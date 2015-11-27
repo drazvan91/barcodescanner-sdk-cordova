@@ -1,10 +1,10 @@
 package com.mirasense.scanditsdk.plugin;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.mirasense.scanditsdk.ScanditSDKScanSettings;
-import com.scandit.barcodepicker.BarcodePicker;
 import com.scandit.barcodepicker.ScanOverlay;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.recognition.Barcode;
@@ -70,7 +70,6 @@ public class ScanditSDKParameterParser {
     public static final String paramViewfinder = "viewfinder".toLowerCase();
     public static final String paramViewfinderDimension = "viewfinderDimension".toLowerCase();
     public static final String paramViewfinderSize = "viewfinderSize".toLowerCase();
-    public static final String paramViewfinderTextHook = "viewfinderTextHook".toLowerCase();
     public static final String paramViewfinderColor = "viewfinderColor".toLowerCase();
     public static final String paramViewfinderDecodedColor = "viewfinderDecodedColor".toLowerCase();
     public static final String paramLogoOffsets = "logoOffsets".toLowerCase();
@@ -254,8 +253,8 @@ public class ScanditSDKParameterParser {
             picker.getOverlayView().setTorchEnabled(bundle.getBoolean(paramTorch));
         }
         if (bundleContainsStringKey(bundle, paramTorchButtonPositionAndSize)) {
-            String hotspot = bundle.getString(paramTorchButtonPositionAndSize);
-            String[] split = hotspot.split("[/]");
+            String positionAndSize = bundle.getString(paramTorchButtonPositionAndSize);
+            String[] split = positionAndSize.split("[/]");
             if (split.length == 4) {
                 try {
                     Float x = Float.valueOf(split[0]);
@@ -263,13 +262,14 @@ public class ScanditSDKParameterParser {
                     int width = Integer.valueOf(split[2]);
                     int height = Integer.valueOf(split[3]);
                     picker.getOverlayView().setTorchButtonMarginsAndSize(
-                            (int) (x * screenWidth), (int) (y * screenHeight), width, height);
+                            (int) (x * dpFromPx(picker.getContext(), screenWidth)),
+                            (int) (y * dpFromPx(picker.getContext(), screenHeight)), width, height);
                 } catch (NumberFormatException e) {}
             }
         }
         if (bundleContainsStringKey(bundle, paramTorchButtonMarginsAndSize)) {
-            String hotspot = bundle.getString(paramTorchButtonMarginsAndSize);
-            String[] split = hotspot.split("[/]");
+            String marginsAndSize = bundle.getString(paramTorchButtonMarginsAndSize);
+            String[] split = marginsAndSize.split("[/]");
             if (split.length == 4) {
                 try {
                     int x = Integer.valueOf(split[0]);
@@ -292,8 +292,8 @@ public class ScanditSDKParameterParser {
             picker.getOverlayView().setCameraSwitchVisibility(actualVisibility);
         }
         if (bundleContainsStringKey(bundle, paramCameraSwitchButtonPositionAndSize)) {
-            String hotspot = bundle.getString(paramCameraSwitchButtonPositionAndSize);
-            String[] split = hotspot.split("[/]");
+            String positionAndSize = bundle.getString(paramCameraSwitchButtonPositionAndSize);
+            String[] split = positionAndSize.split("[/]");
             if (split.length == 4) {
                 try {
                     Float x = Float.valueOf(split[0]);
@@ -301,13 +301,14 @@ public class ScanditSDKParameterParser {
                     int width = Integer.valueOf(split[2]);
                     int height = Integer.valueOf(split[3]);
                     picker.getOverlayView().setCameraSwitchButtonMarginsAndSize(
-                            (int) (x * screenWidth), (int) (y * screenHeight), width, height);
+                            (int) (x * dpFromPx(picker.getContext(), screenWidth)),
+                            (int) (y * dpFromPx(picker.getContext(), screenHeight)), width, height);
                 } catch (NumberFormatException e) {}
             }
         }
         if (bundleContainsStringKey(bundle, paramCameraSwitchButtonMarginsAndSize)) {
-            String hotspot = bundle.getString(paramCameraSwitchButtonMarginsAndSize);
-            String[] split = hotspot.split("[/]");
+            String marginsAndSize = bundle.getString(paramCameraSwitchButtonMarginsAndSize);
+            String[] split = marginsAndSize.split("[/]");
             if (split.length == 4) {
                 try {
                     int x = Integer.valueOf(split[0]);
@@ -382,20 +383,6 @@ public class ScanditSDKParameterParser {
         if (bundle.containsKey(paramViewfinder)) {
             picker.getOverlayView().drawViewfinder(bundle.getBoolean(paramViewfinder));
         }
-        if (bundleContainsStringKey(bundle, paramLogoOffsets)) {
-            String offsets = bundle.getString(paramLogoOffsets);
-            String[] split = offsets.split("[,]");
-            if (split.length == 4) {
-                try {
-                    Float xOffset = Float.valueOf(split[0].trim());
-                    Float yOffset = Float.valueOf(split[1].trim());
-                    Float landscapeXOffset = Float.valueOf(split[2].trim());
-                    Float landscapeYOffset = Float.valueOf(split[3].trim());
-                    picker.getOverlayView().setViewfinderDimension(
-                            xOffset, yOffset, landscapeXOffset, landscapeYOffset);
-                } catch (NumberFormatException e) {}
-            }
-        }
         
         if (bundleContainsStringKey(bundle, paramGuiStyle)) {
             String guiStyle = bundle.getString(paramGuiStyle);
@@ -409,6 +396,11 @@ public class ScanditSDKParameterParser {
     
     private static boolean bundleContainsStringKey(Bundle bundle, String key) {
         return (bundle.containsKey(key) && bundle.getString(key) != null);
+    }
+
+    public static int dpFromPx(Context context, int px) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) ((px - 0.5f) / scale);
     }
 }
 

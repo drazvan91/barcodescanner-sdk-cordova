@@ -961,28 +961,6 @@ public class Scandit {
 		 * @param text A placeholder text shown when the search bar is empty.
 		 */
 		public void setSearchBarPlaceholderText(String text);
-
-		/**
-		 * @brief Sets the minimum size that a barcode entered in the manual searchbar has to have to possibly be valid.
-		 *
-		 * By default this is set to 8.
-		 *
-		 * @since 4.11.0
-		 *
-		 * @param length Minimum number of input characters.
-		 */
-		public void setMinSearchBarBarcodeLength(length);
-
-		/**
-		 * @brief Sets the maximum size that a barcode entered in the manual searchbar can have to possibly be valid.
-		 *
-		 * By default this is set to 100.
-		 *
-		 * @since 4.11.0
-		 *
-		 * @param length Maximum number of input characters.
-		 */
-		public void setMaxSearchBarBarcodeLength(length);
 		///@}
 
 		/** @name Non-Official Methods

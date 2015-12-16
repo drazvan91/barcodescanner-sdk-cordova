@@ -26,7 +26,7 @@
 - (void)restoreDefaults {
     self.goButtonCaption = @"Go";
     self.cancelButtonCaption = @"Cancel";
-    self.minTextLengthForSearch = 8;
+    self.minTextLengthForSearch = 2;
     self.maxTextLengthForSearch = 100;
 }
 

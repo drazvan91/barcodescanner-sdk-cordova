@@ -20,6 +20,15 @@ package com.mirasense.scanditsdk.plugin;
 
 import android.os.Bundle;
 
+import com.scandit.barcodepicker.ScanSession;
+import com.scandit.recognition.Barcode;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
 public class ScanditSDKResultRelay {
     
     private static ScanditSDKResultRelayCallback mCallback;
@@ -32,6 +41,36 @@ public class ScanditSDKResultRelay {
         if (mCallback != null) {
             mCallback.onResultByRelay(bundle);
         }
+    }
+
+    public static JSONObject jsonForSession(ScanSession session) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("newlyRecognizedCodes", jsonForCodes(session.getNewlyRecognizedCodes()));
+            json.put("newlyLocalizedCodes", jsonForCodes(session.getNewlyLocalizedCodes()));
+            json.put("allRecognizedCodes", jsonForCodes(session.getAllRecognizedCodes()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    public static JSONArray jsonForCodes(List<Barcode> codes) {
+        JSONArray array = new JSONArray();
+
+        for (Barcode code : codes) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("symbology", code.getSymbologyName());
+                object.put("gs1DataCarrier", code.isGs1DataCarrier());
+                object.put("recognized", code.isRecognized());
+                object.put("data", code.getData());
+                array.put(object);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return array;
     }
     
     public interface ScanditSDKResultRelayCallback {

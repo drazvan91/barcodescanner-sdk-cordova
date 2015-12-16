@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
@@ -39,21 +40,29 @@ import com.scandit.barcodepicker.ScanditLicense;
 import com.scandit.barcodepicker.internal.ScanditSDKGlobals;
 import com.mirasense.scanditsdk.plugin.ScanditSDKResultRelay.ScanditSDKResultRelayCallback;
 import com.scandit.base.system.SbSystemUtils;
+import com.scandit.base.util.JSONParseException;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
+import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCallback,
         OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
 
+    public static final String INIT_LICENSE = "initLicense";
+    public static final String SHOW = "show";
     public static final String SCAN = "scan";
+    public static final String APPLY_SETTINGS = "applySettings";
     public static final String CANCEL = "cancel";
     public static final String PAUSE = "pause";
     public static final String RESUME = "resume";
@@ -66,23 +75,35 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     private boolean mContinuousMode = false;
     private boolean mPendingOperation = false;
 
-    private Rect mPortraitMargins = new Rect(0, 0, 0, 0);
-    private Rect mLandscapeMargins = new Rect(0, 0, 0, 0);
     private final OrientationHandler mHandler = new OrientationHandler(Looper.getMainLooper());
 
     private SearchBarBarcodePicker mBarcodePicker;
     private RelativeLayout mLayout;
 
+    private ScanditWorker mWorker = null;
+    private boolean mLegacyMode = false;
+
     
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
-        PluginResult result = null;
-
-        if (action.equals(SCAN)) {
+        if (mWorker == null) {
+            mWorker = new ScanditWorker();
+            mWorker.start();
+        }
+        Log.e("ScanditSDK", "execute " + action);
+        if (action.equals(INIT_LICENSE)) {
+            initLicense(args);
+            return true;
+        } else if (action.equals(SHOW)) {
+            mCallbackContext = callbackContext;
+            show(args);
+            return true;
+        } else if (action.equals(SCAN)) {
             mCallbackContext = callbackContext;
             scan(args);
-            result = new PluginResult(Status.NO_RESULT);
-            result.setKeepCallback(true);
+            return true;
+        } else if (action.equals(APPLY_SETTINGS)) {
+            applySettings(args);
             return true;
         } else if (action.equals(CANCEL)) {
             cancel(args);
@@ -106,9 +127,50 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             torch(args);
             return true;
         } else {
-            result = new PluginResult(Status.INVALID_ACTION);
             callbackContext.error("Invalid Action: " + action);
             return false;
+        }
+    }
+
+    private void initLicense(JSONArray data) {
+        if (data.length() < 1) {
+            Log.e("ScanditSDK", "The initLicense call received too few arguments and has to return without starting.");
+            return;
+        }
+
+        try {
+            String appKey = data.getString(0);
+            ScanditSDKGlobals.usedFramework = "phonegap";
+            ScanditLicense.setAppKey(appKey);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void show(JSONArray data) {
+        if (mPendingOperation) {
+            return;
+        }
+        mPendingOperation = true;
+        mHandler.start();
+
+        if (data.length() > 2) {
+            // We extract all options and add them to the intent extra bundle.
+            try {
+                final JSONObject settings = data.getJSONObject(0);
+                final Bundle options = new Bundle();
+                setOptionsOnBundle(data.getJSONObject(1), options);
+                final Bundle overlayOptions = new Bundle();
+                setOptionsOnBundle(data.getJSONObject(2), overlayOptions);
+
+                mLegacyMode = false;
+
+                showPicker(settings, options, overlayOptions);
+
+            } catch (JSONException e) {
+                Log.e("ScanditSDK", "The show call received too few arguments and has to return without starting.");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -119,9 +181,10 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         mPendingOperation = true;
         mHandler.start();
 
-        final Bundle bundle = new Bundle();
+        final Bundle options = new Bundle();
         try {
-            bundle.putString(ScanditSDKParameterParser.paramAppKey, data.getString(0));
+            ScanditSDKGlobals.usedFramework = "phonegap";
+            ScanditLicense.setAppKey(data.getString(0));
         } catch (JSONException e) {
             Log.e("ScanditSDK", "Function called through Java Script contained illegal objects.");
             e.printStackTrace();
@@ -131,241 +194,275 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         if (data.length() > 1) {
             // We extract all options and add them to the intent extra bundle.
             try {
-                setOptionsOnBundle(data.getJSONObject(1), bundle);
+                setOptionsOnBundle(data.getJSONObject(1), options);
+                showPicker(null, options, null);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+    }
 
-        if (bundle.containsKey(ScanditSDKParameterParser.paramContinuousMode)) {
-            mContinuousMode = bundle.getBoolean(ScanditSDKParameterParser.paramContinuousMode);
-        }
+    private void showPicker(final JSONObject settings, final Bundle options, final Bundle overlayOptions) {
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                mContinuousMode = false;
+                if (options.containsKey(PhonegapParamParser.paramContinuousMode)) {
+                    mContinuousMode = options.getBoolean(PhonegapParamParser.paramContinuousMode);
+                }
 
-        ScanditLicense.setAppKey(bundle.getString(ScanditSDKParameterParser.paramAppKey));
-        ScanditSDKGlobals.usedFramework = "phonegap";
+                if (options.containsKey(PhonegapParamParser.paramPortraitMargins)
+                        || options.containsKey(PhonegapParamParser.paramLandscapeMargins)) {
+                    final AtomicBoolean done = new AtomicBoolean(false);
+                    Runnable task = new Runnable() {
+                        public void run() {
+                            synchronized (this) {
+                                ScanSettings scanSettings;
+                                if (settings == null) {
+                                    scanSettings = LegacySettingsParamParser.getSettings(options);
+                                } else {
+                                    try {
+                                        scanSettings = ScanSettings.createWithJson(settings);
+                                    } catch (JSONParseException e) {
+                                        Log.e("ScanditSDK", "Exception when creating settings");
+                                        e.printStackTrace();
+                                        scanSettings = ScanSettings.create();
+                                    }
+                                }
+                                mBarcodePicker = new SearchBarBarcodePicker(cordova.getActivity(), scanSettings);
+                                mBarcodePicker.setOnScanListener(ScanditSDK.this);
 
-        if (bundle.containsKey(ScanditSDKParameterParser.paramPortraitMargins)
-                || bundle.containsKey(ScanditSDKParameterParser.paramLandscapeMargins)) {
-            cordova.getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    ScanSettings settings = ScanditSDKParameterParser.settingsForBundle(bundle);
-                    mBarcodePicker = new SearchBarBarcodePicker(cordova.getActivity(), settings);
-                    mBarcodePicker.setOnScanListener(ScanditSDK.this);
-                    mBarcodePicker.setOnSearchBarListener(ScanditSDK.this);
-                    mLayout = new RelativeLayout(cordova.getActivity());
+                                // Set all the UI options.
+                                PhonegapParamParser.updatePicker(mBarcodePicker, options, ScanditSDK.this);
 
-                    ViewGroup viewGroup = getViewGroupToAddTo();
-                    if (viewGroup != null) {
-                        viewGroup.addView(mLayout);
+                                if (mLegacyMode) {
+                                    LegacyUIParamParser.updatePickerUI(cordova.getActivity(), mBarcodePicker, options);
+                                } else {
+                                    UIParamParser.updatePickerUI(mBarcodePicker, overlayOptions);
+                                    PhonegapParamParser.updatePicker(mBarcodePicker, overlayOptions, ScanditSDK.this);
+                                }
+
+                                // Create the layout to add the picker to and add it on top of the web view.
+                                mLayout = new RelativeLayout(cordova.getActivity());
+
+                                ViewGroup viewGroup = getViewGroupToAddTo();
+                                if (viewGroup != null) {
+                                    viewGroup.addView(mLayout);
+                                }
+
+                                RelativeLayout.LayoutParams rLayoutParams = new RelativeLayout.LayoutParams(
+                                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                                mLayout.addView(mBarcodePicker, rLayoutParams);
+                                PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, options);
+
+                                // Only already start in legacy mode.
+                                if (mLegacyMode) {
+                                    if (options.containsKey(PhonegapParamParser.paramPaused)
+                                            && options.getBoolean(PhonegapParamParser.paramPaused)) {
+                                        mBarcodePicker.startScanning(true);
+                                    } else {
+                                        mBarcodePicker.startScanning();
+                                    }
+                                }
+                                done.set(true);
+                                notify();
+                            }
+                        }
+                    };
+                    cordova.getActivity().runOnUiThread(task);
+                    synchronized (task) {
+                        while (!done.get()) {
+                            try {
+                                task.wait();
+                            } catch (InterruptedException e) {
+                            }
+                        }
                     }
 
-                    Display display = cordova.getActivity().getWindowManager().getDefaultDisplay();
-                    ScanditSDKParameterParser.updatePickerUIFromBundle(mBarcodePicker, bundle,
-                            display.getWidth(), display.getHeight());
+                } else {
+                    ScanditSDKResultRelay.setCallback(ScanditSDK.this);
+                    Intent intent = new Intent(cordova.getActivity(), ScanditSDKActivity.class);
+                    if (settings != null) {
+                        intent.putExtra("settings", settings.toString());
+                    }
+                    intent.putExtra("options", options);
+                    if (overlayOptions != null) {
+                        intent.putExtra("overlayOptions", overlayOptions);
+                    }
+                    cordova.startActivityForResult(ScanditSDK.this, intent, 1);
+                }
+            }
+        });
+    }
 
-                    RelativeLayout.LayoutParams rLayoutParams = new RelativeLayout.LayoutParams(
-                            RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                    mLayout.addView(mBarcodePicker, rLayoutParams);
-                    adjustLayout(bundle, 0);
+    private void applySettings(JSONArray data) {
+        if (data.length() < 1) {
+            Log.e("ScanditSDK", "The applySettings call received too few arguments and has to return without starting.");
+            return;
+        }
+        try {
+            final Bundle bundle = new Bundle();
+            setOptionsOnBundle(data.getJSONObject(0), bundle);
 
-                    if (bundle.containsKey(ScanditSDKParameterParser.paramPaused)
-                            && bundle.getBoolean(ScanditSDKParameterParser.paramPaused)) {
-                        mBarcodePicker.startScanning(true);
-                    } else {
-                        mBarcodePicker.startScanning();
+            mWorker.getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mBarcodePicker != null) {
+                        final AtomicBoolean done = new AtomicBoolean(false);
+                        Runnable task = new Runnable() {
+                            public void run() {
+                                synchronized (this) {
+                                    if (mLegacyMode) {
+                                        LegacyUIParamParser.updatePickerUI(cordova.getActivity(), mBarcodePicker, bundle);
+                                    }
+                                    PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
+                                }
+                            }
+                        };
+                        cordova.getActivity().runOnUiThread(task);
+                        synchronized (task) {
+                            while (!done.get()) {
+                                try {
+                                    task.wait();
+                                } catch (InterruptedException e) {}
+                            }
+                        }
                     }
                 }
             });
-
-        } else {
-            ScanditSDKResultRelay.setCallback(this);
-            Intent intent = new Intent(cordova.getActivity(), ScanditSDKActivity.class);
-            intent.putExtras(bundle);
-            cordova.startActivityForResult(this, intent, 1);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
     private void cancel(JSONArray data) {
-        if (mBarcodePicker != null) {
-            removeSubviewPicker();
-            mPendingOperation = false;
-            mHandler.stop();
-            mCallbackContext.error("Canceled");
-        } else {
-            ScanditSDKActivity.cancel();
-        }
-    }
-
-    private void pause(JSONArray data) {
-        if (mBarcodePicker != null) {
-            mBarcodePicker.pauseScanning();
-        } else {
-            ScanditSDKActivity.pause();
-        }
-    }
-
-    private void resume(JSONArray data) {
-        if (mBarcodePicker != null) {
-            mBarcodePicker.resumeScanning();
-        } else {
-            ScanditSDKActivity.resume();
-        }
-    }
-
-    private void stop(JSONArray data) {
-        if (mBarcodePicker != null) {
-            mBarcodePicker.stopScanning();
-        } else {
-            ScanditSDKActivity.stop();
-        }
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mBarcodePicker != null) {
+                    removeSubviewPicker();
+                    mPendingOperation = false;
+                    mHandler.stop();
+                    mCallbackContext.error("Canceled");
+                } else {
+                    ScanditSDKActivity.cancel();
+                }
+            }
+        });
     }
 
     private void start(JSONArray data) {
-        if (mBarcodePicker != null) {
-            mBarcodePicker.startScanning();
-        } else {
-            ScanditSDKActivity.start();
-        }
-    }
-
-    private void resize(JSONArray data) {
-        if (mBarcodePicker != null) {
-            final Bundle bundle = new Bundle();
-            try {
-                if (data.length() < 1) {
-                    Log.e("ScanditSDK", "The resize call received too few arguments and has to return without starting.");
-                    return;
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("ScanditSDK", "starting");
+                if (mBarcodePicker != null) {
+                    Log.e("ScanditSDK", "starting 2");
+                    mBarcodePicker.startScanning();
+                } else {
+                    ScanditSDKActivity.start();
                 }
-                setOptionsOnBundle(data.getJSONObject(0), bundle);
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-            cordova.getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    Display display = cordova.getActivity().getWindowManager().getDefaultDisplay();
-                    ScanditSDKParameterParser.updatePickerUIFromBundle(mBarcodePicker, bundle,
-                            display.getWidth(), display.getHeight());
-                    double animationDuration = 0;
-                    if (bundle.containsKey(ScanditSDKParameterParser.paramAnimationDuration)) {
-                        animationDuration = bundle.getDouble(ScanditSDKParameterParser.paramAnimationDuration);
-                    }
-                    adjustLayout(bundle, animationDuration);
-                }
-            });
-        }
+        });
     }
 
-    /**
-     * Adjusts the layout parameters of the barcode picker according to the margins set through java script.
-     *
-     * @param bundle The bundle with the java script parameters.
-     * @param animationDuration Over how long the change should be animated.
-     */
-    private void adjustLayout(Bundle bundle, double animationDuration) {
-        if (mBarcodePicker == null) {
+    private void pause(JSONArray data) {
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mBarcodePicker != null) {
+                    mBarcodePicker.pauseScanning();
+                } else {
+                    ScanditSDKActivity.pause();
+                }
+            }
+        });
+    }
+
+    private void resume(JSONArray data) {
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mBarcodePicker != null) {
+                    mBarcodePicker.resumeScanning();
+                } else {
+                    ScanditSDKActivity.resume();
+                }
+            }
+        });
+    }
+
+    private void stop(JSONArray data) {
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mBarcodePicker != null) {
+                    mBarcodePicker.stopScanning();
+                } else {
+                    ScanditSDKActivity.stop();
+                }
+            }
+        });
+    }
+
+    private void resize(final JSONArray data) {
+        if (data.length() < 1) {
+            Log.e("ScanditSDK", "The resize call received too few arguments and has to return without starting.");
             return;
         }
-        final RelativeLayout.LayoutParams rLayoutParams = (RelativeLayout.LayoutParams) mBarcodePicker.getLayoutParams();
-
-        Display display = ((WindowManager) webView.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        if (bundle.containsKey(ScanditSDKParameterParser.paramPortraitMargins) && display.getHeight() > display.getWidth()) {
-            String portraitMargins = bundle.getString(ScanditSDKParameterParser.paramPortraitMargins);
-            String[] split = portraitMargins.split("[/]");
-            if (split.length == 4) {
-                try {
-                    final Rect oldPortraitMargins = new Rect(mPortraitMargins);
-                    mPortraitMargins = new Rect(Integer.valueOf(split[0]), Integer.valueOf(split[1]),
-                            Integer.valueOf(split[2]), Integer.valueOf(split[3]));
-                    if (animationDuration > 0) {
-                        Animation anim = new Animation() {
-                            @Override
-                            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                                rLayoutParams.topMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                        (int) (oldPortraitMargins.top
-                                                + (mPortraitMargins.top - oldPortraitMargins.top) * interpolatedTime));
-                                rLayoutParams.rightMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                        (int) (oldPortraitMargins.right
-                                                + (mPortraitMargins.right - oldPortraitMargins.right) * interpolatedTime));
-                                rLayoutParams.bottomMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                        (int) (oldPortraitMargins.bottom
-                                                + (mPortraitMargins.bottom - oldPortraitMargins.bottom) * interpolatedTime));
-                                rLayoutParams.leftMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                        (int) (oldPortraitMargins.left
-                                                + (mPortraitMargins.left - oldPortraitMargins.left) * interpolatedTime));
-                                mBarcodePicker.setLayoutParams(rLayoutParams);
-                            }
-                        };
-                        anim.setDuration((int) (animationDuration * 1000));
-                        mBarcodePicker.startAnimation(anim);
-                    } else {
-
-                        rLayoutParams.topMargin = SbSystemUtils.pxFromDp(webView.getContext(), mPortraitMargins.top);
-                        rLayoutParams.rightMargin = SbSystemUtils.pxFromDp(webView.getContext(), mPortraitMargins.right);
-                        rLayoutParams.bottomMargin = SbSystemUtils.pxFromDp(webView.getContext(), mPortraitMargins.bottom);
-                        rLayoutParams.leftMargin = SbSystemUtils.pxFromDp(webView.getContext(), mPortraitMargins.left);
-                        mBarcodePicker.setLayoutParams(rLayoutParams);
+        mWorker.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mBarcodePicker != null) {
+                    final Bundle bundle = new Bundle();
+                    try {
+                        setOptionsOnBundle(data.getJSONObject(0), bundle);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (NumberFormatException e) {
-
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            if (mLegacyMode) {
+                                LegacyUIParamParser.updatePickerUI(cordova.getActivity(), mBarcodePicker, bundle);
+                            }
+                            PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
+                        }
+                    });
                 }
             }
-        } else if (bundle.containsKey(ScanditSDKParameterParser.paramLandscapeMargins) && display.getWidth() > display.getHeight()) {
-            String landscapeMargins = bundle.getString(ScanditSDKParameterParser.paramLandscapeMargins);
-            String[] split = landscapeMargins.split("[/]");
-            if (split.length == 4) {
-                final Rect oldLandscapeMargins = new Rect(mLandscapeMargins);
-                mLandscapeMargins = new Rect(Integer.valueOf(split[0]), Integer.valueOf(split[1]),
-                        Integer.valueOf(split[2]), Integer.valueOf(split[3]));
-
-                Animation anim = new Animation() {
-                    @Override
-                    protected void applyTransformation(float interpolatedTime, Transformation t) {
-                        rLayoutParams.topMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                (int) (oldLandscapeMargins.top
-                                        + (mLandscapeMargins.top - oldLandscapeMargins.top) * interpolatedTime));
-                        rLayoutParams.rightMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                (int)(oldLandscapeMargins.right
-                                        + (mLandscapeMargins.right - oldLandscapeMargins.right) * interpolatedTime));
-                        rLayoutParams.bottomMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                (int)(oldLandscapeMargins.bottom
-                                        + (mLandscapeMargins.bottom - oldLandscapeMargins.bottom) * interpolatedTime));
-                        rLayoutParams.leftMargin = SbSystemUtils.pxFromDp(webView.getContext(),
-                                (int)(oldLandscapeMargins.left
-                                        + (mLandscapeMargins.left - oldLandscapeMargins.left) * interpolatedTime));
-                        mBarcodePicker.setLayoutParams(rLayoutParams);
-                    }
-                };
-                anim.setDuration((int) (animationDuration * 1000));
-                mBarcodePicker.startAnimation(anim);
-            }
-        }
+        });
     }
-    
+
     /**
      * Switches the torch on or off. Pass true to turn it on, false to turn it off.
      * You call this the following way from java script:
      *
      * cordova.exec(null, null, "ScanditSDK", "torch", [true]);
      */
-    private void torch(JSONArray data) {
-        boolean enabled = false;
-        try {
-            if (data.length() < 1) {
-                Log.e("ScanditSDK", "The torch call received too few arguments and has to return without starting.");
-                return;
-            }
-            enabled = data.getBoolean(0);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private void torch(final JSONArray data) {
+        if (data.length() < 1) {
+            Log.e("ScanditSDK", "The torch call received too few arguments and has to return without starting.");
+            return;
         }
-        final boolean innerEnabled = enabled;
-        cordova.getActivity().runOnUiThread(new Runnable() {
+        mWorker.getHandler().post(new Runnable() {
+            @Override
             public void run() {
-                if (mBarcodePicker != null) {
-                    mBarcodePicker.switchTorchOn(innerEnabled);
-                } else {
-                    ScanditSDKActivity.torch(innerEnabled);
+                boolean enabled = false;
+                try {
+                    enabled = data.getBoolean(0);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                final boolean innerEnabled = enabled;
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (mBarcodePicker != null) {
+                            mBarcodePicker.switchTorchOn(innerEnabled);
+                        } else {
+                            ScanditSDKActivity.torch(innerEnabled);
+                        }
+                    }
+                });
             }
         });
     }
@@ -395,13 +492,33 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                 if (obj instanceof Float) {
                     bundle.putFloat(key.toLowerCase(), (Float) obj);
                 } else if (obj instanceof Double) {
-                    bundle.putDouble(key.toLowerCase(), (Double) obj);
+                    bundle.putFloat(key.toLowerCase(), new Float((Double) obj));
                 } else if (obj instanceof Integer) {
                     bundle.putInt(key.toLowerCase(), (Integer) obj);
                 } else if (obj instanceof Boolean) {
                     bundle.putBoolean(key.toLowerCase(), (Boolean) obj);
                 } else if (obj instanceof String) {
                     bundle.putString(key.toLowerCase(), (String) obj);
+                } else if (obj instanceof JSONArray) {
+                    LinkedList<Object> list = new LinkedList<Object>();
+                    JSONArray array = (JSONArray)obj;
+                    for (int i = 0; i < array.length(); i++) {
+                        try {
+                            Object item = array.get(i);
+                            if (item instanceof Double) {
+                                list.add(new Float((Double) item));
+                            } else {
+                                list.add(array.get(i));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    bundle.putSerializable(key.toLowerCase(), list);
+                } else if (obj instanceof JSONObject) {
+                    Bundle dictionary = new Bundle();
+                    setOptionsOnBundle((JSONObject)obj, dictionary);
+                    bundle.putBundle(key, dictionary);
                 }
             }
         }
@@ -411,30 +528,21 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         ScanditSDKResultRelay.setCallback(null);
         if (resultCode == ScanditSDKActivity.SCAN || resultCode == ScanditSDKActivity.MANUAL) {
-            String barcode = data.getExtras().getString("barcode");
-            String symbology = data.getExtras().getString("symbology");
-            JSONArray args = new JSONArray();
-            args.put(barcode);
-            args.put(symbology);
+            PluginResult result = resultForBundle(data.getExtras());
             mPendingOperation = false;
             mHandler.stop();
-            mCallbackContext.success(args);
-            
+            mCallbackContext.sendPluginResult(result);
+
         } else if (resultCode == ScanditSDKActivity.CANCEL) {
             mPendingOperation = false;
             mHandler.stop();
             mCallbackContext.error("Canceled");
         }
     }
-    
+
     @Override
     public void onResultByRelay(Bundle bundle) {
-        String barcode = bundle.getString("barcode");
-        String symbology = bundle.getString("symbology");
-        JSONArray args = new JSONArray();
-        args.put(barcode);
-        args.put(symbology);
-        PluginResult result = new PluginResult(Status.OK, args);
+        PluginResult result = resultForBundle(bundle);
         if (mContinuousMode) {
             result.setKeepCallback(true);
         } else {
@@ -444,13 +552,44 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         mCallbackContext.sendPluginResult(result);
     }
 
+    private PluginResult resultForBundle(Bundle bundle) {
+        PluginResult result;
+        if (bundle.containsKey("jsonString")) {
+            String jsonString = bundle.getString("jsonString");
+            try {
+                JSONObject json = new JSONObject(jsonString);
+                result = new PluginResult(Status.OK, json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                result = new PluginResult(Status.OK, "error");
+            }
+        } else if (bundle.containsKey("string")) {
+            String string = bundle.getString("string");
+            result = new PluginResult(Status.OK, string);
+        } else {
+            // Legacy
+            String barcode = bundle.getString("barcode");
+            String symbology = bundle.getString("symbology");
+            JSONArray args = new JSONArray();
+            args.put(barcode);
+            args.put(symbology);
+            result = new PluginResult(Status.OK, args);
+        }
+        return result;
+    }
+
     @Override
     public void didScan(ScanSession session) {
         if (session.getNewlyRecognizedCodes().size() > 0) {
-            JSONArray args = new JSONArray();
-            args.put(session.getNewlyRecognizedCodes().get(0).getData());
-            args.put(session.getNewlyRecognizedCodes().get(0).getSymbologyName());
-            PluginResult result = new PluginResult(Status.OK, args);
+            PluginResult result;
+            if (mLegacyMode) {
+                JSONArray args = new JSONArray();
+                args.put(session.getNewlyRecognizedCodes().get(0).getData());
+                args.put(session.getNewlyRecognizedCodes().get(0).getSymbologyName());
+                result = new PluginResult(Status.OK, args);
+            } else {
+                result = new PluginResult(Status.OK, ScanditSDKResultRelay.jsonForSession(session));
+            }
             if (mContinuousMode) {
                 result.setKeepCallback(true);
             } else {
@@ -464,10 +603,15 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
 
     @Override
     public void didEnter(String entry) {
-        JSONArray args = new JSONArray();
-        args.put(entry);
-        args.put("UNKNOWN");
-        PluginResult result = new PluginResult(Status.OK, args);
+        PluginResult result;
+        if (mLegacyMode) {
+            JSONArray args = new JSONArray();
+            args.put(entry);
+            args.put("UNKNOWN");
+            result = new PluginResult(Status.OK, args);
+        } else {
+            result = new PluginResult(Status.OK, entry);
+        }
         if (mContinuousMode) {
             result.setKeepCallback(true);
         } else {
@@ -563,12 +707,28 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             if (context != null) {
                 int displayRotation = SbSystemUtils.getDisplayRotation(context);
                 if (displayRotation != mLastRotation) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(ScanditSDKParameterParser.paramPortraitMargins, mPortraitMargins.left + "/" + mPortraitMargins.top
-                            + "/" + mPortraitMargins.right + "/" + mPortraitMargins.bottom);
-                    bundle.putString(ScanditSDKParameterParser.paramLandscapeMargins, mLandscapeMargins.left + "/" + mLandscapeMargins.top
-                            + "/" + mLandscapeMargins.right + "/" + mLandscapeMargins.bottom);
-                    adjustLayout(bundle, 0);
+
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Bundle bundle = new Bundle();
+                            LinkedList<Object> list = new LinkedList<Object>();
+                            list.add((Integer) mBarcodePicker.portraitMargins.left);
+                            list.add((Integer) mBarcodePicker.portraitMargins.top);
+                            list.add((Integer) mBarcodePicker.portraitMargins.right);
+                            list.add((Integer) mBarcodePicker.portraitMargins.bottom);
+                            bundle.putSerializable(PhonegapParamParser.paramPortraitMargins, list);
+
+                            list = new LinkedList<Object>();
+                            list.add((Integer) mBarcodePicker.landscapeMargins.left);
+                            list.add((Integer) mBarcodePicker.landscapeMargins.top);
+                            list.add((Integer) mBarcodePicker.landscapeMargins.right);
+                            list.add((Integer) mBarcodePicker.landscapeMargins.bottom);
+                            bundle.putSerializable(PhonegapParamParser.paramLandscapeMargins, list);
+
+                            PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
+                        }
+                    });
                     mLastRotation = displayRotation;
                 }
                 mHandler.sendEmptyMessageDelayed(OrientationHandler.CHECK_ORIENTATION, 20);

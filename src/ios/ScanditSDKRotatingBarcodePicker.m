@@ -52,6 +52,9 @@
     return self;
 }
 
+
+#pragma mark - Orientation Changes & Margin Adjustment
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -61,7 +64,7 @@
 
 - (void)adjustSize:(CGFloat)animationDuration {
     if (self.parentViewController && self.view.superview) {
-        
+
         [UIView animateWithDuration:animationDuration animations:^{
             CGRect margins = self.portraitMargins;
             if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {

@@ -28,6 +28,13 @@ dispatch_sync(dispatch_get_main_queue(), block);\
 
 @interface ScanditSDK : CDVPlugin
 
+- (void)initLicense:(CDVInvokedUrlCommand *)command;
+
+- (void)show:(CDVInvokedUrlCommand *)command;
+
+/**
+ * @deprecated Replaced by initLicense: and show:
+ */
 - (void)scan:(CDVInvokedUrlCommand *)command;
 
 - (void)cancel:(CDVInvokedUrlCommand *)command;

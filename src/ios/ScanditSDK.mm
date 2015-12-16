@@ -17,8 +17,11 @@
 
 #import "ScanditSDK.h"
 #import "ScanditSDKRotatingBarcodePicker.h"
-#import "ScanditSDKParameterParser.h"
 #import "ScanditSDKSearchBar.h"
+#import "SBSLegacySettingsParamParser.h"
+#import "SBSLegacyUIParamParser.h"
+#import "SBSUIParamParser.h"
+#import "SBSPhonegapParamParser.h"
 
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
@@ -33,13 +36,56 @@
 @property (nonatomic, assign) BOOL continuousMode;
 @property (nonatomic, assign) BOOL modallyPresented;
 @property (nonatomic, assign) BOOL startAnimationDone;
-@property (nonatomic, strong) SBSCode *bufferedResult;
+@property (nonatomic, strong) SBSScanSession *bufferedResult;
 @property (nonatomic, strong) ScanditSDKRotatingBarcodePicker *scanditBarcodePicker;
+@property (nonatomic, strong) dispatch_queue_t queue;
+@property (nonatomic, assign) BOOL legacyMode;
 @end
 
 
 @implementation ScanditSDK
 @synthesize hasPendingOperation;
+
+- (dispatch_queue_t)queue {
+    if (!_queue) {
+        self.queue = dispatch_queue_create("scandit_barcode_scanner_plugin", NULL);
+        dispatch_queue_t high = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, NULL);
+        dispatch_set_target_queue(_queue, high);
+    }
+    return _queue;
+}
+
+- (void)initLicense:(CDVInvokedUrlCommand *)command {
+    NSUInteger argc = [command.arguments count];
+    if (argc < 1) {
+        NSLog(@"The initLicense call received too few arguments and has to return without starting.");
+        return;
+    }
+    NSString *appKey = [command.arguments objectAtIndex:0];
+    [SBSLicense setFrameworkIdentifier:@"phonegap"];
+    [SBSLicense setAppKey:appKey];
+}
+
+- (void)show:(CDVInvokedUrlCommand *)command {
+    if (self.hasPendingOperation) {
+        return;
+    }
+    self.hasPendingOperation = YES;
+    
+    NSUInteger argc = [command.arguments count];
+    if (argc < 2) {
+        NSLog(@"The show call received too few arguments and has to return without starting.");
+        return;
+    }
+    self.callbackId = command.callbackId;
+    
+    NSDictionary *settings = [command.arguments objectAtIndex:0];
+    NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];
+    NSDictionary *overlayOptions = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:2]];
+    
+    self.legacyMode = NO;
+    [self showPickerWithSettings:settings options:options overlayOptions:overlayOptions];
+}
 
 - (void)scan:(CDVInvokedUrlCommand *)command {
     if (self.hasPendingOperation) {
@@ -59,184 +105,187 @@
     [SBSLicense setAppKey:appKey];
     
     NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];
+    
+    self.legacyMode = YES;
+    [self showPickerWithSettings:nil options:options overlayOptions:nil];
+}
 
-    // Continuous mode support
-    self.continuousMode = NO;
-    NSObject *continuousMode = [options objectForKey:[ScanditSDKParameterParser paramContinuousMode]];
-    if (continuousMode && [continuousMode isKindOfClass:[NSNumber class]]) {
-        self.continuousMode = [((NSNumber *)continuousMode) boolValue];
-    }
-	
-    
-    self.scanditBarcodePicker = [[ScanditSDKRotatingBarcodePicker alloc]
-                                 initWithSettings:[ScanditSDKParameterParser settingsForOptions:options]];
-    
-    NSObject *orientationsObj = [options objectForKey:[ScanditSDKParameterParser paramOrientations]];
-    if (orientationsObj && [orientationsObj isKindOfClass:[NSString class]]) {
-        NSUInteger allowedOrientations = 0;
-        NSString *orientationsString = (NSString *)orientationsObj;
-        if ([orientationsString rangeOfString:[ScanditSDKParameterParser paramOrientationsPortrait]].location != NSNotFound) {
-            allowedOrientations = allowedOrientations | (1 << UIInterfaceOrientationPortrait);
+- (void)showPickerWithSettings:(NSDictionary *)settings
+                       options:(NSDictionary *)options
+                overlayOptions:(NSDictionary *)overlayOptions {
+    dispatch_async(self.queue, ^{
+        // Continuous mode support.
+        self.continuousMode = NO;
+        NSObject *continuousMode = [options objectForKey:[SBSPhonegapParamParser paramContinuousMode]];
+        if (continuousMode && [continuousMode isKindOfClass:[NSNumber class]]) {
+            self.continuousMode = [((NSNumber *)continuousMode) boolValue];
         }
-        if ([orientationsString rangeOfString:[ScanditSDKParameterParser paramOrientationsPortraitUpsideDown]].location != NSNotFound) {
-            allowedOrientations = allowedOrientations | (1 << UIInterfaceOrientationPortraitUpsideDown);
-        }
-        if ([orientationsString rangeOfString:[ScanditSDKParameterParser paramOrientationsLandscapeLeft]].location != NSNotFound) {
-            allowedOrientations = allowedOrientations | (1 << UIInterfaceOrientationLandscapeLeft);
-        }
-        if ([orientationsString rangeOfString:[ScanditSDKParameterParser paramOrientationsLandscapeRight]].location != NSNotFound) {
-            allowedOrientations = allowedOrientations | (1 << UIInterfaceOrientationLandscapeRight);
-        }
-        self.scanditBarcodePicker.allowedInterfaceOrientations = allowedOrientations;
-    }
-	
-    NSObject *searchBar = [options objectForKey:[ScanditSDKParameterParser paramSearchBar]];
-    if (searchBar && [searchBar isKindOfClass:[NSNumber class]]) {
-        [self.scanditBarcodePicker showSearchBar:[((NSNumber *)searchBar) boolValue]];
-        self.scanditBarcodePicker.searchDelegate = self;
-    }
-    
-    NSObject *t5 = [options objectForKey:[ScanditSDKParameterParser paramSearchBarActionButtonCaption]];
-    if (t5 && [t5 isKindOfClass:[NSString class]]) {
-        self.scanditBarcodePicker.manualSearchBar.goButtonCaption = (NSString *) t5;
-    }
-    NSObject *t6 = [options objectForKey:[ScanditSDKParameterParser paramSearchBarCancelButtonCaption]];
-    if (t6 && [t6 isKindOfClass:[NSString class]]) {
-        self.scanditBarcodePicker.manualSearchBar.cancelButtonCaption = (NSString *) t6;
-    }
-    NSObject *t7 = [options objectForKey:[ScanditSDKParameterParser paramSearchBarPlaceholderText]];
-    if (t7 && [t7 isKindOfClass:[NSString class]]) {
-        self.scanditBarcodePicker.manualSearchBar.placeholder = (NSString *) t7;
-    }
-    
-    NSObject *minManual = [options objectForKey:[ScanditSDKParameterParser paramMinSearchBarBarcodeLength]];
-    if (minManual && [minManual isKindOfClass:[NSNumber class]]) {
-        self.scanditBarcodePicker.manualSearchBar.minTextLengthForSearch = [((NSNumber *) minManual) integerValue];
-    }
-    NSObject *maxManual = [options objectForKey:[ScanditSDKParameterParser paramMaxSearchBarBarcodeLength]];
-    if (maxManual && [maxManual isKindOfClass:[NSNumber class]]) {
-        self.scanditBarcodePicker.manualSearchBar.maxTextLengthForSearch = [((NSNumber *) maxManual) integerValue];
-    }
-    
-    if (![options objectForKey:[ScanditSDKParameterParser paramPortraitMargins]]
-        && ![options objectForKey:[ScanditSDKParameterParser paramLandscapeMargins]]) {
-        // Show the toolbar that contains a cancel button.
-        [self.scanditBarcodePicker.overlayController showToolBar:YES];
-    }
-    
-    [ScanditSDKParameterParser updatePickerUI:self.scanditBarcodePicker fromOptions:options];
-    
-    // Set this class as the delegate for the overlay controller. It will now receive events when
-    // a barcode was successfully scanned, manually entered or the cancel button was pressed.
-    self.scanditBarcodePicker.scanDelegate = self;
-    self.scanditBarcodePicker.overlayController.cancelDelegate = self;
-    
-    if ([options objectForKey:[ScanditSDKParameterParser paramPortraitMargins]]
-            || [options objectForKey:[ScanditSDKParameterParser paramLandscapeMargins]]) {
-        self.modallyPresented = NO;
-        [self.viewController addChildViewController:self.scanditBarcodePicker];
-        [self.viewController.view addSubview:self.scanditBarcodePicker.view];
-        [self.scanditBarcodePicker didMoveToParentViewController:self.viewController];
         
-        [self adjustLayoutWithOptions:options animationDuration:0];
-        
-    } else {
-        self.modallyPresented = YES;
-        
-        self.startAnimationDone = NO;
-        self.bufferedResult = nil;
-        
-        // Present the barcode picker modally and start scanning.
-        [self.viewController presentViewController:self.scanditBarcodePicker animated:YES completion:^{
-            self.startAnimationDone = YES;
-            if (self.bufferedResult != nil) {
-                [self performSelector:@selector(returnBuffer) withObject:nil afterDelay:0.01];
+        dispatch_main_sync_safe(^{
+            // Create the picker.
+            SBSScanSettings *scanSettings;
+            if (!settings) {
+                scanSettings = [SBSLegacySettingsParamParser settingsForOptions:options];
+            } else {
+                NSError *error;
+                scanSettings = [SBSScanSettings settingsWithDictionary:settings error:&error];
+                if (error) {
+                    NSLog(@"Error when creating settings: %@", [error localizedDescription]);
+                }
             }
-        }];
-    }
-    
-    NSObject *paused = [options objectForKey:[ScanditSDKParameterParser paramPaused]];
-    if (paused && [paused isKindOfClass:[NSNumber class]] && [((NSNumber *)paused) boolValue]) {
-        [self.scanditBarcodePicker performSelector:@selector(startScanningInPausedState:)
-                                        withObject:[NSNumber numberWithBool:YES] afterDelay:0.1];
-    } else {
-        [self.scanditBarcodePicker performSelector:@selector(startScanning) withObject:nil afterDelay:0.1];
-    }
+            self.scanditBarcodePicker = [[ScanditSDKRotatingBarcodePicker alloc]
+                                         initWithSettings:scanSettings];
+            
+            // Show the toolbar if we start modally. Need to do this here already such that other
+            // toolbar options can be set afterwards.
+            if (![options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
+                    && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]) {
+                [self.scanditBarcodePicker.overlayController showToolBar:YES];
+            }
+            
+            // Set all the UI options.
+            [SBSPhonegapParamParser updatePicker:self.scanditBarcodePicker
+                                     fromOptions:options
+                              withSearchDelegate:self];
+            
+            if (self.legacyMode) {
+                [SBSLegacyUIParamParser updatePickerUI:self.scanditBarcodePicker fromOptions:options];
+            } else {
+                [SBSUIParamParser updatePickerUI:self.scanditBarcodePicker fromOptions:overlayOptions];
+                [SBSPhonegapParamParser updatePicker:self.scanditBarcodePicker
+                                         fromOptions:overlayOptions
+                                  withSearchDelegate:self];
+            }
+            
+            // Set this class as the delegate for the overlay controller. It will now receive events when
+            // a barcode was successfully scanned, manually entered or the cancel button was pressed.
+            self.scanditBarcodePicker.scanDelegate = self;
+            self.scanditBarcodePicker.overlayController.cancelDelegate = self;
+        
+            if ([options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
+                || [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]) {
+                self.modallyPresented = NO;
+                [self.viewController addChildViewController:self.scanditBarcodePicker];
+                [self.viewController.view addSubview:self.scanditBarcodePicker.view];
+                [self.scanditBarcodePicker didMoveToParentViewController:self.viewController];
+                
+                [SBSPhonegapParamParser updateLayoutOfPicker:self.scanditBarcodePicker withOptions:options];
+                
+            } else {
+                self.modallyPresented = YES;
+                
+                self.startAnimationDone = NO;
+                self.bufferedResult = nil;
+                
+                // Present the barcode picker modally and start scanning.
+                [self.viewController presentViewController:self.scanditBarcodePicker animated:YES completion:^{
+                    self.startAnimationDone = YES;
+                    if (self.bufferedResult != nil) {
+                        [self performSelector:@selector(returnBuffer) withObject:nil afterDelay:0.01];
+                    }
+                }];
+            }
+            
+            // Only already start in legacy mode.
+            if (self.legacyMode) {
+                if ([SBSPhonegapParamParser isPausedSpecifiedInOptions:options]) {
+                    [self.scanditBarcodePicker performSelector:@selector(startScanningInPausedState:)
+                                                    withObject:[NSNumber numberWithBool:YES] afterDelay:0.1];
+                } else {
+                    [self.scanditBarcodePicker performSelector:@selector(startScanning) withObject:nil afterDelay:0.1];
+                }
+            }
+        });
+    });
 }
 
 - (void)returnBuffer {
     if (self.bufferedResult != nil) {
-        [self scannedCode:self.bufferedResult.data
-              ofSymbology:self.bufferedResult.symbologyString
-                inSession:nil];
+        [self scannedSession:self.bufferedResult];
         
         self.bufferedResult = nil;
     }
 }
 
-- (void)cancel:(CDVInvokedUrlCommand *)command {
-    if (self.scanditBarcodePicker) {
-        [self overlayController:self.scanditBarcodePicker.overlayController didCancelWithStatus:nil];
+- (void)applySettings:(CDVInvokedUrlCommand *)command {
+    NSUInteger argc = [command.arguments count];
+    if (argc < 1) {
+        NSLog(@"The applySettings call received too few arguments and has to return without starting.");
+        return;
     }
-}
-
-- (void)pause:(CDVInvokedUrlCommand *)command {
-    [self.scanditBarcodePicker pauseScanning];
-}
-
-- (void)resume:(CDVInvokedUrlCommand *)command {
-    [self.scanditBarcodePicker resumeScanning];
-}
-
-- (void)start:(CDVInvokedUrlCommand *)command {
-    [self.scanditBarcodePicker startScanning];
-}
-
-- (void)stop:(CDVInvokedUrlCommand *)command {
-    [self.scanditBarcodePicker stopScanning];
-}
-
-- (void)resize:(CDVInvokedUrlCommand *)command {
-    dispatch_main_sync_safe(^{
-        if (self.scanditBarcodePicker && !self.modallyPresented) {
-            NSUInteger argc = [command.arguments count];
-            if (argc < 1) {
-                NSLog(@"The resize call received too few arguments and has to return without starting.");
-                return;
+    
+    dispatch_async(self.queue, ^{
+        if (self.scanditBarcodePicker) {
+            NSDictionary *settings = [command.arguments objectAtIndex:0];
+            NSError *error;
+            SBSScanSettings *scanSettings = [SBSScanSettings settingsWithDictionary:settings error:&error];
+            if (error) {
+                NSLog(@"Error when creating settings: %@", [error localizedDescription]);
+            } else {
+                [self.scanditBarcodePicker applyScanSettings:scanSettings completionHandler:nil];
             }
-            
-            NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
-            
-            [ScanditSDKParameterParser updatePickerUI:self.scanditBarcodePicker fromOptions:options];
-            
-            CGFloat animation = 0;
-            NSObject *animationDuration = [options objectForKey:[ScanditSDKParameterParser paramAnimationDuration]];
-            if (animationDuration && [animationDuration isKindOfClass:[NSNumber class]]) {
-                animation = [((NSNumber *)animationDuration) floatValue];
-            }
-            [self adjustLayoutWithOptions:options animationDuration:animation];
         }
     });
 }
 
-- (void)adjustLayoutWithOptions:(NSDictionary *)options animationDuration:(CGFloat)animationDuration {
-    NSObject *portraitMargins = [options objectForKey:[ScanditSDKParameterParser paramPortraitMargins]];
-    NSObject *landscapeMargins = [options objectForKey:[ScanditSDKParameterParser paramLandscapeMargins]];
-    if (portraitMargins || landscapeMargins) {
-        self.scanditBarcodePicker.portraitMargins = CGRectMake(0, 0, 0, 0);
-        self.scanditBarcodePicker.landscapeMargins = CGRectMake(0, 0, 0, 0);
+- (void)cancel:(CDVInvokedUrlCommand *)command {
+    dispatch_async(self.queue, ^{
+        if (self.scanditBarcodePicker) {
+            [self overlayController:self.scanditBarcodePicker.overlayController didCancelWithStatus:nil];
+        }
+    });
+}
+
+- (void)pause:(CDVInvokedUrlCommand *)command {
+    dispatch_async(self.queue, ^{
+        [self.scanditBarcodePicker pauseScanning];
+    });
+}
+
+- (void)resume:(CDVInvokedUrlCommand *)command {
+    dispatch_async(self.queue, ^{
+        [self.scanditBarcodePicker resumeScanning];
+    });
+}
+
+- (void)start:(CDVInvokedUrlCommand *)command {
+    dispatch_async(self.queue, ^{
+        NSUInteger argc = [command.arguments count];
+        NSDictionary *options = [NSDictionary dictionary];
+        if (argc >= 1) {
+            options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
+        }
+        [self.scanditBarcodePicker startScanningInPausedState:[SBSPhonegapParamParser
+                                                               isPausedSpecifiedInOptions:options]];
+    });
+}
+
+- (void)stop:(CDVInvokedUrlCommand *)command {
+    NSLog(@"stopScanning");
+    dispatch_async(self.queue, ^{
+        NSLog(@"stopScanning execute");
+        [self.scanditBarcodePicker stopScanning];
+    });
+}
+
+- (void)resize:(CDVInvokedUrlCommand *)command {
+    if (self.scanditBarcodePicker && !self.modallyPresented) {
+        NSUInteger argc = [command.arguments count];
+        if (argc < 1) {
+            NSLog(@"The resize call received too few arguments and has to return without starting.");
+            return;
+        }
+        dispatch_async(self.queue, ^{
+            dispatch_main_sync_safe(^{
+                NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
+                if (self.legacyMode) {
+                    [SBSLegacyUIParamParser updatePickerUI:self.scanditBarcodePicker fromOptions:options];
+                }
+                
+                [SBSPhonegapParamParser updateLayoutOfPicker:self.scanditBarcodePicker withOptions:options];
+            });
+        });
     }
-    
-    if (portraitMargins) {
-        CGRect margins = [ScanditSDKParameterParser rectFromParameter:portraitMargins];
-        self.scanditBarcodePicker.portraitMargins = margins;
-    }
-    if (landscapeMargins) {
-        CGRect margins = [ScanditSDKParameterParser rectFromParameter:landscapeMargins];
-        self.scanditBarcodePicker.landscapeMargins = margins;
-    }
-    
-    [self.scanditBarcodePicker adjustSize:animationDuration];
 }
 
 - (void)torch:(CDVInvokedUrlCommand *)command {
@@ -245,8 +294,10 @@
         NSLog(@"The torch call received too few arguments and has to return without starting.");
         return;
     }
-    NSNumber *enabled = [command.arguments objectAtIndex:0];
-    [self.scanditBarcodePicker switchTorchOn:[enabled boolValue]];
+    dispatch_async(self.queue, ^{
+        NSNumber *enabled = [command.arguments objectAtIndex:0];
+        [self.scanditBarcodePicker switchTorchOn:[enabled boolValue]];
+    });
 }
 
 
@@ -263,32 +314,41 @@
 
 #pragma mark - SBSScanDelegate methods
 
-
 - (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
-    NSArray *newCodes = session.newlyRecognizedCodes;
-    SBSCode *code = [newCodes firstObject];
+    NSLog(@"didScan 1");
     
     if (self.modallyPresented) {
         if (!self.startAnimationDone) {
             // If the initial animation hasn't finished yet we buffer the result and return it as soon
             // as the animation finishes.
-            self.bufferedResult = code;
+            self.bufferedResult = session;
             return;
         } else {
             self.bufferedResult = nil;
         }
     }
     
-    [self scannedCode:code.data ofSymbology:code.symbologyString inSession:session];
+    [self scannedSession:session];
+    NSLog(@"didScan 2");
 }
 
-- (void)scannedCode:(NSString *)data
-        ofSymbology:(NSString *)symbologyString
-          inSession:(SBSScanSession *)session {
-    NSArray *result = [[NSArray alloc] initWithObjects:data, symbologyString, nil];
-    
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                       messageAsArray:result];
+- (void)scannedSession:(SBSScanSession *)session {
+    CDVPluginResult *pluginResult;
+    if (self.legacyMode) {
+        SBSCode *newCode = [session.newlyRecognizedCodes objectAtIndex:0];
+        NSArray *result = [[NSArray alloc] initWithObjects:[newCode data], [newCode symbologyString], nil];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                          messageAsArray:result];
+        
+    } else {
+        NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                [self jsObjectsFromCodeArray:session.newlyRecognizedCodes], @"newlyRecognizedCodes",
+                                [self jsObjectsFromCodeArray:session.newlyLocalizedCodes], @"newlyLocalizedCodes",
+                                [self jsObjectsFromCodeArray:session.allRecognizedCodes], @"allRecognizedCodes", nil];
+        
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                     messageAsDictionary:result];
+    }
     
     if (!self.continuousMode) {
         if (session) {
@@ -312,6 +372,20 @@
     }
 	
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+}
+
+- (NSArray *)jsObjectsFromCodeArray:(NSArray *)codes {
+    NSMutableArray *finalArray = [[NSMutableArray alloc] init];
+    for (SBSCode *code in codes) {
+        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [code symbologyName], @"symbology",
+                              [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
+                              [NSNumber numberWithBool:[code isRecognized]], @"recognized",
+                              [code data], @"data",
+                              nil];
+        [finalArray addObject:dict];
+    }
+    return finalArray;
 }
 
 
@@ -339,10 +413,16 @@
 #pragma mark - ScanditSDKSearchBarDelegate
 
 - (void)searchExecutedWithContent:(NSString *)content {
-    NSArray *result = [[NSArray alloc] initWithObjects:content, @"UNKNOWN", nil];
-    
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                       messageAsArray:result];
+    CDVPluginResult *pluginResult;
+    if (self.legacyMode) {
+        NSArray *result = [[NSArray alloc] initWithObjects:content, "UNKNOWN", nil];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                          messageAsArray:result];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                         messageAsString:content];
+    }
+
     if (!self.continuousMode) {
         [self.scanditBarcodePicker stopScanning];
         if (self.modallyPresented) {
@@ -361,7 +441,5 @@
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 }
-
-
 
 @end

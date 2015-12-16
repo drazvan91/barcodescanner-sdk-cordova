@@ -8,6 +8,7 @@ import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -22,11 +23,8 @@ import com.scandit.base.view.SbImageButton;
  */
 @SuppressLint("ViewConstructor")
 public class ScanditSDKSearchBar extends RelativeLayout {
-    
-    private final static String STATE_SEARCH_NORMAL = "normal";
 
 	private EditText mSearchEditText;
-	private SbImageButton mSearchButton;
 	private OnClickListener mOnClickListener = null;
 	
 	
@@ -41,51 +39,15 @@ public class ScanditSDKSearchBar extends RelativeLayout {
 		
         RelativeLayout.LayoutParams rParams;
         
-        mSearchButton = new SbImageButton(getContext(), new SbRectangle(0, 0, 0, 0));
-        mSearchButton.setResourceIdForState(STATE_SEARCH_NORMAL, 
-                SbResourceUtils.getResIdentifier(context, "ic_btn_search", "raw"));
-        mSearchButton.setState(STATE_SEARCH_NORMAL);
-        rParams = new RelativeLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
-        rParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        addView(mSearchButton, rParams);
-        mSearchButton.setId(1234);
-        mSearchButton.setOnClickListener(new OnClickListener() {
-        	@Override
-        	public void onClick(View v) {
-        		onButtonClicked();
-        	}
-        });
-        
         mSearchEditText = new EditText(getContext());
         mSearchEditText.setLines(1);
-        mSearchEditText.setEllipsize(TruncateAt.END);
+        mSearchEditText.setEllipsize(TruncateAt.START);
         mSearchEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        mSearchEditText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         rParams = new RelativeLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         rParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        rParams.addRule(RelativeLayout.LEFT_OF, mSearchButton.getId());
         addView(mSearchEditText, rParams);
-        mSearchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                RelativeLayout.LayoutParams params = 
-                    (RelativeLayout.LayoutParams) mSearchButton.getLayoutParams();
-                if (s.length() > 0) {
-                    params.width = mSearchEditText.getHeight();
-                    params.height = mSearchEditText.getHeight();
-                    mSearchButton.setLayoutParams(params);
-                } else {
-                    params.width = 0;
-                    mSearchButton.setLayoutParams(params);
-                }
-            }
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                    int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                    int count) {}
-        });
         mSearchEditText.setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -107,7 +69,7 @@ public class ScanditSDKSearchBar extends RelativeLayout {
                 mSearchEditText.getApplicationWindowToken(), 0);
         
         if (mOnClickListener != null) {
-        	mOnClickListener.onClick(mSearchButton);
+        	mOnClickListener.onClick(null);
         }
 	}
 	

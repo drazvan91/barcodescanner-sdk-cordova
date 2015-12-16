@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Display;
 import android.view.Window;
@@ -30,8 +31,11 @@ import android.view.WindowManager;
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
+import com.scandit.base.util.JSONParseException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -50,42 +54,79 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
     private boolean mContinuousMode = false;
 
     private boolean mStartPaused = false;
+
+    private boolean mLegacyMode = false;
     
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initializeAndStartBarcodeRecognition(getIntent().getExtras());
         super.onCreate(savedInstanceState);
+
+        JSONObject settings = null;
+        Bundle options = null;
+        Bundle overlayOptions = null;
+
+        if (getIntent().getExtras().containsKey("settings")) {
+            try {
+                settings = new JSONObject(getIntent().getExtras().getString("settings"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            mLegacyMode = false;
+        } else {
+            mLegacyMode = true;
+        }
+        if (getIntent().getExtras().containsKey("options")) {
+            options = getIntent().getExtras().getBundle("options");
+        }
+        if (getIntent().getExtras().containsKey("overlayOptions")) {
+            overlayOptions = getIntent().getExtras().getBundle("overlayOptions");
+        }
+
+        initializeAndStartBarcodeRecognition(settings, options, overlayOptions);
     }
     
     @SuppressWarnings("deprecation")
-    public void initializeAndStartBarcodeRecognition(Bundle extras) {
+    public void initializeAndStartBarcodeRecognition(
+            JSONObject settings, Bundle options, Bundle overlayOptions) {
         // Switch to full screen.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        ScanSettings settings = ScanditSDKParameterParser.settingsForBundle(extras);
-
-        mBarcodePicker = new SearchBarBarcodePicker(this, settings);
+        ScanSettings scanSettings;
+        if (mLegacyMode) {
+            scanSettings = LegacySettingsParamParser.getSettings(options);
+        } else {
+            try {
+                scanSettings = ScanSettings.createWithJson(settings);
+            } catch (JSONParseException e) {
+                Log.e("ScanditSDK", "Exception when creating settings");
+                e.printStackTrace();
+                scanSettings = ScanSettings.create();
+            }
+        }
+        mBarcodePicker = new SearchBarBarcodePicker(this, scanSettings);
+        mBarcodePicker.setOnScanListener(this);
 
         this.setContentView(mBarcodePicker);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        ScanditSDKParameterParser.updatePickerUIFromBundle(mBarcodePicker, extras,
-                display.getWidth(), display.getHeight());
+        // Set all the UI options.
+        PhonegapParamParser.updatePicker(mBarcodePicker, options, this);
 
-        if (extras.containsKey(ScanditSDKParameterParser.paramContinuousMode)) {
-            mContinuousMode = extras.getBoolean(ScanditSDKParameterParser.paramContinuousMode);
+        if (settings == null) {
+            LegacyUIParamParser.updatePickerUI(this, mBarcodePicker, options);
+        } else {
+            UIParamParser.updatePickerUI(mBarcodePicker, overlayOptions);
+            PhonegapParamParser.updatePicker(mBarcodePicker, overlayOptions, this);
         }
-        
-        // Register listener, in order to be notified about relevant events
-        // (e.g. a successfully scanned bar code).
-        mBarcodePicker.setOnScanListener(this);
-        mBarcodePicker.setOnSearchBarListener(this);
 
-        if (extras.containsKey(ScanditSDKParameterParser.paramPaused)
-                && extras.getBoolean(ScanditSDKParameterParser.paramPaused)) {
+        if (options.containsKey(PhonegapParamParser.paramContinuousMode)) {
+            mContinuousMode = options.getBoolean(PhonegapParamParser.paramContinuousMode);
+        }
+
+        if (options.containsKey(PhonegapParamParser.paramPaused)
+                && options.getBoolean(PhonegapParamParser.paramPaused)) {
             mStartPaused = true;
         } else {
             mStartPaused = false;
@@ -140,31 +181,30 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
 
     @Override
     public void didScan(ScanSession session) {
-        Log.e("ScanditSDK", "didScan 1");
         if (session.getNewlyRecognizedCodes().size() > 0) {
-            Log.e("ScanditSDK", "didScan 2");
             if (!mContinuousMode) {
-                Log.e("ScanditSDK", "didScan 2.5");
                 session.stopScanning();
 
-                Log.e("ScanditSDK", "didScan 3");
                 Intent intent = new Intent();
-                intent.putExtra("barcode", session.getNewlyRecognizedCodes().get(0).getData());
-                intent.putExtra("symbology",
-                        session.getNewlyRecognizedCodes().get(0).getSymbologyName());
-                Log.e("ScanditSDK", "didScan 4");
+                if (mLegacyMode) {
+                    intent.putExtra("barcode", session.getNewlyRecognizedCodes().get(0).getData());
+                    intent.putExtra("symbology",
+                            session.getNewlyRecognizedCodes().get(0).getSymbologyName());
+                } else {
+                    intent.putExtra("jsonString", ScanditSDKResultRelay.jsonForSession(session).toString());
+                }
                 setResult(SCAN, intent);
-                Log.e("ScanditSDK", "didScan 5");
                 finish();
-                Log.e("ScanditSDK", "called finish");
             } else {
-                Log.e("ScanditSDK", "didScan 6");
                 Bundle bundle = new Bundle();
-                bundle.putString("barcode", session.getNewlyRecognizedCodes().get(0).getData());
-                bundle.putString("symbology",
-                        session.getNewlyRecognizedCodes().get(0).getSymbologyName());
+                if (mLegacyMode) {
+                    bundle.putString("barcode", session.getNewlyRecognizedCodes().get(0).getData());
+                    bundle.putString("symbology",
+                            session.getNewlyRecognizedCodes().get(0).getSymbologyName());
+                } else {
+                    bundle.putString("jsonString", ScanditSDKResultRelay.jsonForSession(session).toString());
+                }
                 ScanditSDKResultRelay.onResult(bundle);
-                Log.e("ScanditSDK", "not finish");
             }
         }
     }
@@ -173,14 +213,22 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
     public void didEnter(String entry) {
         if (!mContinuousMode) {
             Intent intent = new Intent();
-            intent.putExtra("barcode", entry.trim());
-            intent.putExtra("symbology", "UNKNOWN");
+            if (mLegacyMode) {
+                intent.putExtra("barcode", entry.trim());
+                intent.putExtra("symbology", "UNKNOWN");
+            } else {
+                intent.putExtra("string", entry.trim());
+            }
             setResult(MANUAL, intent);
             finish();
         } else {
             Bundle bundle = new Bundle();
-            bundle.putString("barcode", entry.trim());
-            bundle.putString("symbology", "UNKNOWN");
+            if (mLegacyMode) {
+                bundle.putString("barcode", entry.trim());
+                bundle.putString("symbology", "UNKNOWN");
+            } else {
+                bundle.putString("string", entry.trim());
+            }
             ScanditSDKResultRelay.onResult(bundle);
         }
     }

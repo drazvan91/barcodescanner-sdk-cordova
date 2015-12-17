@@ -21,7 +21,8 @@ ScanSettings.prototype.getSymbologySettings = function(symbology) {
 	if (symbology in this.symbologies) {
 		return this.symbologies[symbology];
 	} else {
-		return new SymbologySettings();
+		this.symbologies[symbology] = new SymbologySettings();
+		return this.symbologies[symbology];
 	}
 }
 

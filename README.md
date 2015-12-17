@@ -253,7 +253,9 @@ See http://docs.scandit.com/interface_cordova_plugin.html for the plugin documen
 
 License
 -------
-* This plug-in is released under the Apache 2.0 license: http://www.apache.org/licenses/LICENSE-2.0
+* The source code of the phonegap/cordova plug-in code published here is released under the Apache 2.0 license: http://www.apache.org/licenses/LICENSE-2.0. 
+
+* The plugin code relies on the Scandit Barcode Scanner SDK that is available under a commercial license from www.scandit.com.
 
 
 

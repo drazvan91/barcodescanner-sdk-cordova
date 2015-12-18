@@ -18,6 +18,9 @@ SymbologySettings.Extension = {
 function SymbologySettings() {
 	this.enabled = false;
 	this.colorInvertedEnabled = false;
+	this.checksums = [];
+	this.extensions = [];
+	this.activeSymbolCounts = []
 }
 
 module.exports = SymbologySettings;

@@ -1,6 +1,6 @@
 
 /**
- *
+ * Module for all functionality of the barcode recognition plugin.
  *
  * @since 4.11.0
  */
@@ -557,15 +557,21 @@ public class Scandit {
     	 * @param deviceName A device name.
     	 */
     	public String deviceName;
+    	
+    	/**
+    	 * Hash containing the symbology settings for each available symbology.
+    	 */
+    	public HashMap<Barcode.Symbology, SymbologySettings> symbologies;
 
     	/**
     	 * @brief Retrieve symbology specific-settings
     	 *
     	 * @param symbology the symbology settings to retrieve
     	 * @return the symbology settings object, or null, if symbology is an invalid symbology.
+    	 *
     	 * @since 4.11.0
     	 */
-    	public SymbologySettings getSymbologySettings(int symbology);
+    	public SymbologySettings getSymbologySettings(Barcode.Symbology symbology);
 
     	/**
     	 * @brief Enable/disable decoding of a certain symbology.
@@ -973,6 +979,8 @@ public class Scandit {
 		 * can be accessed through it can and will vanish without public notice from one version to
 		 * the next. Do not use this method unless you specifically have to.
 		 *
+		 * @since 4.11.0
+		 *
 		 * @param key The name of the property
 		 * @param value the value for the property.
 		 */
@@ -983,6 +991,9 @@ public class Scandit {
     
     public class SymbologySettings {
     
+    	/**
+    	 * Checksums for the symbology.
+    	 */
     	public enum Checksum {
     		/**
 			 * Modulo 10 checksum.
@@ -1014,6 +1025,9 @@ public class Scandit {
     		MOD_1110,
 		}
 		
+		/**
+		 * Extensions for the symbology.
+		 */
 		public enum Extension {
 			/**
 			 * Enable decoder optimizations for small data-matrix codes.
@@ -1071,7 +1085,7 @@ public class Scandit {
     	 * the symbology specification. If any of the checksums matches, the code is returned as
     	 * recognized, otherwise it is discarded.
     	 *
-    	 * @see 4.11.0
+    	 * @since 4.11.0
     	 */
     	public Checksum[] checksums;
 

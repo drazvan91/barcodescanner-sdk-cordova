@@ -987,7 +987,7 @@ public class Scandit {
     
     
     /**
-     * @brief Holds setttings specific for decoding of a symbology (1d, 2d)
+     * @brief Holds settings specific to a particular symbology (1d, 2d)
      */
     public class SymbologySettings {
     

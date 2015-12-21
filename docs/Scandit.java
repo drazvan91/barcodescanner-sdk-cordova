@@ -95,6 +95,9 @@ public class Scandit {
 	 * @since 4.11.0
 	 */
 	public class Barcode {
+	    /**
+	     * @brief An enumeration of all supported barcode symbologies
+	     */
 		public enum Symbology  {
     		/**
     		 * @brief Sentinel value to represent an unknown symbology
@@ -416,6 +419,9 @@ public class Scandit {
 	}
 
 
+    /**
+     * @brief Settings to configure the decoding process
+     */
 	public class ScanSettings {
     	
 		/**
@@ -657,8 +663,7 @@ public class Scandit {
     public class ScanOverlay {
 
 		/**
-		 * @name Camera Switch Button Visibility
-		 * @{
+		 * @brief Camera Switch Button Visibility
 		 */
 		public enum CameraSwitchVisibility  {
 			/**
@@ -674,13 +679,9 @@ public class Scandit {
 			 */
 			ALWAYS
 		}
-		/**
-		 * @}
-		 */
 
 		/**
-		 * @name Scan UI style
-		 * @{
+		 * @brief Scan UI style
 		 */
 		public enum GuiStyle  {
 		    /**
@@ -700,10 +701,6 @@ public class Scandit {
 		     */
 			NONE
 		}
-		/**
-		 * @}
-		 */
-
 		/**
 		 * @brief The GUI style drawn to display the indicator where the code should be scanned and the
 		 *   visualization of recognized codes.
@@ -989,6 +986,9 @@ public class Scandit {
     }
     
     
+    /**
+     * @brief Holds setttings specific for decoding of a symbology (1d, 2d)
+     */
     public class SymbologySettings {
     
     	/**

@@ -13,7 +13,7 @@ Overview         			{#cordova-guides}
 ## Getting Started
 
 * \subpage cordova-integrate
-
+* \subpage cordova-examples
 
 ## Guides
 

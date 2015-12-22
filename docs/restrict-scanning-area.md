@@ -11,13 +11,12 @@ By default the Scandit Barcode Scanner searches the entire camera feed for barco
 
 ## Restrict the scanning area
 
-Restricting the scanning area is done through \link com.scandit.barcodepicker.ScanSettings.setActiveScanningArea(int, RectF) setActiveScanningArea(int, RectF) \endlink on the settings object. You have to provide an orientation (either portrait or landscape) when setting it which allows you to have different scanning areas dependent on the device orientation. The area itself is specified as a rectangle with coordinates relative to the device's screen size where the top-left corner is 0/0 and the bottom-right corner is 1/1. Setting RectF(0.0, 0.0, 1.0, 1.0) would set the scanning area to the entire screen. Following an example of restricting the scanning area to 100% of the screen width and 10% of the screen height centered around the middle of the screen.
+Restricting the scanning area is done through {@link Scandit.ScanSettings.activeScanningAreaPortrait activeScanningAreaPortrait} and {@link Scandit.ScanSettings.activeScanningAreaLandscape activeScanningAreaLandscape} on the settings object. The two properties allow you to have different scanning areas dependent on the device orientation. The area itself is specified as a rectangle with coordinates relative to the device's screen size where the top-left corner is 0/0 and the bottom-right corner is 1/1. Setting Scandit.Rect(0.0, 0.0, 1.0, 1.0) would set the scanning area to the entire screen. Following an example of restricting the scanning area to 100% of the screen width and 10% of the screen height centered around the middle of the screen.
 
 ~~~~~~~~~~~~~~~~{.java}
 
-ScanSettings settings = ScanSettings.create();
-
-settings.setActiveScanningArea(ScanSettings.ORIENTATION_PORTRAIT, new RectF(0.0f, 0.45f, 0.55f, 1.0f));
+var settings = Scandit.ScanSettings();
+settings.activeScanningAreaPortrait(new Scandit.Rect(0.0, 0.45, 1.0, 0.1));
 
 ~~~~~~~~~~~~~~~~
 
@@ -25,21 +24,19 @@ Restricting the scanning area to only the bottom half of the screen would look t
 
 ~~~~~~~~~~~~~~~~{.java}
 
-settings.setActiveScanningArea(ScanSettings.ORIENTATION_PORTRAIT, new RectF(0.0f, 0.5f, 1.0f, 1.0f));
+settings.activeScanningAreaPortrait(new Scandit.Rect(0.0, 0.5, 1.0, 0.5));
 
 ~~~~~~~~~~~~~~~~
-<br/>
-**Careful:** RectF is defined through left, top, right and bottom coordinates which is different from how the iOS CGRect is defined.
 <br/>
 
 
 ## Adjust the viewfinder to match the scanning area
 
-If you reduced the size of the scanning area you likely also want to adjust the size of the viewfinder that guides the user. You can do this by setting the viewfinder dimension on the \link com.scandit.barcodepicker.ScanOverlay ScanOverlay \endlink. The coordinate system here is the same as when setting the active scanning area, relative to the device's screen going from 0.0 to 1.0.
+If you reduced the size of the scanning area you likely also want to adjust the size of the viewfinder that guides the user. You can do this by setting the viewfinder dimension on the {@link Scandit.ScanOverlay ScanOverlay}. The coordinate system here is the same as when setting the active scanning area, relative to the device's screen going from 0.0 to 1.0.
 
 ~~~~~~~~~~~~~~~~{.java}
 
-mPicker.getOverlayView().setViewfinderDimension(0.6f, 0.1f, 0.6f, 0.1f);
+picker.getOverlayView().setViewfinderDimension(0.6, 0.1, 0.6, 0.1);
 
 ~~~~~~~~~~~~~~~~
 
@@ -47,7 +44,7 @@ Alternatively you can also use the new laser GUI style. This style is mostly for
 
 ~~~~~~~~~~~~~~~~{.java}
 
-mPicker.getOverlayController().setGuiStyle(ScanOverlay.GUI_STYLE_LASER);
+picker.getOverlayController().setGuiStyle(ScanOverlay.GuiStyle.LASER);
 
 ~~~~~~~~~~~~~~~~
 

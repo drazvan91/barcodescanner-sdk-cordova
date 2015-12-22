@@ -312,6 +312,15 @@ public class Scandit {
 	    public void applyScanSettings(ScanSettings settings);
 	    
 	    /**
+	     * @brief Allows to scan multiple codes without closing the scanner.
+	     *
+	     * By default continuousMode is false and the scanner closes after scanning a code.
+	     *
+	     * @since 4.11.0
+	     */
+	    public boolean continuousMode;
+	    
+	    /**
 	     * @brief The orientations to which the barcode picker is allowed to rotate to.
 	     *
 	     * @since 4.11.0
@@ -500,7 +509,7 @@ public class Scandit {
     	/**
     	 * The duration of the duplicate filter in milliseconds.
     	 * When set to values larger than zero, barcodes with the same symbology
-    	 * and data are filtered out if they are decoded less than @p duration
+    	 * and data are filtered out if they are decoded less than the specified
     	 * milliseconds apart. Set this value to zero, if you do not want to
     	 * filter duplicates. When set to -1, barcodes are filtered as duplicates
     	 * if they match an already decoded barcode in the session.

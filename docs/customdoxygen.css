@@ -1,26 +1,214 @@
-h1, .h1, h2, .h2, h3, .h3{
-    font-weight: 200 !important;
+body {
+background: #white !important;
 }
 
-#navrow1, #navrow2, #navrow3, #navrow4, #navrow5{
-    border-bottom: 1px solid #EEEEEE;
+.navbar.navbar-default {
+background-color: black;
+border: 0;
+border-radius: 0;
 }
 
-.adjust-right {
-margin-left: 30px !important;
-font-size: 1.15em !important;
-}
-.navbar{
- border: 0px solid #222 !important;
+.sc-logo {
+display: block;
+height: 30px;
+margin: 30px 0px 0px;
+background: url("img/design/logo.png") no-repeat;
 }
 
+.navbar a {
+    color: white ! important;
+}
+
+.sc-header-title {
+display: block;
+margin: 3px 0px 30px 0;
+}
+.sc-header-title,.sc-header-title-link {
+font-family: "HelveticaNeue-Light","Helvetica Neue",sans-serif;
+font-weight: 300;
+letter-spacing: 1px;
+font-size: 14px;
+text-transform: uppercase;
+color: white;
+}
+
+.navbar-header > a.navbar-brand:hover {
+color: #39C1CC;
+}
+
+.panel.panel-default {
+border-radius: 0;
+}
+
+.panel {
+    border-width: 0px ! important;
+    padding:0px ! important;
+}
+
+body .nav-pills > li.active > a,
+body .nav-pills > li.active > a:hover,
+body .nav-pills > li.active > a:focus {
+color: #fff;
+background-color: #39C1CC;
+border-radius:0px ! important;
+}
+
+
+body a, body a:focus {
+    color: #2a969e;
+}
+
+body .content a:visited {
+    color: #1c696f;
+}
+
+body a:hover {
+color: #1a5c61;
+}
+
+.directory {
+border: none !important;
+}
+
+.page-header {
+border: none !important;
+}
+
+.table.table-striped > tbody > tr:nth-child(2n+1) {
+background-color: #efefef;
+}
+
+.table tr {
+    padding : 0px ! important;
+    margin : 0px ! important;
+}
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+border: none !important;
+}
+
+.table.directory td {
+padding-top: 12px;
+}
+
+.paramname {
+    color: #666 ! important;
+}
+
+.levels {
+display: none;
+}
+
+.image {
+margin: 30px auto 0 auto;
+max-width: 70%;
+}
+.image > img {
+max-width: 100%;
+}
+
+.fragment.well {
+margin-bottom: 20px;
+background: #fff;
+border: 0;
+border-radius: 0;
+padding: 12px;
+padding-top:4px;
+padding-bottom:4px;
+border-left-width:3px;
+border-left-color:#2a969e;
+border-left-style:solid;
+}
+
+div.headertitle {
+padding: 0 10px;
+margin: 0;
+}
+
+#content h1,
+#content .h1,
+#content h2,
+#content .h2,
+#content h3,
+#content .h3 {
+font-weight: 200;
+}
+
+ul.breadcrumb {
+background: white;
+border-radius:0px !important;
+}
+
+.sc-header-panel {
+padding: 10px;
+}
+
+h2.groupheader {
+border-bottom: none;
+color: inherit;
+margin-left: -8px;
+padding: 0;
+}
+
+tr.active > td, tr.active > th {
+background: white !important;
+}
+
+.panel-default > .panel-heading {
+background: #ebebeb !important;
+}
+
+.qindex {
+background: none !important;
+border: 0 !important;
+}
+
+.fieldtable th {
+background: none;
+border: 0;
+}
+
+table.fieldtable {
+    border: 1px solid #ccc;
+}
+
+/* Class reference page design */
+
+div.summary {
+float: none;
+width: auto;
+padding-right:12px;
+}
+
+.title {
+margin: 10px 0;
+}
+
+h2.groupheader {
+margin-left: 0;
+}
+
+div.groupHeader {
+margin-left: 0 !important;
+}
+div.groupText {
+margin-left: 0 !important;
+}
+
+.table {
+    padding-left: 0 ! important;
+    margin-left: 0 ! important;
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
 html,
 body {
     height: 100%;
-    /* The html and body elements cannot have any padding or margin. */
 }
 
 /* Wrapper for page content to push down footer */
@@ -127,7 +315,7 @@ dl.el {
 }
 
 pre.fragment {
-    border: 1px solid #C4CFE5;
+    border: 0px solid #C4CFE5;
     background-color: #FBFCFD;
     padding: 4px 6px;
     margin: 4px 8px 4px 2px;
@@ -140,9 +328,9 @@ pre.fragment {
 }
 
 div.fragment {
-    padding: 4px 6px;
-    margin: 4px 8px 4px 2px;
-    border: 1px solid #C4CFE5;
+    padding: 4px 0px;
+    margin: 4px 0px 4px 0px;
+    border: 0px solid #C4CFE5;
 }
 
 div.line {
@@ -260,3 +448,15 @@ blockquote {
 .mdescRight {
     padding-bottom:1em;
 }
+
+
+.entry b {
+    font-weight:normal ! important;
+    font-style: italic;
+}
+
+.sc-footer {
+    margin-top:0px;
+    padding-top:0px;
+}
+

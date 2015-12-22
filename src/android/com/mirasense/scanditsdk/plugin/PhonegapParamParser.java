@@ -54,6 +54,11 @@ public class PhonegapParamParser {
 
     public static void updateLayout(final Activity activity, final SearchBarBarcodePicker picker,
                                     Bundle bundle) {
+        
+        if (picker == null) {
+            return;
+        }
+        
         double animationDuration = 0;
         if (bundle.containsKey(paramAnimationDuration)) {
             animationDuration = bundle.getDouble(paramAnimationDuration);

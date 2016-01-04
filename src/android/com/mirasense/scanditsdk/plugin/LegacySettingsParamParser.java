@@ -45,25 +45,25 @@ public class LegacySettingsParamParser {
     public static final String paramCodeDuplicateFilter = "codeDuplicateFilter".toLowerCase();
     public static final String paramScanningHotSpot = "scanningHotSpot".toLowerCase();
     public static final String paramScanningHotSpotHeight = "scanningHotSpotHeight".toLowerCase();
-
+    
     public static final String paramZoom = "zoom".toLowerCase();
     public static final String paramDeviceName = "deviceName".toLowerCase();
-
-
+    
+    
     public static ScanSettings getSettings(Bundle options) {
         ScanditSDKScanSettings oldSettings = ScanditSDKScanSettings.getPre43DefaultSettings();
         ScanSettings settings = oldSettings.getScanSettings();
-
+        
         int facing = ScanSettings.CAMERA_FACING_BACK;
         if (options.containsKey(paramPreferFrontCamera) && options.getBoolean(paramPreferFrontCamera)) {
             facing = ScanSettings.CAMERA_FACING_FRONT;
         }
         settings.setCameraFacingPreference(facing);
-
+        
         if (bundleContainsStringKey(options, paramDeviceName)) {
             settings.setDeviceName(options.getString(paramDeviceName));
         }
-
+        
         if (options.containsKey(param1DScanning) && options.getBoolean(param1DScanning)) {
             Log.e("ScanditSDK", "The parameter '1DScanning' is deprecated. Please enable symbologies individually instead");
             settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN13, true);
@@ -86,66 +86,65 @@ public class LegacySettingsParamParser {
             settings.setSymbologyEnabled(Barcode.SYMBOLOGY_QR, true);
             settings.setSymbologyEnabled(Barcode.SYMBOLOGY_PDF417, true);
         }
-
-        if ((options.containsKey(paramEan13AndUpc12) && options.getBoolean(paramEan13AndUpc12))
-                || !options.containsKey(paramEan13AndUpc12)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN13, true);
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCA, true);
+        
+        if (options.containsKey(paramEan13AndUpc12)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN13, options.getBoolean(paramEan13AndUpc12));
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCA, options.getBoolean(paramEan13AndUpc12));
         }
-        if ((options.containsKey(paramEan8) && options.getBoolean(paramEan8))
-                || !options.containsKey(paramEan8)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN8, true);
+        if (options.containsKey(paramEan8)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN8, options.getBoolean(paramEan8));
         }
-        if ((options.containsKey(paramUpce) && options.getBoolean(paramUpce))
-                || !options.containsKey(paramUpce)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCE, true);
+        if (options.containsKey(paramUpce)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCE, options.getBoolean(paramUpce));
         }
-        if ((options.containsKey(paramCode39) && options.getBoolean(paramCode39))
-                || !options.containsKey(paramCode39)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE39, true);
+        if (options.containsKey(paramCode39)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE39, options.getBoolean(paramCode39));
         }
-        if ((options.containsKey(paramCode93) && options.getBoolean(paramCode93))
-                || !options.containsKey(paramCode93)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE93, true);
+        if (options.containsKey(paramCode93)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE93, options.getBoolean(paramCode93));
         }
-        if ((options.containsKey(paramCode128) && options.getBoolean(paramCode128))
-                || !options.containsKey(paramCode128)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE128, true);
+        if (options.containsKey(paramCode128)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE128, options.getBoolean(paramCode128));
         }
-        if (options.containsKey(paramItf) && options.getBoolean(paramItf)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_INTERLEAVED_2_OF_5, true);
+        if (options.containsKey(paramItf)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_INTERLEAVED_2_OF_5,
+                                         options.getBoolean(paramItf));
         }
-        if (options.containsKey(paramGS1Databar) && options.getBoolean(paramGS1Databar)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR, true);
+        if (options.containsKey(paramGS1Databar)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR,
+                                         options.getBoolean(paramGS1Databar));
         }
-        if (options.containsKey(paramGS1DatabarExpanded) && options.getBoolean(paramGS1DatabarExpanded)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR_EXPANDED, true);
+        if (options.containsKey(paramGS1DatabarExpanded)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR_EXPANDED,
+                                         options.getBoolean(paramGS1DatabarExpanded));
         }
         if (options.containsKey(paramCodabar) && options.getBoolean(paramCodabar)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODABAR, true);
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODABAR,
+                                         options.getBoolean(paramCodabar));
         }
-        if ((options.containsKey(paramQR) && options.getBoolean(paramQR))
-                || !options.containsKey(paramQR)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_QR, true);
+        if (options.containsKey(paramQR)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_QR, options.getBoolean(paramQR));
         }
-        if ((options.containsKey(paramDatamatrix) && options.getBoolean(paramDatamatrix))
-                || !options.containsKey(paramDatamatrix)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_DATA_MATRIX, true);
+        if (options.containsKey(paramDatamatrix)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_DATA_MATRIX,
+                                         options.getBoolean(paramDatamatrix));
         }
-        if (options.containsKey(paramPdf417) && options.getBoolean(paramPdf417)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_PDF417, true);
+        if (options.containsKey(paramPdf417)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_PDF417, options.getBoolean(paramPdf417));
         }
-        if (options.containsKey(paramAztec) && options.getBoolean(paramAztec)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_AZTEC, true);
+        if (options.containsKey(paramAztec)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_AZTEC, options.getBoolean(paramAztec));
         }
-        if (options.containsKey(paramMsiPlessey) && options.getBoolean(paramMsiPlessey)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MSI_PLESSEY, true);
+        if (options.containsKey(paramMsiPlessey)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MSI_PLESSEY,
+                                         options.getBoolean(paramMsiPlessey));
         }
-        if (options.containsKey(paramCode11) && options.getBoolean(paramCode11)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE11, true);
+        if (options.containsKey(paramCode11)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE11, options.getBoolean(paramCode11));
         }
-        if (options.containsKey(paramMaxiCode) && options.getBoolean(paramMaxiCode)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MAXICODE, true);
+        if (options.containsKey(paramMaxiCode)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MAXICODE,
+                                         options.getBoolean(paramMaxiCode));
         }
         if (bundleContainsStringKey(options, paramMsiPlesseyChecksumType)) {
             String checksum = options.getString(paramMsiPlesseyChecksumType);
@@ -162,36 +161,36 @@ public class LegacySettingsParamParser {
             SymbologySettings symbSettings = settings.getSymbologySettings(Barcode.SYMBOLOGY_MSI_PLESSEY);
             symbSettings.setChecksums(actualChecksum);
         }
-
+        
         if (options.containsKey(paramInverseRecognition)) {
             SymbologySettings symbSettingsQr = settings.getSymbologySettings(Barcode.SYMBOLOGY_QR);
             SymbologySettings symbSettingsDm = settings.getSymbologySettings(Barcode.SYMBOLOGY_DATA_MATRIX);
             symbSettingsQr.setColorInvertedEnabled(options.getBoolean(paramInverseRecognition));
             symbSettingsDm.setColorInvertedEnabled(options.getBoolean(paramInverseRecognition));
         }
-
+        
         if (options.containsKey(paramQRInverseRecognition)) {
             SymbologySettings symbSettingsQr = settings.getSymbologySettings(Barcode.SYMBOLOGY_QR);
             symbSettingsQr.setColorInvertedEnabled(options.getBoolean(paramQRInverseRecognition));
         }
-
+        
         if (options.containsKey(paramDataMatrixInverseRecognition)) {
             SymbologySettings symbSettingsDm = settings.getSymbologySettings(Barcode.SYMBOLOGY_DATA_MATRIX);
             symbSettingsDm.setColorInvertedEnabled(options.getBoolean(paramDataMatrixInverseRecognition));
         }
-
+        
         if (options.containsKey(paramMicroDataMatrix)) {
             settings.setMicroDataMatrixEnabled(options.getBoolean(paramMicroDataMatrix));
         }
-
+        
         if (options.containsKey(paramForce2D)) {
             settings.setForce2dRecognitionEnabled(options.getBoolean(paramForce2D));
         }
-
+        
         if (options.containsKey(paramCodeDuplicateFilter)) {
             settings.setCodeDuplicateFilter(options.getInt(paramCodeDuplicateFilter));
         }
-
+        
         if (bundleContainsStringKey(options, paramScanningHotSpot)) {
             String hotspot = options.getString(paramScanningHotSpot);
             String[] split = hotspot.split("[/]");
@@ -203,19 +202,19 @@ public class LegacySettingsParamParser {
                 } catch (NumberFormatException e) {}
             }
         }
-
+        
         if (options.containsKey(paramScanningHotSpotHeight)) {
             settings.setRestrictedAreaScanningEnabled(true);
             settings.setScanningHotSpotHeight((float) options.getDouble(paramScanningHotSpotHeight));
         }
-
+        
         if (options.containsKey(paramZoom)) {
             settings.setRelativeZoom(options.getFloat(paramZoom));
         }
-
+        
         return settings;
     }
-
+    
     private static boolean bundleContainsStringKey(Bundle bundle, String key) {
         return (bundle.containsKey(key) && bundle.getString(key) != null);
     }

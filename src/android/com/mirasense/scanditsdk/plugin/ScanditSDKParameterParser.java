@@ -117,67 +117,65 @@ public class ScanditSDKParameterParser {
             settings.setSymbologyEnabled(Barcode.SYMBOLOGY_QR, true);
             settings.setSymbologyEnabled(Barcode.SYMBOLOGY_PDF417, true);
         }
-
-        if ((bundle.containsKey(paramEan13AndUpc12) && bundle.getBoolean(paramEan13AndUpc12))
-                || !bundle.containsKey(paramEan13AndUpc12)) {
-            //Log.e("ScanditSDK", "The parameter 'ean13AndUpc12' is deprecated. Please enable the symbologies individually instead");
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN13, true);
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCA, true);
+        
+        if (options.containsKey(paramEan13AndUpc12)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN13, options.getBoolean(paramEan13AndUpc12));
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCA, options.getBoolean(paramEan13AndUpc12));
         }
-        if ((bundle.containsKey(paramEan8) && bundle.getBoolean(paramEan8))
-                || !bundle.containsKey(paramEan8)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN8, true);
+        if (options.containsKey(paramEan8)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_EAN8, options.getBoolean(paramEan8));
         }
-        if ((bundle.containsKey(paramUpce) && bundle.getBoolean(paramUpce))
-                || !bundle.containsKey(paramUpce)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCE, true);
+        if (options.containsKey(paramUpce)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_UPCE, options.getBoolean(paramUpce));
         }
-        if ((bundle.containsKey(paramCode39) && bundle.getBoolean(paramCode39))
-                || !bundle.containsKey(paramCode39)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE39, true);
+        if (options.containsKey(paramCode39)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE39, options.getBoolean(paramCode39));
         }
-        if ((bundle.containsKey(paramCode93) && bundle.getBoolean(paramCode93))
-                || !bundle.containsKey(paramCode93)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE93, true);
+        if (options.containsKey(paramCode93)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE93, options.getBoolean(paramCode93));
         }
-        if ((bundle.containsKey(paramCode128) && bundle.getBoolean(paramCode128))
-                || !bundle.containsKey(paramCode128)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE128, true);
+        if (options.containsKey(paramCode128)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE128, options.getBoolean(paramCode128));
         }
-        if (bundle.containsKey(paramItf) && bundle.getBoolean(paramItf)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_INTERLEAVED_2_OF_5, true);
+        if (options.containsKey(paramItf)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_INTERLEAVED_2_OF_5,
+                                         options.getBoolean(paramItf));
         }
-        if (bundle.containsKey(paramGS1Databar) && bundle.getBoolean(paramGS1Databar)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR, true);
+        if (options.containsKey(paramGS1Databar)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR,
+                                         options.getBoolean(paramGS1Databar));
         }
-        if (bundle.containsKey(paramGS1DatabarExpanded) && bundle.getBoolean(paramGS1DatabarExpanded)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR_EXPANDED, true);
+        if (options.containsKey(paramGS1DatabarExpanded)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_GS1_DATABAR_EXPANDED,
+                                         options.getBoolean(paramGS1DatabarExpanded));
         }
-        if (bundle.containsKey(paramCodabar) && bundle.getBoolean(paramCodabar)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODABAR, true);
+        if (options.containsKey(paramCodabar) && options.getBoolean(paramCodabar)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODABAR,
+                                         options.getBoolean(paramCodabar));
         }
-        if ((bundle.containsKey(paramQR) && bundle.getBoolean(paramQR))
-                || !bundle.containsKey(paramQR)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_QR, true);
+        if (options.containsKey(paramQR)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_QR, options.getBoolean(paramQR));
         }
-        if ((bundle.containsKey(paramDatamatrix) && bundle.getBoolean(paramDatamatrix))
-                || !bundle.containsKey(paramDatamatrix)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_DATA_MATRIX, true);
+        if (options.containsKey(paramDatamatrix)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_DATA_MATRIX,
+                                         options.getBoolean(paramDatamatrix));
         }
-        if (bundle.containsKey(paramPdf417) && bundle.getBoolean(paramPdf417)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_PDF417, true);
+        if (options.containsKey(paramPdf417)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_PDF417, options.getBoolean(paramPdf417));
         }
-        if (bundle.containsKey(paramAztec) && bundle.getBoolean(paramAztec)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_AZTEC, true);
+        if (options.containsKey(paramAztec)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_AZTEC, options.getBoolean(paramAztec));
         }
-        if (bundle.containsKey(paramMsiPlessey) && bundle.getBoolean(paramMsiPlessey)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MSI_PLESSEY, true);
+        if (options.containsKey(paramMsiPlessey)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MSI_PLESSEY,
+                                         options.getBoolean(paramMsiPlessey));
         }
-        if (bundle.containsKey(paramCode11) && bundle.getBoolean(paramCode11)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE11, true);
+        if (options.containsKey(paramCode11)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_CODE11, options.getBoolean(paramCode11));
         }
-        if (bundle.containsKey(paramMaxiCode) && bundle.getBoolean(paramMaxiCode)) {
-            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MAXICODE, true);
+        if (options.containsKey(paramMaxiCode)) {
+            settings.setSymbologyEnabled(Barcode.SYMBOLOGY_MAXICODE,
+                                         options.getBoolean(paramMaxiCode));
         }
         if (bundleContainsStringKey(bundle, paramMsiPlesseyChecksumType)) {
             String checksum = bundle.getString(paramMsiPlesseyChecksumType);

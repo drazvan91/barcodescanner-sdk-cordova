@@ -20,7 +20,6 @@ function SymbologySettings() {
 	this.colorInvertedEnabled = false;
 	this.checksums = [];
 	this.extensions = [];
-	this.activeSymbolCounts = []
 }
 
 module.exports = SymbologySettings;

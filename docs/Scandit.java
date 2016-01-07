@@ -714,8 +714,11 @@ public class Scandit {
 		 * @brief The GUI style drawn to display the indicator where the code should be scanned and the
 		 *   visualization of recognized codes.
 		 *
-		 * @param guiStyle Must be one of {@link ScanOverlay.GuiStyle.DEFAULT}, {@link ScanOverlay.GuiStyle.LASER} or
-		 *        {@link ScanOverlay.GuiStyle.NONE}. By default this is ScanOverlay.GuiStyle.DEFAULT.
+		 * @param guiStyle Must be one of 
+         * {@link ScanOverlay.GuiStyle.DEFAULT Scandit.ScanOverlay.GuiStyle.DEFAULT}, 
+         * {@link ScanOverlay.GuiStyle.LASER Scandit.ScanOverlay.GuiStyle.LASER} or
+         * {@link ScanOverlay.GuiStyle.NONE Scandit.ScanOverlay.GuiStyle.NONE}. By default this is 
+         * Scandit.ScanOverlay.GuiStyle.DEFAULT.
 		 *
 		 * @since 4.11.0
 		 */
@@ -824,12 +827,14 @@ public class Scandit {
 		/**
 		 * Sets when the camera switch button is visible for devices that have more than one camera.
 		 *
-		 * By default it is CAMERA_SWITCH_NEVER.
+		 * By default it is {@link ScanOverlay.CameraSwitchVisibility.NEVER Scandit.ScanOverlay.CameraSwitchVisibility.NEVER}.
 		 *
 		 * @since 4.11.0
 		 *
-		 * @param visibility The visibility of the camera switch button (.CAMERA_SWITCH_NEVER,
-		 *                   CAMERA_SWITCH_ON_TABLET, CAMERA_SWITCH_ALWAYS)
+		 * @param visibility The visibility of the camera switch button 
+         *                   ({@link ScanOverlay.CameraSwitchVisibility.NEVER Scandit.ScanOverlay.CameraSwitchVisibility.NEVER},
+		 *                   {@link ScanOverlay.CameraSwitchVisibility.ON_TABLET Scandit.ScanOverlay.CameraSwitchVisibility.ON_TABLET}, 
+         *                   {@link ScanOverlay.CameraSwitchVisibility.ALWAYS Scandit.ScanOverlay.CameraSwitchVisibility.ALWAYS})
 		 */
 		public void setCameraSwitchVisibility(boolean visibility);
 

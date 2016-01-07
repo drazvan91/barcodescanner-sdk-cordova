@@ -1,18 +1,6 @@
 <?xml version="1.0" ?> <plugin id="com.mirasense.scanditsdk.plugin" version="4.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">    
 
 	<name>ScanditBarcodeScanner</name>
-		
-	<asset src="src/barcode.js" target="js/barcode.js"/>
-	<asset src="src/barcodepicker.js" target="js/barcodepicker.js"/>
-	<asset src="src/license.js" target="js/license.js"/>
-	<asset src="src/margins.js" target="js/margins.js"/>
-	<asset src="src/point.js" target="js/point.js"/>
-	<asset src="src/quadrilateral.js" target="js/quadrilateral.js"/>
-	<asset src="src/rect.js" target="js/rect.js"/>
-	<asset src="src/overlay.js" target="js/overlay.js"/>
-	<asset src="src/session.js" target="js/session.js"/>
-	<asset src="src/settings.js" target="js/settings.js"/>
-	<asset src="src/symbologysettings.js" target="js/symbologysettings.js"/>
 
 	<js-module src="src/barcode.js" name="Barcode">
 		<clobbers target="Scandit.Barcode" />

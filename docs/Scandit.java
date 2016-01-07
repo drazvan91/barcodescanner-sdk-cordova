@@ -298,6 +298,20 @@ public class Scandit {
 			 */
 			LANDSCAPE_LEFT
 		}
+        
+        /**
+         * Visibly shows the picker to the user. This should be called after the picker has been
+         * fully configured. Once it is shown make sure to call
+         * {@link startScanning() startScanning()} if you want to start the video feed and scan for
+         * barcodes.
+         */
+        public void show();
+        
+        /**
+         * Cancels the picker by stopping it and removing it from the screen. If the picker is not
+         * in continuous mode this will happen automatically when a code is recognized.
+         */
+        public void cancel();
 		
     	/**
     	 * @brief Reconfigure the barcode picker with new settings

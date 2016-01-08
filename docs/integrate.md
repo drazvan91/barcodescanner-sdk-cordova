@@ -15,7 +15,7 @@ Choose a plan (e.g., free “Enterprise” or "Community" plan) at http://www.sc
 
 If you do not have a Phonegap project yet, you should create a new one.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
     cordova create helloworld
     cd helloworld
     cordova platform add ios
@@ -27,7 +27,7 @@ If you do not have a Phonegap project yet, you should create a new one.
 
 Use the phonegap CLI to add the plugin to your already existing project.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
     cd <directory of your project>
 	phonegap plugin add <path to downloaded and unzipped plugin>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -7,7 +7,7 @@ To get you started we have prepared two examples that quickly show you how to us
 
 This shows the simplest way of using the plugin. The scanner is opened full screen and is closed as soon as a barcode is scanned, returning the result to a function specified by you.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.xml}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
 
 <!DOCTYPE html>
 <html>
@@ -67,7 +67,7 @@ This example demonstrates how to display the scanner as an overlay on top of you
 
 This example also uses the {@link Scandit.BarcodePicker.continousMode continuousMode} which lets you scan multiple barcodes in sequence without having to reopen the picker each time.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.html}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
 <!DOCTYPE html>
 <html>
     <head>

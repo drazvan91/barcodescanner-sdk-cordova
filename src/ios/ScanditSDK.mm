@@ -377,12 +377,13 @@
 - (NSArray *)jsObjectsFromCodeArray:(NSArray *)codes {
     NSMutableArray *finalArray = [[NSMutableArray alloc] init];
     for (SBSCode *code in codes) {
-        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                              [code symbologyName], @"symbology",
-                              [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
-                              [NSNumber numberWithBool:[code isRecognized]], @"recognized",
-                              [code data], @"data",
-                              nil];
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                     [code symbologyName], @"symbology",
+                                     [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
+                                     [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
+        if ([code isRecognized]) {
+            [dict setObject:[code data] forKey:@"data"];
+        }
         [finalArray addObject:dict];
     }
     return finalArray;

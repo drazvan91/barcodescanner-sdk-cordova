@@ -636,9 +636,6 @@ public class Scandit {
     	 * Sets the location in the image which is decoded with the highest priority
     	 * when multiple barcodes are present in the image.
     	 * <p>
-    	 * In restrictActiveScanningArea mode (activated with
-    	 * {@link #setRestrictedAreaScanningEnabled(boolean)}):
-    	 * <p>
     	 * Changes the location of the spot where the barcode decoder actively scans
     	 * for barcodes.
     	 * <p>
@@ -912,7 +909,6 @@ public class Scandit {
 		 * recognized. It only changes the size of the box drawn onto the scan screen. To restrict the
 		 * active scanning area, use the methods listed below.
 		 *
-		 * @see ScanSettings.enableRestrictedAreaScanning(boolean)
 		 * @see ScanSettings.setScanningHotSpot(float, float)
 		 * @see ScanSettings.setScanningHotSpotHeight(float)
 		 *

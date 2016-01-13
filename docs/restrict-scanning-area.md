@@ -16,7 +16,7 @@ Restricting the scanning area is done through {@link Scandit.ScanSettings.active
 ~~~~~~~~~~~~~~~~{.java}
 
 var settings = Scandit.ScanSettings();
-settings.activeScanningAreaPortrait(new Scandit.Rect(0.0, 0.45, 1.0, 0.1));
+settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.45, 1.0, 0.1);
 
 ~~~~~~~~~~~~~~~~
 
@@ -24,7 +24,7 @@ Restricting the scanning area to only the bottom half of the screen would look t
 
 ~~~~~~~~~~~~~~~~{.java}
 
-settings.activeScanningAreaPortrait(new Scandit.Rect(0.0, 0.5, 1.0, 0.5));
+settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.5, 1.0, 0.5);
 
 ~~~~~~~~~~~~~~~~
 <br/>

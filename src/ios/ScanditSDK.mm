@@ -395,18 +395,20 @@
 - (void)overlayController:(SBSOverlayController *)overlayController
       didCancelWithStatus:(NSDictionary *)status {
     [self.scanditBarcodePicker stopScanning];
-    if (self.modallyPresented) {
-        [self.viewController dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        [self.scanditBarcodePicker removeFromParentViewController];
-        [self.scanditBarcodePicker.view removeFromSuperview];
-        [self.scanditBarcodePicker didMoveToParentViewController:nil];
-    }
-	self.scanditBarcodePicker = nil;
+    dispatch_main_sync_safe(^{
+        if (self.modallyPresented) {
+            [self.viewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [self.scanditBarcodePicker removeFromParentViewController];
+            [self.scanditBarcodePicker.view removeFromSuperview];
+            [self.scanditBarcodePicker didMoveToParentViewController:nil];
+        }
+    });
+    self.scanditBarcodePicker = nil;
     
-	CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                                       messageAsString:@"Canceled"];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId]; 
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     self.hasPendingOperation = NO;
 }
 

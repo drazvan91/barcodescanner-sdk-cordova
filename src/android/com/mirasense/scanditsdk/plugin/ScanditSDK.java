@@ -84,7 +84,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             mWorker = new ScanditWorker();
             mWorker.start();
         }
-        Log.e("ScanditSDK", "execute " + action);
+        
         if (action.equals(INIT_LICENSE)) {
             initLicense(args);
             return true;
@@ -189,6 +189,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             // We extract all options and add them to the intent extra bundle.
             try {
                 setOptionsOnBundle(data.getJSONObject(1), options);
+                mLegacyMode = true;
                 showPicker(null, options, null);
             } catch (JSONException e) {
                 e.printStackTrace();

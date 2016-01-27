@@ -16,10 +16,10 @@ Choose a plan (e.g., free “Enterprise” or "Community" plan) at http://www.sc
 If you do not have a Phonegap project yet, you should create a new one.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
-    cordova create helloworld
+    phonegap create helloworld
     cd helloworld
-    cordova platform add ios
-    cordova platform add android
+    phonegap platform add ios
+    phonegap platform add android
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

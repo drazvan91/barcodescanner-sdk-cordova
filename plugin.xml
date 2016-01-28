@@ -1,7 +1,6 @@
-<?xml version="1.0" ?> <plugin id="com.mirasense.scanditsdk.plugin" version="4.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">    
-
+<?xml version="1.0" ?> 
+<plugin id="com.mirasense.scanditsdk.plugin" version="4.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">    
 	<name>ScanditBarcodeScanner</name>
-
 	<js-module src="src/barcode.js" name="Barcode">
 		<clobbers target="Scandit.Barcode" />
 	</js-module>
@@ -35,8 +34,6 @@
 	<js-module src="src/symbologysettings.js" name="SymbologySettings">
 		<clobbers target="Scandit.SymbologySettings" />
 	</js-module>
-	
-
 	<platform name="ios">      
 		  <plugins-plist key="ScanditSDK" string="ScanditSDK"/>      
 		  <!-- feature tag in config.xml -->      
@@ -47,8 +44,7 @@
 		  </config-file>      
 
 		  <!-- Resource Bundle for Scandit SDK -->
-		  <resource-file src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.bundle"/>
-		  
+		  <resource-file src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.bundle"/>	  
 		  <!-- Scandit SDK Cordova Plugin Source for iOS -->
 		  <header-file src="src/ios/ScanditSDK.h"/>
 		  <source-file src="src/ios/ScanditSDK.mm"/>
@@ -81,9 +77,7 @@
 		  <framework src="libiconv.dylib"/>      
 		  <framework src="libz.dylib"/>      
 		  <framework src="libc++.dylib"/>      
-	</platform>    
-
-      
+	</platform>     
     <platform name="android">      
 		<!-- register plugin -->      
 		<config-file parent="/widget" target="res/xml/config.xml">        

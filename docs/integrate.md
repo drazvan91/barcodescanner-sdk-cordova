@@ -16,20 +16,20 @@ Choose a plan (e.g., free “Enterprise” or "Community" plan) at http://www.sc
 If you do not have a Phonegap project yet, you should create a new one.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
-    phonegap create helloworld
+    cordova create helloworld
     cd helloworld
-    phonegap platform add ios
-    phonegap platform add android
+    cordova platform add ios
+    cordova platform add android
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ## Add the plugin to your project
 
-Use the phonegap CLI to add the plugin to your already existing project.
+Use the cordova CLI to add the plugin to your already existing project.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
     cd <directory of your project>
-	phonegap plugin add <path to downloaded and unzipped plugin>
+	cordova plugin add <path to downloaded and unzipped plugin>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -42,7 +42,7 @@ The scanning process is managed by the {@link Scandit.BarcodePicker BarcodePicke
 // Set your app key.
 Scandit.License.setAppKey("--- ENTER YOUR SCANDIT APP KEY HERE ---");
 
-var settings = Scandit.ScanSettings();
+var settings = new Scandit.ScanSettings();
 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN13, true);
 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPC12, true);
 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN8, true);

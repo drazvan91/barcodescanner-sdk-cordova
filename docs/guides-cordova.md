@@ -25,6 +25,7 @@ Overview         			{#cordova-guides}
 ### Version/edition upgrades
 
 * \subpage cordova-howto-upgrade
+* \subpage cordova-features-by-platform
 
 ### API changes in 4.11
 

@@ -82,13 +82,13 @@ BarcodePicker.prototype.cancel = function() {
 }
 
 BarcodePicker.prototype.startScanning = function(paused) {
-	if (this.isShown) {
-		if (typeof paused !== "undefined") {
-			cordova.exec(null, null, "ScanditSDK", "start", [{"paused": paused}]);
-		} else {
-			cordova.exec(null, null, "ScanditSDK", "start", []);
-		}
-	}
+    if (!this.isShown) {
+        return;
+    }
+    var options = {
+        paused : paused !== undefined ? !!paused : false
+    };
+    cordova.exec(null, null, "ScanditSDK", "start", [options]);
 }
 
 BarcodePicker.prototype.stopScanning = function() {

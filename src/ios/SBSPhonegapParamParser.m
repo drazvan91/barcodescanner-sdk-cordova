@@ -61,7 +61,7 @@
             NSArray *orientationsArray = (NSArray *)orientationsObj;
             for (NSObject *obj in orientationsArray) {
                 if ([obj isKindOfClass:[NSString class]]) {
-                    NSString *orientationsString = (NSString *)orientationsObj;
+                    NSString *orientationsString = (NSString *)obj;
                     if ([orientationsString isEqualToString:[self paramOrientationsPortrait]]) {
                         allowed = allowed | (1 << UIInterfaceOrientationPortrait);
                     } else if ([orientationsString isEqualToString:[self paramOrientationsPortraitUpsideDown]]) {

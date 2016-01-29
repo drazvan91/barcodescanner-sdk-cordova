@@ -13,23 +13,23 @@ Choose a plan (e.g., free “Enterprise” or "Community" plan) at http://www.sc
 
 ## Create a new project
 
-If you do not have a Phonegap project yet, you should create a new one.
+If you do not have a Phonegap project yet, you should create a new one. You can either use the cordova or phonegap command-line interfaces. In this guide, we use the phonegap command. You can just exchange it with cordova if you prefer to use it.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
-    cordova create helloworld
+    phonegap create helloworld
     cd helloworld
-    cordova platform add ios
-    cordova platform add android
+    phonegap platform add ios
+    phonegap platform add android
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ## Add the plugin to your project
 
-Use the cordova CLI to add the plugin to your already existing project.
+Use the phonegap CLI to add the plugin to your already existing project.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
     cd <directory of your project>
-	cordova plugin add <path to downloaded and unzipped plugin>
+	phonegap plugin add <path to downloaded and unzipped plugin>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

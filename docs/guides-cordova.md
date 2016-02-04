@@ -14,6 +14,7 @@ Overview         			{#cordova-guides}
 
 * \subpage cordova-integrate
 * \subpage cordova-examples
+* \subpage cordova-windows
 
 ## Guides
 

@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import com.scandit.barcodepicker.BarcodePicker;
 import com.scandit.base.system.SbSystemUtils;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by mo on 14/12/15.
@@ -70,8 +70,8 @@ public class PhonegapParamParser {
 
             if (bundle.containsKey(paramPortraitMargins)) {
                 if (bundle.getSerializable(paramPortraitMargins) != null
-                        && bundle.getSerializable(paramPortraitMargins) instanceof LinkedList) {
-                    LinkedList<Object> list = (LinkedList<Object>) bundle.getSerializable(paramPortraitMargins);
+                        && bundle.getSerializable(paramPortraitMargins) instanceof List) {
+                    List<Object> list = (List<Object>) bundle.getSerializable(paramPortraitMargins);
                     if (list.size() == 4 && UIParamParser.checkClassOfListObjects(list, Integer.class)) {
                         portraitMargins = new Rect((Integer) list.get(0), (Integer) list.get(1),
                                 (Integer) list.get(2), (Integer) list.get(3));
@@ -94,8 +94,8 @@ public class PhonegapParamParser {
 
             if (bundle.containsKey(paramLandscapeMargins)) {
                 if (bundle.getSerializable(paramLandscapeMargins) != null
-                        && bundle.getSerializable(paramLandscapeMargins) instanceof LinkedList) {
-                    LinkedList<Object> list = (LinkedList<Object>) bundle.getSerializable(paramLandscapeMargins);
+                        && bundle.getSerializable(paramLandscapeMargins) instanceof List) {
+                    List<Object> list = (List<Object>) bundle.getSerializable(paramLandscapeMargins);
                     if (list.size() == 4 && UIParamParser.checkClassOfListObjects(list, Integer.class)) {
                         landscapeMargins = new Rect((Integer) list.get(0), (Integer) list.get(1),
                                 (Integer) list.get(2), (Integer) list.get(3));

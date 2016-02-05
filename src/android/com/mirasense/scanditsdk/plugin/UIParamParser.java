@@ -9,7 +9,7 @@ import com.scandit.barcodepicker.BarcodePicker;
 import com.scandit.barcodepicker.ScanOverlay;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by mo on 14/12/15.
@@ -68,7 +68,7 @@ public class UIParamParser {
         }
 
         if (bundleContainsListKey(bundle, paramTorchButtonMarginsAndSize)) {
-            LinkedList<Object> marginsAndSize = (LinkedList<Object>)bundle.getSerializable(paramTorchButtonMarginsAndSize);
+            List<Object> marginsAndSize = (List<Object>)bundle.getSerializable(paramTorchButtonMarginsAndSize);
             if (checkClassOfListObjects(marginsAndSize, Integer.class) && marginsAndSize.size() == 4) {
                 picker.getOverlayView().setTorchButtonMarginsAndSize(
                         (Integer)marginsAndSize.get(0), (Integer)marginsAndSize.get(1),
@@ -96,7 +96,7 @@ public class UIParamParser {
         }
 
         if (bundleContainsListKey(bundle, paramCameraSwitchButtonMarginsAndSize)) {
-            LinkedList<Object> marginsAndSize = (LinkedList<Object>)bundle.getSerializable(paramCameraSwitchButtonMarginsAndSize);
+            List<Object> marginsAndSize = (List<Object>)bundle.getSerializable(paramCameraSwitchButtonMarginsAndSize);
             if (checkClassOfListObjects(marginsAndSize, Integer.class) && marginsAndSize.size() == 4) {
                 picker.getOverlayView().setCameraSwitchButtonMarginsAndSize(
                         (Integer) marginsAndSize.get(0), (Integer) marginsAndSize.get(1),
@@ -117,7 +117,7 @@ public class UIParamParser {
         }
 
         if (bundleContainsListKey(bundle, paramViewfinderDimension)) {
-            LinkedList<Object> viewfinderDimension = (LinkedList<Object>)bundle.getSerializable(paramViewfinderDimension);
+            List<Object> viewfinderDimension = (List<Object>)bundle.getSerializable(paramViewfinderDimension);
             if (checkClassOfListObjects(viewfinderDimension, Float.class)
                     && viewfinderDimension.size() == 4) {
                 picker.getOverlayView().setViewfinderDimension(
@@ -198,7 +198,7 @@ public class UIParamParser {
     public static boolean bundleContainsListKey(Bundle bundle, String key) {
         if (bundle.containsKey(key)) {
             Serializable serial = bundle.getSerializable(key);
-            if (serial != null && serial instanceof LinkedList) {
+            if (serial != null && serial instanceof List) {
                 return true;
             } else {
                 Log.e("ScanditSDK", "Failed to parse " + key + " - needs to be array");
@@ -218,7 +218,7 @@ public class UIParamParser {
         return false;
     }
 
-    public static boolean checkClassOfListObjects(LinkedList<Object> list, Class<?> aClass) {
+    public static boolean checkClassOfListObjects(List<Object> list, Class<?> aClass) {
         for (Object obj : list) {
             if (!aClass.isInstance(obj)) {
                 Log.e("ScanditSDK", "array contains wrong class - " + obj.getClass().getName());

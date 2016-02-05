@@ -45,8 +45,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -495,7 +495,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                 } else if (obj instanceof String) {
                     bundle.putString(key.toLowerCase(), (String) obj);
                 } else if (obj instanceof JSONArray) {
-                    LinkedList<Object> list = new LinkedList<Object>();
+                    ArrayList<Object> list = new ArrayList<Object>();
                     JSONArray array = (JSONArray)obj;
                     for (int i = 0; i < array.length(); i++) {
                         try {
@@ -707,14 +707,14 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                         @Override
                         public void run() {
                             Bundle bundle = new Bundle();
-                            LinkedList<Object> list = new LinkedList<Object>();
+                            ArrayList<Object> list = new ArrayList<Object>();
                             list.add((Integer) mBarcodePicker.portraitMargins.left);
                             list.add((Integer) mBarcodePicker.portraitMargins.top);
                             list.add((Integer) mBarcodePicker.portraitMargins.right);
                             list.add((Integer) mBarcodePicker.portraitMargins.bottom);
                             bundle.putSerializable(PhonegapParamParser.paramPortraitMargins, list);
 
-                            list = new LinkedList<Object>();
+                            list = new ArrayList<Object>();
                             list.add((Integer) mBarcodePicker.landscapeMargins.left);
                             list.add((Integer) mBarcodePicker.landscapeMargins.top);
                             list.add((Integer) mBarcodePicker.landscapeMargins.right);

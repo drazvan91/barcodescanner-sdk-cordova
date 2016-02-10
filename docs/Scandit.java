@@ -847,7 +847,7 @@ public class Scandit {
 		 *                   {@link ScanOverlay.CameraSwitchVisibility.ON_TABLET Scandit.ScanOverlay.CameraSwitchVisibility.ON_TABLET}, 
          *                   {@link ScanOverlay.CameraSwitchVisibility.ALWAYS Scandit.ScanOverlay.CameraSwitchVisibility.ALWAYS})
 		 */
-		public void setCameraSwitchVisibility(boolean visibility);
+		public void setCameraSwitchVisibility(CameraSwitchVisibility visibility);
 
 		/**
 		 * @brief Sets the position at which the button to switch the camera is drawn.

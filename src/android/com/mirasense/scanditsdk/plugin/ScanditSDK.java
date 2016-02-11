@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
@@ -38,7 +39,9 @@ import com.scandit.base.system.SbSystemUtils;
 import com.scandit.base.util.JSONParseException;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
@@ -65,6 +68,8 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     public static final String RESIZE = "resize";
     public static final String TORCH = "torch";
     
+    public static DisplayMetrics DISPLAY;
+
     private CallbackContext mCallbackContext;
     private boolean mContinuousMode = false;
     private boolean mPendingOperation = false;
@@ -637,6 +642,12 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             }
         }
         return null;
+    }
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        DISPLAY = this.cordova.getActivity().getApplicationContext().getResources().getDisplayMetrics();
     }
 
     @Override

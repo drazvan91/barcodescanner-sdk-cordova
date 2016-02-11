@@ -138,7 +138,7 @@ BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDura
 	if (this.isShown) {
 		var duration = 0;
 		if (typeof animationDuration !== "undefined") {
-			duration = animationDuration;
+			duration = parseFloat(animationDuration);
 		}
     	cordova.exec(null, null, "ScanditSDK", "resize", [{"portraitMargins": this.portraitMargins,
     													   "landscapeMargins": this.landscapeMargins,

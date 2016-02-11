@@ -68,6 +68,7 @@
 		  <framework src="AudioToolbox.framework"/>
 		  <framework src="AVFoundation.framework"/>      
 		  <framework src="CoreGraphics.framework"/>      
+		  <framework src="CoreText.framework"/>      
 		  <framework src="CoreLocation.framework"/>      
 		  <framework src="CoreMedia.framework"/>      
 		  <framework src="CoreVideo.framework"/>      

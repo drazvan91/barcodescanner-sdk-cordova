@@ -355,9 +355,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         mWorker.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.e("ScanditSDK", "starting");
                 if (mBarcodePicker != null) {
-                    Log.e("ScanditSDK", "starting 2");
                     mBarcodePicker.startScanning();
                 } else {
                     ScanditSDKActivity.start();

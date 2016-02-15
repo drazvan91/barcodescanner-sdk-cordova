@@ -154,18 +154,23 @@
         picker.portraitMargins = CGRectMake(0, 0, 0, 0);
         picker.landscapeMargins = CGRectMake(0, 0, 0, 0);
     }
-    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat screenHeight = screenRect.size.height;
+   
+
     if (portraitMargins) {
         if ([portraitMargins isKindOfClass:[NSString class]]) {
             picker.portraitMargins = [SBSLegacyUIParamParser rectFromParameter:portraitMargins];
         } else if ([portraitMargins isKindOfClass:[NSArray class]]) {
             NSArray *marginsArray = (NSArray *) portraitMargins;
-            if ([marginsArray count] == 4 && [SBSUIParamParser array:marginsArray
-                                           onlyContainObjectsOfClass:[NSNumber class]]) {
-                picker.portraitMargins = CGRectMake([marginsArray[0] floatValue],
-                                                    [marginsArray[1] floatValue],
-                                                    [marginsArray[2] floatValue],
-                                                    [marginsArray[3] floatValue]);
+            if ([marginsArray count] == 4 && 
+                            ([SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSNumber class]]
+                             || [SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSString class]])) {
+                picker.portraitMargins = CGRectMake([SBSUIParamParser getSize:marginsArray[0] relativeTo:screenWidth],
+                                                    [SBSUIParamParser getSize:marginsArray[1] relativeTo:screenHeight],
+                                                    [SBSUIParamParser getSize:marginsArray[2] relativeTo:screenWidth],
+                                                    [SBSUIParamParser getSize:marginsArray[3] relativeTo:screenHeight]);
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse portrait margins - wrong type");
@@ -177,12 +182,13 @@
             picker.landscapeMargins = [SBSLegacyUIParamParser rectFromParameter:portraitMargins];
         } else if ([landscapeMargins isKindOfClass:[NSArray class]]) {
             NSArray *marginsArray = (NSArray *) landscapeMargins;
-            if ([marginsArray count] == 4 && [SBSUIParamParser array:marginsArray
-                                           onlyContainObjectsOfClass:[NSNumber class]]) {
-                picker.landscapeMargins = CGRectMake([marginsArray[0] floatValue],
-                                                     [marginsArray[1] floatValue],
-                                                     [marginsArray[2] floatValue],
-                                                     [marginsArray[3] floatValue]);
+            if ([marginsArray count] == 4 && 
+                            ([SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSNumber class]]
+                             || [SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSString class]])) {
+                picker.landscapeMargins = CGRectMake([SBSUIParamParser getSize:marginsArray[0] relativeTo:screenHeight],
+                                                    [SBSUIParamParser getSize:marginsArray[1] relativeTo:screenWidth],
+                                                    [SBSUIParamParser getSize:marginsArray[2] relativeTo:screenHeight],
+                                                    [SBSUIParamParser getSize:marginsArray[3] relativeTo:screenWidth]);
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse landscape margins - wrong type");

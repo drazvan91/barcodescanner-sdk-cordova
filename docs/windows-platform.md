@@ -16,7 +16,7 @@ The phonegap/cordova plugin for the windows platform supports applications targe
 Supported Cordova Versions
 --------------------------------------------------
 
-As of the Scandit BarcodeScanner release 4.12.0, the last stable release of the cordova windows platform (4.3.1) is missing some of the functionality required to install the Scandit BarcodeScanner plugin. More specifically, it is not possible to have one plugin that targets multiple architectures or operating systems when the plugin depends on unmanaged C/C++ code. These issues will be fixed in the upcoming release of cordova-windows. As soon as this version is released, these steps will no longer be necessary. 
+As of the Scandit BarcodeScanner release 4.12.0, the last stable release of the cordova windows platform (4.3.1) is missing some of the functionality required to install the Scandit BarcodeScanner plugin. More specifically, it is not possible to have one plugin that targets multiple architectures or operating systems when the plugin depends on unmanaged C/C++ code. We have provided patches to the cordova team to fix these issues. The fixes will be available in cordova-windows 4.4. As soon as this version is released, these steps will no longer be necessary. 
 
 In the meantime, to install the plugin as is, you will either need to use the pre-release version of cordova-windows, or modify the plugin.xml included with the barcode scanner plugin by hand. We recommend to use the pre-release version of cordova-windows as this is the simpler approach.
 

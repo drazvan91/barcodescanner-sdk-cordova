@@ -234,7 +234,7 @@ public class UIParamParser {
     // Converts px to dp if String ends with 'px'
     public static Integer getDp(Object obj) {
         if (obj instanceof Number) {
-            return (Integer) obj;
+            return ((Number) obj).intValue();
         } else if (obj.getClass().equals(String.class)) {
             String str = (String) obj;
             if (str.substring(Math.max(str.length() - 2, 0)).equals("px")) {

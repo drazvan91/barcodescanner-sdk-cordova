@@ -67,8 +67,9 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     public static final String STOP = "stop";
     public static final String RESIZE = "resize";
     public static final String TORCH = "torch";
-    
-    public static DisplayMetrics DISPLAY;
+   
+    public static int SCREEN_HEIGHT;
+    public static int SCREEN_WIDTH;
 
     private CallbackContext mCallbackContext;
     private boolean mContinuousMode = false;
@@ -645,7 +646,10 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        DISPLAY = this.cordova.getActivity().getApplicationContext().getResources().getDisplayMetrics();
+        DisplayMetrics display =  this.cordova.getActivity().
+                getApplicationContext().getResources().getDisplayMetrics();
+        SCREEN_WIDTH = (int) (display.widthPixels * 160.f / display.densityDpi);
+        SCREEN_HEIGHT = (int) (display.heightPixels * 160.f / display.densityDpi);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.scandit.barcodepicker.BarcodePicker;
 import com.scandit.barcodepicker.ScanOverlay;
 
 import java.io.Serializable;
+import java.lang.Math;
 import java.lang.NumberFormatException;
 import java.util.List;
 
@@ -74,8 +75,10 @@ public class UIParamParser {
             if ((checkClassOfListObjects(marginsAndSize, Integer.class) || checkClassOfListObjects(marginsAndSize, String.class))
                             && marginsAndSize.size() == 4) {
                 picker.getOverlayView().setTorchButtonMarginsAndSize(
-                        getDp(marginsAndSize.get(0)), getDp(marginsAndSize.get(1)),
-                        getDp(marginsAndSize.get(2)), getDp(marginsAndSize.get(3)));
+                        getSize(marginsAndSize.get(0), 0),
+                        getSize(marginsAndSize.get(1), 0),
+                        getSize(marginsAndSize.get(2), 0),
+                        getSize(marginsAndSize.get(3), 0));
             } else {
                 Log.e("ScanditSDK", "Failed to parse torch button margins and size - wrong type");
             }
@@ -103,8 +106,10 @@ public class UIParamParser {
             if ((checkClassOfListObjects(marginsAndSize, Integer.class) || checkClassOfListObjects(marginsAndSize, String.class))
                             && marginsAndSize.size() == 4) {
                 picker.getOverlayView().setCameraSwitchButtonMarginsAndSize(
-                        getDp(marginsAndSize.get(0)), getDp(marginsAndSize.get(1)),
-                        getDp(marginsAndSize.get(2)), getDp(marginsAndSize.get(3)));
+                        getSize(marginsAndSize.get(0), 0),
+                        getSize(marginsAndSize.get(1), 0),
+                        getSize(marginsAndSize.get(2), 0),
+                        getSize(marginsAndSize.get(3), 0));
             } else {
                 Log.e("ScanditSDK", "Failed to parse camera switch button margins and size - wrong type");
             }
@@ -231,30 +236,34 @@ public class UIParamParser {
         return true;
     }
 
-    // Converts px to dp if String ends with 'px'
-    public static Integer getDp(Object obj) {
+    // Converts % to pt if string ends with '%'
+    public static Integer getSize(Object obj, int max) {
         if (obj instanceof Number) {
             return ((Number) obj).intValue();
         } else if (obj.getClass().equals(String.class)) {
             String str = (String) obj;
-            if (str.substring(Math.max(str.length() - 2, 0)).equals("px")) {
+            if (str.substring(Math.max(str.length() - 1, 0)).equals("%")) {
                 try {
-                    int px = Integer.parseInt(str.substring(0, str.length() - 2));
-                    return (int) ( (int)px * 1f / (ScanditSDK.DISPLAY.densityDpi / 160f));
+                    float percent = Float.parseFloat(str.substring(0, str.length() - 1));
+                    if (percent < 0f || 100f < percent) {
+                        Log.e("ScanditSDK", "Percentage value is not valid: " + percent + ", using 0%");
+                        return 0;
+                    }
+                    return (int) Math.round(percent * max / 100f);
                 } catch (NumberFormatException e) {
-                    Log.e("ScanditSDK", "Can not recognize dp value of String " + str + " - returning 0");
+                    Log.e("ScanditSDK", "Can not parse size value of string " + str + " - returning 0");
                     return 0;
                 }
             } else {
                 try {
                     return Integer.parseInt(str);
                 } catch (NumberFormatException e) {
-                    Log.e("ScanditSDK", "Can not recognize dp value of String " + str + " - returning 0");
+                    Log.e("ScanditSDK", "Can not parse size value of string " + str + " - returning 0");
                     return 0;
                 }
             }
         } else {
-            Log.e("ScanditSDK", "Can not recognize dp value - returning 0");
+            Log.e("ScanditSDK", "Can not parse size value - returning 0");
             return 0;
         }
     }

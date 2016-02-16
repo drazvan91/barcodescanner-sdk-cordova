@@ -22,9 +22,13 @@ This shows the simplest way of using the plugin. The scanner is opened full scre
     </head>
     <body>
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
 
+            // On Windows, the alert function doesn't exist, so we add it.
+            window.alert = window.alert !== undefined ? window.alert : function (message) {
+                var alertBox = new Windows.UI.Popups.MessageDialog(message);
+                alertBox.showAsync();
+            };
             function success(session) {
 				alert("Scanned " + session.newlyRecognizedCodes[0].symbology 
 						+ " code: " + session.newlyRecognizedCodes[0].data);
@@ -45,8 +49,6 @@ This shows the simplest way of using the plugin. The scanner is opened full scre
 				picker.show(success, null, failure);
 				picker.startScanning();
             }
-
-            app.initialize();
         </script>
 
         <div align="center" valign="center">
@@ -81,9 +83,14 @@ This example also uses the {@link Scandit.BarcodePicker.continousMode continuous
     </head>
     <body>
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
 			
+            // On Windows, the alert function doesn't exist, so we add it.
+            window.alert = window.alert !== undefined ? window.alert : function (message) {
+                var alertBox = new Windows.UI.Popups.MessageDialog(message);
+                alertBox.showAsync();
+            };
+
 			var picker;
 			
             function success(session) {
@@ -127,8 +134,6 @@ This example also uses the {@link Scandit.BarcodePicker.continousMode continuous
             function cancel() {
             	picker.cancel();
             }
-
-            app.initialize();
         </script>
 
         <div>

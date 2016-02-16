@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
@@ -38,7 +39,9 @@ import com.scandit.base.system.SbSystemUtils;
 import com.scandit.base.util.JSONParseException;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
@@ -64,7 +67,10 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     public static final String STOP = "stop";
     public static final String RESIZE = "resize";
     public static final String TORCH = "torch";
-    
+   
+    public static int SCREEN_HEIGHT;
+    public static int SCREEN_WIDTH;
+
     private CallbackContext mCallbackContext;
     private boolean mContinuousMode = false;
     private boolean mPendingOperation = false;
@@ -350,9 +356,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         mWorker.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.e("ScanditSDK", "starting");
                 if (mBarcodePicker != null) {
-                    Log.e("ScanditSDK", "starting 2");
                     mBarcodePicker.startScanning();
                 } else {
                     ScanditSDKActivity.start();
@@ -637,6 +641,15 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             }
         }
         return null;
+    }
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        DisplayMetrics display =  this.cordova.getActivity().
+                getApplicationContext().getResources().getDisplayMetrics();
+        SCREEN_WIDTH = (int) (display.widthPixels * 160.f / display.densityDpi);
+        SCREEN_HEIGHT = (int) (display.heightPixels * 160.f / display.densityDpi);
     }
 
     @Override

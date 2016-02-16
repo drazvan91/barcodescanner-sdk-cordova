@@ -92,13 +92,15 @@
     if (torchButtonMarginsAndSize) {
         if ([torchButtonMarginsAndSize isKindOfClass:[NSArray class]]) {
             NSArray *marginsAndSizeArray = (NSArray *)torchButtonMarginsAndSize;
-            if ([marginsAndSizeArray count] == 4 && [self array:marginsAndSizeArray
-                                      onlyContainObjectsOfClass:[NSNumber class]]) {
+            if ([marginsAndSizeArray count] == 4 
+                            && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
+                                ||[self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]] )) {
                 [picker.overlayController
-                 setTorchButtonLeftMargin:[marginsAndSizeArray[0] floatValue]
-                 topMargin:[marginsAndSizeArray[1] floatValue]
-                 width:[marginsAndSizeArray[2] floatValue]
-                 height:[marginsAndSizeArray[3] floatValue]];
+                        setTorchButtonLeftMargin:[self getSize: marginsAndSizeArray[0] relativeTo:0]
+                                       topMargin:[self getSize: marginsAndSizeArray[1] relativeTo:0]
+                                           width:[self getSize: marginsAndSizeArray[2] relativeTo:0]
+                                          height:[self getSize: marginsAndSizeArray[3] relativeTo:0]
+                                          ];
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse torch button margins and size - wrong type");
@@ -159,12 +161,15 @@
     if (cameraSwitchButtonMarginsAndSize) {
         if ([cameraSwitchButtonMarginsAndSize isKindOfClass:[NSArray class]]) {
             NSArray *marginsAndSizeArray = (NSArray *)cameraSwitchButtonMarginsAndSize;
-            if ([marginsAndSizeArray count] == 4) {
+            if ([marginsAndSizeArray count] == 4 
+                            && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
+                                ||[self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]] )) {
                 [picker.overlayController
-                 setCameraSwitchButtonRightMargin:[marginsAndSizeArray[0] floatValue]
-                 topMargin:[marginsAndSizeArray[1] floatValue]
-                 width:[marginsAndSizeArray[2] floatValue]
-                 height:[marginsAndSizeArray[3] floatValue]];
+                        setCameraSwitchButtonRightMargin:[self getSize: marginsAndSizeArray[0] relativeTo:0]
+                                               topMargin:[self getSize: marginsAndSizeArray[1] relativeTo:0]
+                                                   width:[self getSize: marginsAndSizeArray[2] relativeTo:0]
+                                                  height:[self getSize: marginsAndSizeArray[3] relativeTo:0]
+                                                ];
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse camera switch button margins and size - wrong type");
@@ -323,6 +328,21 @@
         }
     }
     return YES;
+}
+
++ (float)getSize:(NSObject *)obj relativeTo:(int)max {
+    if ([obj isKindOfClass:[NSNumber class]]) {
+        return [(NSNumber *) obj floatValue];
+    } else if ([obj isKindOfClass:[NSString class]]) {
+        NSString* str = (NSString *) obj;
+        if ([[str substringFromIndex: [str length] - 1] isEqualToString:@"%"]) {
+            return [[str substringToIndex: [str length] - 1] floatValue] * max / 100.;
+        } else {
+            return [str floatValue];
+        }
+    } else {
+        return 0.;
+    }
 }
 
 @end

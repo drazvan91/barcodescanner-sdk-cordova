@@ -35,4 +35,6 @@
 
 + (BOOL)array:(NSArray *)array onlyContainObjectsOfClass:(Class)aClass;
 
++ (float)getSize: (NSObject *)obj relativeTo:(int)max;
+
 @end

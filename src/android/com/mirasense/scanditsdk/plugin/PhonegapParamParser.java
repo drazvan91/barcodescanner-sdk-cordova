@@ -72,17 +72,25 @@ public class PhonegapParamParser {
                 if (bundle.getSerializable(paramPortraitMargins) != null
                         && bundle.getSerializable(paramPortraitMargins) instanceof List) {
                     List<Object> list = (List<Object>) bundle.getSerializable(paramPortraitMargins);
-                    if (list.size() == 4 && UIParamParser.checkClassOfListObjects(list, Integer.class)) {
-                        portraitMargins = new Rect((Integer) list.get(0), (Integer) list.get(1),
-                                (Integer) list.get(2), (Integer) list.get(3));
+                    if (list.size() == 4 &&
+                                    (UIParamParser.checkClassOfListObjects(list, Integer.class) ||
+                                     UIParamParser.checkClassOfListObjects(list, String.class))) {
+                        portraitMargins = new Rect(
+                                        UIParamParser.getSize(list.get(0), ScanditSDK.SCREEN_WIDTH),
+                                        UIParamParser.getSize(list.get(1), ScanditSDK.SCREEN_HEIGHT),
+                                        UIParamParser.getSize(list.get(2), ScanditSDK.SCREEN_WIDTH),
+                                        UIParamParser.getSize(list.get(3), ScanditSDK.SCREEN_HEIGHT));
                     }
                 } else if (bundle.getString(paramPortraitMargins) != null) {
                     String portraitMarginsString = bundle.getString(paramPortraitMargins);
                     String[] split = portraitMarginsString.split("[/]");
                     if (split.length == 4) {
                         try {
-                            portraitMargins = new Rect(Integer.valueOf(split[0]), Integer.valueOf(split[1]),
-                                    Integer.valueOf(split[2]), Integer.valueOf(split[3]));
+                            portraitMargins = new Rect(
+                                        UIParamParser.getSize(split[0], ScanditSDK.SCREEN_WIDTH),
+                                        UIParamParser.getSize(split[1], ScanditSDK.SCREEN_HEIGHT),
+                                        UIParamParser.getSize(split[2], ScanditSDK.SCREEN_WIDTH),
+                                        UIParamParser.getSize(split[3], ScanditSDK.SCREEN_HEIGHT));
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }
@@ -96,17 +104,25 @@ public class PhonegapParamParser {
                 if (bundle.getSerializable(paramLandscapeMargins) != null
                         && bundle.getSerializable(paramLandscapeMargins) instanceof List) {
                     List<Object> list = (List<Object>) bundle.getSerializable(paramLandscapeMargins);
-                    if (list.size() == 4 && UIParamParser.checkClassOfListObjects(list, Integer.class)) {
-                        landscapeMargins = new Rect((Integer) list.get(0), (Integer) list.get(1),
-                                (Integer) list.get(2), (Integer) list.get(3));
+                    if (list.size() == 4 &&
+                            (UIParamParser.checkClassOfListObjects(list, Integer.class) ||
+                             UIParamParser.checkClassOfListObjects(list, String.class))) {
+                        landscapeMargins = new Rect(
+                                        UIParamParser.getSize(list.get(0), ScanditSDK.SCREEN_HEIGHT),
+                                        UIParamParser.getSize(list.get(1), ScanditSDK.SCREEN_WIDTH),
+                                        UIParamParser.getSize(list.get(2), ScanditSDK.SCREEN_HEIGHT),
+                                        UIParamParser.getSize(list.get(3), ScanditSDK.SCREEN_WIDTH));
                     }
                 } else if (bundle.getString(paramLandscapeMargins) != null) {
                     String landscapeMarginsString = bundle.getString(paramLandscapeMargins);
                     String[] split = landscapeMarginsString.split("[/]");
                     if (split.length == 4) {
                         try {
-                            landscapeMargins = new Rect(Integer.valueOf(split[0]), Integer.valueOf(split[1]),
-                                    Integer.valueOf(split[2]), Integer.valueOf(split[3]));
+                            landscapeMargins = new Rect(
+                                        UIParamParser.getSize(split[0], ScanditSDK.SCREEN_HEIGHT),
+                                        UIParamParser.getSize(split[1], ScanditSDK.SCREEN_WIDTH),
+                                        UIParamParser.getSize(split[2], ScanditSDK.SCREEN_HEIGHT),
+                                        UIParamParser.getSize(split[3], ScanditSDK.SCREEN_WIDTH));
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }

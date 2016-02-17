@@ -84,6 +84,20 @@ public class Scandit {
 		 * @param bottom The bottom margin.
 		 */
 		public Margins(int left, int top, int right, int bottom);
+
+		/**
+		 * Construct a new margins object by passing the margins as strings
+		 *
+		 * You may specify the margins in percent by adding a '%%' at the end of 
+		 * the string. When expressing the margins in percent, the margin is set 
+		 * to the desired percentage of the screen width or height.
+		 *
+		 * @param left The left margin. 
+		 * @param top The top margin.
+		 * @param right The top margin.
+		 * @param bottom The bottom margin.
+		 */
+		public Margins(String left, String top, String right, String bottom);
 	}
 	
 	/**
@@ -304,8 +318,17 @@ public class Scandit {
          * fully configured. Once it is shown make sure to call
          * {@link startScanning() startScanning()} if you want to start the video feed and scan for
          * barcodes.
+         *
+         * @param success callback to be invoked whenever codes have been successfully scanned. 
+         *    The callback receives the scan session as the first and only argument which contains 
+         *    a list of recognized codes. 
+         * @param manual callback to be invoked when the user enters a text in the search bar. 
+         *    The entered text is passed as the first argument to the callback. If you do not 
+         *    use the search bar, you may pass null. 
+         * @param failure callback to be invoked upon failure, or when cancel is called on the 
+         *    picker. The callback is passed a reason for failure as the only argument.
          */
-        public void show();
+        public void show(function success, function manual=null, function failure=null);
         
         /**
          * Cancels the picker by stopping it and removing it from the screen. If the picker is not
@@ -344,8 +367,11 @@ public class Scandit {
 	    /**
 	     * @brief Sets the margins of the barcode picker.
 	     *
-	     * Non-zero margins cause the barcode picker to be added as a subview on top of the webview
-	     * instead of as full screen in a new view controller or activity.
+	     * A call to this function causes the barcode picker to be added as a subview on top of the webview
+	     * instead of as full screen in a new view controller or activity. 
+	     *
+	     * Margins may either be specified using absolute, device-independent pixel units, or in percent 
+	     * of the screen size. See {@link Margins(String,String,String,String)} for details.
 	     *
 	     * @param portraitMargins Margins for when the device is in portrait or upside-down portrait 
 	     *        orientation. Can be null to indicate no margins.
@@ -959,6 +985,11 @@ public class Scandit {
 		
 		/**
 		 * Shows (or hides) a search bar at the top of the scan screen.
+		 * 
+		 * The search bar allows the user to manually enter the data of a barcode. When the 
+		 * user finished entering data, the manual callback provided to the 
+		 * {@link BarcodePicker.show BarcodePicker.show} method is invoked with the entered 
+		 * data as a string.
 		 *
 		 * @since 4.11.0
 		 *

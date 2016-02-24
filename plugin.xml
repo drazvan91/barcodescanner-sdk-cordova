@@ -80,43 +80,27 @@
 		  <framework src="libz.dylib"/>      
 		  <framework src="libc++.dylib"/>      
 	</platform>     
-    <platform name="android">      
-		<!-- register plugin -->      
-		<config-file parent="/widget" target="res/xml/config.xml">        
+    <platform name="android">
+		<!-- register plugin -->
+		<config-file parent="/widget" target="res/xml/config.xml">
 			<feature name="ScanditSDK">          
-				<param name="android-package" value="com.mirasense.scanditsdk.plugin.ScanditSDK"/>          
+				<param name="android-package" value="com.mirasense.scanditsdk.plugin.ScanditSDK"/>
 			</feature>        
 		</config-file>      
-		<!-- add permissions in AndroidManifest.xml file-->      
-		<config-file parent="/manifest" target="AndroidManifest.xml">        
-			<uses-permission android:name="android.permission.CAMERA"/>        
-			<uses-permission android:name="android.permission.VIBRATE"/>        
-			<uses-permission android:name="android.permission.INTERNET"/>        
+		<!-- add permissions in AndroidManifest.xml file--> 
+		<config-file parent="/manifest" target="AndroidManifest.xml"> 
+			<uses-permission android:name="android.permission.CAMERA"/>
+			<uses-permission android:name="android.permission.VIBRATE"/>
+			<uses-permission android:name="android.permission.INTERNET"/>
 		</config-file>      
-		<!-- add ScanditSDK Activity to the "application" section of AndroidManifest.xml file -->      
-		<config-file parent="/manifest/application" target="AndroidManifest.xml">        
-			<activity android:name="com.mirasense.scanditsdk.plugin.ScanditSDKActivity"/>        
-		</config-file>      
-		<!-- copy Scandit SDK libs -->      
-        <source-file src="src/android/scanditsdk-community-android_4.0.0/libs/scanditsdk-android-4.0.0.jar" target-dir="libs"/>
-        <source-file src="src/android/scanditsdk-community-android_4.0.0/libs/armeabi/libscanditsdk-android-4.0.0.so" target-dir="libs/armeabi"/>
-        <source-file src="src/android/scanditsdk-community-android_4.0.0/libs/armeabi-v7a/libscanditsdk-android-4.0.0.so" target-dir="libs/armeabi-v7a"/>
-        <source-file src="src/android/scanditsdk-community-android_4.0.0/libs/x86/libscanditsdk-android-4.0.0.so" target-dir="libs/x86"/>
-        <source-file src="src/android/scanditsdk-community-android_4.0.0/libs/arm64-v8a/libscanditsdk-android-4.0.0.so" target-dir="libs/arm64-v8a"/>
+		<!-- add ScanditSDK Activity to the "application" section of AndroidManifest.xml file -->
+		<config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <activity android:name="com.mirasense.scanditsdk.plugin.ScanditSDKActivity"/>
+		</config-file>
+		<!-- copy Scandit SDK libs -->
+		 <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
 		<!-- copy Scandit SDK resources (images, beep) -->      
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/beep.wav" target-dir="res/raw"/>      
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/scandit_logo.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/scandit_logo2x.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/scandit_logo3x.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/ic_btn_search.png" target-dir="res/raw"/>      
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/flashlight_turn_off_icon.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/flashlight_turn_off_icon_pressed.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/flashlight_turn_on_icon.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/flashlight_turn_on_icon_pressed.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/camera_swap_icon.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/camera_swap_icon_pressed.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/scan_line_blue.png" target-dir="res/raw"/>
-		<source-file src="src/android/scanditsdk-community-android_4.0.0/res/raw/scan_line_white.png" target-dir="res/raw"/>
+        <resource-file src="src/android/scanditsdk-community-android_4.0.0/ScanditBarcodeScanner.aar" target="libs/ScanditBarcodeScanner.aar" />
         <!-- add plugin source code -->
 		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDK.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>            
 		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDKActivity.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>            

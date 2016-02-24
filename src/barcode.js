@@ -18,6 +18,7 @@ Barcode.Symbology = {
 	CODE128: "code128",
 	CODE39: "code39",
 	CODE93: "code93",
+	CODE25: "code25",
 	ITF: "itf",
 	QR: "qr",
 	DATA_MATRIX: "data-matrix",

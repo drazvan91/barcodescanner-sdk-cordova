@@ -1201,7 +1201,7 @@ public class Scandit {
 		 *
 		 * @since 4.11.0
 		 */
-		Barcode[] newlyRecognizedCodes;
+		public Barcode[] newlyRecognizedCodes;
 
 		/**
 		 * List of barcodes that have been localized in the last frame. This list does not include 
@@ -1209,7 +1209,7 @@ public class Scandit {
 		 *
 		 * @since 4.11.0
 		 */
-		Barcode[] newlyLocalizedCodes;
+		public Barcode[] newlyLocalizedCodes;
 
 		/**
 		 * @brief Returns the list of barcodes (data, symbology) that have been recognized
@@ -1226,7 +1226,7 @@ public class Scandit {
 		 *
 		 * @since 4.11.0
 		 */
-		Barcode[] allRecognizedCodes;
+		public Barcode[] allRecognizedCodes;
 		
 		/**
 		 * @brief Immediately Pauses barcode recognition, but keeps camera preview open.
@@ -1245,7 +1245,7 @@ public class Scandit {
 		 *
 		 * @since 4.11.0
 		 */
-		void pauseScanning();
+		public void pauseScanning();
 
 		/**
 		 * Immediately stops the scanning and clears the scan session
@@ -1257,6 +1257,6 @@ public class Scandit {
 		 *
 		 * @since 4.11.0
 		 */
-		void stopScanning();
+		public void stopScanning();
 	}
 }

@@ -204,6 +204,27 @@
         [picker.overlayController setCameraSwitchButtonFrontAccessibilityLabel:label hint:hint];
     }
     
+    NSObject *guiStyle = [options objectForKey:[self paramGuiStyle]];
+    if (guiStyle) {
+        if ([guiStyle isKindOfClass:[NSNumber class]]) {
+            switch ([(NSNumber *)guiStyle integerValue]) {
+                case 0:
+                    picker.overlayController.guiStyle = SBSGuiStyleDefault;
+                    break;
+                    
+                case 1:
+                    picker.overlayController.guiStyle = SBSGuiStyleLaser;
+                    break;
+                    
+                case 2:
+                    picker.overlayController.guiStyle = SBSGuiStyleNone;
+                    break;
+            }
+        } else {
+            NSLog(@"SBS Plugin: failed to parse gui style - wrong type");
+        }
+    }
+    
     NSObject *viewfinderSize = [options objectForKey:[self paramViewfinderDimension]];
     if (viewfinderSize) {
         if ([viewfinderSize isKindOfClass:[NSArray class]]) {
@@ -277,27 +298,6 @@
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse viewfinder decoded color - wrong type");
-        }
-    }
-    
-    NSObject *guiStyle = [options objectForKey:[self paramGuiStyle]];
-    if (guiStyle) {
-        if ([guiStyle isKindOfClass:[NSNumber class]]) {
-            switch ([(NSNumber *)guiStyle integerValue]) {
-                case 0:
-                picker.overlayController.guiStyle = SBSGuiStyleDefault;
-                break;
-                
-                case 1:
-                picker.overlayController.guiStyle = SBSGuiStyleLaser;
-                break;
-                
-                case 2:
-                picker.overlayController.guiStyle = SBSGuiStyleNone;
-                break;
-            }
-        } else {
-            NSLog(@"SBS Plugin: failed to parse gui style - wrong type");
         }
     }
     

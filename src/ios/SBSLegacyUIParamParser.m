@@ -108,6 +108,16 @@
                                                             height:buttonRect.size.height];
     }
     
+    NSObject *guiStyle = [options objectForKey:[SBSUIParamParser paramGuiStyle]];
+    if (guiStyle && [guiStyle isKindOfClass:[NSString class]]) {
+        NSString *guiStyleString = (NSString *)guiStyle;
+        if ([guiStyleString isEqualToString:[self paramGuiStyleLaser]]) {
+            picker.overlayController.guiStyle = SBSGuiStyleLaser;
+        } else {
+            picker.overlayController.guiStyle = SBSGuiStyleDefault;
+        }
+    }
+    
     NSObject *color1 = [options objectForKey:[SBSUIParamParser paramViewfinderColor]];
     if (color1 && [color1 isKindOfClass:[NSString class]]) {
         NSString *color1String = (NSString *)color1;
@@ -150,16 +160,6 @@
             float blue = ((float) blueInt) / 256.0;
             
             [picker.overlayController setViewfinderDecodedColor:red green:green blue:blue];
-        }
-    }
-    
-    NSObject *guiStyle = [options objectForKey:[SBSUIParamParser paramGuiStyle]];
-    if (guiStyle && [guiStyle isKindOfClass:[NSString class]]) {
-        NSString *guiStyleString = (NSString *)guiStyle;
-        if ([guiStyleString isEqualToString:[self paramGuiStyleLaser]]) {
-            picker.overlayController.guiStyle = SBSGuiStyleLaser;
-        } else {
-            picker.overlayController.guiStyle = SBSGuiStyleDefault;
         }
     }
     

@@ -75,6 +75,7 @@
 		  <framework src="CoreMedia.framework"/>      
 		  <framework src="CoreVideo.framework"/>      
 		  <framework src="QuartzCore.framework"/>      
+		  <framework src="Accelerate.framework"/>      
 		  <framework src="OpenGLES.framework"/>      
 		  <framework src="SystemConfiguration.framework"/>      
 		  <framework src="MediaPlayer.framework"/>      

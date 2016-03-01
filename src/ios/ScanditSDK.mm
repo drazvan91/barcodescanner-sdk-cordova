@@ -22,6 +22,7 @@
 #import "SBSLegacyUIParamParser.h"
 #import "SBSUIParamParser.h"
 #import "SBSPhonegapParamParser.h"
+#import "SBSLocalScanSession.h"
 
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
@@ -36,7 +37,7 @@
 @property (nonatomic, assign) BOOL continuousMode;
 @property (nonatomic, assign) BOOL modallyPresented;
 @property (nonatomic, assign) BOOL startAnimationDone;
-@property (nonatomic, strong) SBSScanSession *bufferedResult;
+@property (nonatomic, strong) SBSLocalScanSession *bufferedResult;
 @property (nonatomic, strong) ScanditSDKRotatingBarcodePicker *scanditBarcodePicker;
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, assign) BOOL legacyMode;
@@ -315,13 +316,12 @@
 #pragma mark - SBSScanDelegate methods
 
 - (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
-    NSLog(@"didScan 1");
-    
     if (self.modallyPresented) {
         if (!self.startAnimationDone) {
             // If the initial animation hasn't finished yet we buffer the result and return it as soon
             // as the animation finishes.
-            self.bufferedResult = session;
+            self.bufferedResult = [[SBSLocalScanSession alloc]
+                                   initWithScanSession:session andPicker:picker];
             return;
         } else {
             self.bufferedResult = nil;
@@ -329,7 +329,6 @@
     }
     
     [self scannedSession:session];
-    NSLog(@"didScan 2");
 }
 
 - (void)scannedSession:(SBSScanSession *)session {

@@ -29,6 +29,6 @@ The success callback has been reworked and is called with a {@link Scandit.ScanS
 
 ### Other changes
 
-- For the new API, the default length of barcodes  has been lowered for all variable-length symbologies (Code39, Code93, Code128, Codabar, Interleaved 2 of 5, MSI-Plessey).  To scan codes that are longer than the new defaults, you must explicitly enable scanning of longer codes. Take a look at the {@link Scandit.SymbologySettings.activeSymbolCounts SymbologySettings.activeSymbolCounts} documentation for details on how to do that.
+- For the new API, the default length of barcodes  has been lowered for all variable-length symbologies (Code 39, Code 93, Code 128, Codabar, Interleaved 2 of 5, MSI-Plessey).  To scan codes that are longer than the new defaults, you must explicitly enable scanning of longer codes. Take a look at the {@link Scandit.SymbologySettings.activeSymbolCounts SymbologySettings.activeSymbolCounts} documentation for details on how to do that.
 
 

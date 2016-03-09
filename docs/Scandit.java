@@ -85,7 +85,7 @@ public class Scandit {
 		 */
 		public Margins(int left, int top, int right, int bottom);
 
-                /**
+		/**
 		 * Construct a new margins object by passing the margins as strings
 		 *
 		 * You may specify the margins in percent by adding a '%%' at the end of
@@ -96,8 +96,8 @@ public class Scandit {
 		 * @param top The top margin.
 		 * @param right The top margin.
 		 * @param bottom The bottom margin.
-                 */
-                public Margins(String left, String top, String right, String bottom);
+		 */
+		public Margins(String left, String top, String right, String bottom);
 
 	}
 	

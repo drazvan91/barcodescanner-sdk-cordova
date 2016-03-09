@@ -44,7 +44,7 @@ Alternatively you can also use the new laser GUI style. This style is mostly for
 
 ~~~~~~~~~~~~~~~~{.java}
 
-picker.getOverlayController().setGuiStyle(Scandit.ScanOverlay.GuiStyle.LASER);
+picker.getOverlayController().setGuiStyle(ScanOverlay.GuiStyle.LASER);
 
 ~~~~~~~~~~~~~~~~
 

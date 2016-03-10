@@ -106,6 +106,17 @@ picker.startScanning();
 
 <br/>
 
+## Build and run the app
+
+Compile your project. Attach a device and run the app on your desired plattform.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
+    phonegap build
+    phonegap run android
+    phonegap run ios
+    phonegap run windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ## Next steps
 
 * \ref cordova-examples

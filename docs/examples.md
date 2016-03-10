@@ -1,6 +1,8 @@
 Example code     {#cordova-examples}
 ===================================
 
+For barcode scanner usage examples, you can either use one of the sample apps included in the plugin archive, or paste one of the samples below into your www/index.html file.
+
 ## Build the sample apps
 
 In order to build the simple or extended sample apps you must import one of them upon creation of your project as follows:

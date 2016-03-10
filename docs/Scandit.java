@@ -12,14 +12,14 @@ public class Scandit {
 	 * @since 4.11.0
 	 */
 	public class Point {
-		public double x;
-		public double y;
+		public number x;
+		public number y;
 		
 		/**
 		 * @param x The x coordinate.
 		 * @param y the y coordinate.
 		 */
-		public Point(double x, double y);
+		public Point(number x, number y);
 	}
 
 	/**
@@ -28,10 +28,10 @@ public class Scandit {
 	 * @since 4.11.0
 	 */
 	public class Rect {
-		public double x;
-		public double y;
-		public double width;
-		public double height;
+		public number x;
+		public number y;
+		public number width;
+		public number height;
 		
 		/**
 		 * @param x The x coordinate.
@@ -39,7 +39,7 @@ public class Scandit {
 		 * @param width The rectangle's width.
 		 * @param height The rectangle's height.
 		 */
-		public Rect(double x, double y, double width, double height);
+		public Rect(number x, number y, number width, number height);
 	}
 	
 	/**
@@ -88,16 +88,17 @@ public class Scandit {
 		/**
 		 * Construct a new margins object by passing the margins as strings
 		 *
-		 * You may specify the margins in percent by adding a '%%' at the end of 
-		 * the string. When expressing the margins in percent, the margin is set 
+		 * You may specify the margins in percent by adding a '%%' at the end of
+		 * the string. When expressing the margins in percent, the margin is set
 		 * to the desired percentage of the screen width or height.
 		 *
-		 * @param left The left margin. 
+		 * @param left The left margin.
 		 * @param top The top margin.
 		 * @param right The top margin.
 		 * @param bottom The bottom margin.
 		 */
 		public Margins(String left, String top, String right, String bottom);
+
 	}
 	
 	/**
@@ -382,7 +383,7 @@ public class Scandit {
 	     *
 	     * @since 4.11.0
 	     */
-		public void setMargins(Margins portraitMargins, Margins landscapeMargins, double animationDuration);
+		public void setMargins(Margins portraitMargins, Margins landscapeMargins, number animationDuration);
 
     	/**
     	 * @brief Asynchronously pause the scanning process while keeping the camera preview running.
@@ -675,7 +676,7 @@ public class Scandit {
     	/**
     	 * The percentage of the max zoom (between 0 and 1).
     	 */
-    	public float relativeZoom;
+    	public number relativeZoom;
     
     	/**
     	 * Maximum number of codes to be decoded every frame. 
@@ -777,7 +778,7 @@ public class Scandit {
 		 *
 		 * @param enabled Whether the beep is enabled.
 		 */
-		public void setBeepEnabled(enabled);
+		public void setBeepEnabled(boolean enabled);
 
 		/**
 		 * Enables or disables the vibration when a code was recognized. If the phone's ring mode
@@ -789,7 +790,7 @@ public class Scandit {
 		 *
 		 * @param enabled Whether vibrate is enabled.
 		 */
-		public void setVibrateEnabled(enabled);
+		public void setVibrateEnabled(boolean enabled);
 		///@}
 
 
@@ -808,7 +809,7 @@ public class Scandit {
 		 *
 		 * @param enabled Whether the torch button should be shown.
 		 */
-		public void setTorchEnabled(enabled);
+		public void setTorchEnabled(boolean enabled);
 
 		/**
 		 * @brief Sets the position at which the button to enable the torch is drawn.
@@ -935,8 +936,8 @@ public class Scandit {
 		 * recognized. It only changes the size of the box drawn onto the scan screen. To restrict the
 		 * active scanning area, use the methods listed below.
 		 *
-		 * @see ScanSettings.setScanningHotSpot(float, float)
-		 * @see ScanSettings.setScanningHotSpotHeight(float)
+		 * @see ScanSettings.setScanningHotSpot(number, number)
+		 * @see ScanSettings.setScanningHotSpotHeight(number)
 		 *
 		 * By default the width is 0.8, height is 0.4, landscapeWidth is 0.6, landscapeHeight is 0.4
 		 *
@@ -948,7 +949,7 @@ public class Scandit {
 		 * @param landscapeHeight Height of the viewfinder rectangle in landscape orientation.
 		 */
 		public void setViewfinderDimension(
-				double width, double height, double landscapeWidth, double landscapeHeight);
+				number width, number height, number landscapeWidth, number landscapeHeight);
 
 		/**
 		 * Sets the color of the viewfinder before a bar code has been recognized
@@ -985,7 +986,7 @@ public class Scandit {
 		
 		/**
 		 * Shows (or hides) a search bar at the top of the scan screen.
-		 * 
+ 		 *
 		 * The search bar allows the user to manually enter the data of a barcode. When the 
 		 * user finished entering data, the manual callback provided to the 
 		 * {@link BarcodePicker.show BarcodePicker.show} method is invoked with the entered 

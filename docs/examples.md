@@ -17,7 +17,7 @@ or
     phonegap create helloworld --copy-from <path-to-repository>/samples/extended/www/
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Note that you will still need to add the platform and plugin as described in {@link cordova-integrate here}.
+Note that you will still need to add the platform and plugin as described in {@link cordova-integrate here}. You will also need to replace the app key in the samples with your application key. For the extended sample, the application key is in www/index.js.
 
 
 ## Simple Fullscreen

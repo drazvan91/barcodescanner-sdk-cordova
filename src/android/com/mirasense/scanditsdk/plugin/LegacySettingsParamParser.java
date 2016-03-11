@@ -205,13 +205,12 @@ public class LegacySettingsParamParser {
         
         if (options.containsKey(paramScanningHotSpotHeight)) {
             settings.setRestrictedAreaScanningEnabled(true);
-            settings.setScanningHotSpotHeight((float) options.getDouble(paramScanningHotSpotHeight));
+            settings.setScanningHotSpotHeight(((Number)options.getSerializable(paramScanningHotSpotHeight)).floatValue());
         }
         
         if (options.containsKey(paramZoom)) {
-            settings.setRelativeZoom(options.getFloat(paramZoom));
+            settings.setRelativeZoom(((Number)options.getSerializable(paramZoom)).floatValue());
         }
-        
         return settings;
     }
     

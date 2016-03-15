@@ -34,13 +34,19 @@
 	<js-module src="src/symbologysettings.js" name="SymbologySettings">
 		<clobbers target="Scandit.SymbologySettings" />
 	</js-module>
+	<js-module src="src/scancase.js" name="ScanCase">
+		<clobbers target="Scandit.ScanCase" />
+	</js-module>
 	<platform name="ios">      
 		  <plugins-plist key="ScanditSDK" string="ScanditSDK"/>      
 		  <!-- feature tag in config.xml -->      
 		  <config-file parent="/widget" target="config.xml">        
 				<feature name="ScanditSDK">          
-					  <param name="ios-package" value="ScanditSDK"/>          
-				</feature>        
+					<param name="ios-package" value="ScanditSDK"/>          
+				</feature>       
+	                       <feature name="SBSScanCasePlugin">          
+					<param name="ios-package" value="SBSScanCasePlugin"/>          
+				</feature>      
 		  </config-file>      
 
 		  <!-- Resource Bundle for Scandit SDK -->
@@ -59,6 +65,10 @@
 		  <header-file src="src/ios/SBSPhonegapParamParser.h"/>
 		  <source-file src="src/ios/SBSPhonegapParamParser.m"/>
 		  <header-file src="src/ios/SBSUIParamParser.h"/>
+		  <header-file src="src/ios/SBSTypeConversion.h"/>
+		  <source-file src="src/ios/SBSTypeConversion.m"/>
+		  <header-file src="src/ios/SBSScanCasePlugin.h"/>
+		  <source-file src="src/ios/SBSScanCasePlugin.m"/>
           <source-file src="src/ios/SBSUIParamParser.m"/>
           <header-file src="src/ios/SBSLocalScanSession.h"/>
           <source-file src="src/ios/SBSLocalScanSession.m"/>

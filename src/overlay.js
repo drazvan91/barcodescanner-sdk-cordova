@@ -120,6 +120,11 @@ ScanOverlay.prototype.setMaxSearchBarBarcodeLength = function(length) {
 	this.updateOverlayIfExists();
 }
 
+ScanOverlay.prototype.setToolBarButtonCaption = function(caption) {
+	this.toolBarButtonCaption = caption;
+	this.updateOverlayIfExists();
+}
+
 ScanOverlay.prototype.setProperty = function(key, value) {
     this.properties[key] = value;
 	this.updateOverlayIfExists();

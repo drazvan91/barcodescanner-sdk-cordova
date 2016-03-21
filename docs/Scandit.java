@@ -1011,7 +1011,7 @@ public class Scandit {
 
 		/**
 		 * Sets the text shown in the manual entry field when nothing has been entered yet. To take
-		 * effect this has to be called after
+		 * effect this has to be called after showSearchBar().
 		 *
 		 * By default this is: "Scan barcode or enter it here"
 		 *
@@ -1021,7 +1021,26 @@ public class Scandit {
 		 */
 		public void setSearchBarPlaceholderText(String text);
 		///@}
-
+        
+        
+        /** @name Tool Bar Configuration
+         *  Customize the tool bar (iOS only).
+         */
+        ///@{
+        
+        /**
+         * Sets the button caption of the cancel button on the tool bar.
+         *
+         * By default this is: "Cancel"
+         *
+         * @since 4.13.0
+         *
+         * @param caption The cancel button's caption.
+         */
+        public void setToolBarButtonCaption(String caption);
+        ///@}
+        
+        
 		/** @name Non-Official Methods
 		 */
 		///@{

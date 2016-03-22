@@ -469,7 +469,9 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     private void removeSubviewPicker() {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                mBarcodePicker.stopScanning();
+                if (mBarcodePicker != null) {
+                    mBarcodePicker.stopScanning();
+                }
 
                 ViewGroup viewGroup = getViewGroupToAddTo();
                 if (viewGroup != null) {

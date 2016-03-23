@@ -10,13 +10,13 @@ function BarcodePicker(scanSettings) {
 	} else {
 		this.scanSettings = new ScanSettings();
 	}
-	
+
 	// Keep the overlay private.
-	var overlay = new ScanOverlay(this);
+	var overlay = new ScanOverlay();
 	this.getOverlayView = function() {
 		return overlay;
 	}
-	
+
     this.isShown = false;
 	this.continuousMode = false;
 	this.portraitMargins = null;
@@ -34,7 +34,7 @@ BarcodePicker.Orientation = {
 
 BarcodePicker.prototype.show = function(success, manual, failure) {
 	var options = {"continuousMode": this.continuousMode};
-	
+
 	if (this.portraitMargins != null) {
 		options["portraitMargins"] = this.portraitMargins;
 	}
@@ -44,7 +44,7 @@ BarcodePicker.prototype.show = function(success, manual, failure) {
 	if (this.orientations.length > 0) {
 		options["orientations"] = this.orientations;
 	}
-	
+
 	cordova.exec(function(session) {
 		if (typeof session === 'string' || session instanceof String) {
 			manual(session);
@@ -56,7 +56,9 @@ BarcodePicker.prototype.show = function(success, manual, failure) {
 			success(properSession);
 		}
 	}, failure, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);
+
     this.isShown = true;
+    this.getOverlayView().pickerIsShown = true;
 }
 
 BarcodePicker.codeArrayFromGenericArray = function(genericArray) {
@@ -78,6 +80,7 @@ BarcodePicker.prototype.applyScanSettings = function(settings) {
 
 BarcodePicker.prototype.cancel = function() {
     this.isShown = false;
+    this.getOverlayView().pickerIsShown = false;
     cordova.exec(null, null, "ScanditSDK", "cancel", []);
 }
 
@@ -126,13 +129,13 @@ BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDura
 	if (portrait == null) {
 		this.portraitMargins = [0, 0, 0, 0];
 	} else {
-		this.portraitMargins = [portrait.left, portrait.top, 
+		this.portraitMargins = [portrait.left, portrait.top,
 								portrait.right, portrait.bottom];
 	}
 	if (landscape == null) {
 		this.landscapeMargins = [0, 0, 0, 0];
 	} else {
-		this.landscapeMargins = [landscape.left, landscape.top, 
+		this.landscapeMargins = [landscape.left, landscape.top,
 								 landscape.right, landscape.bottom];
 	}
 	if (this.isShown) {

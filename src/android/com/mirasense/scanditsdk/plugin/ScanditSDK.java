@@ -66,6 +66,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     public static final String START = "start";
     public static final String STOP = "stop";
     public static final String RESIZE = "resize";
+    public static final String UPDATE_OVERLAY = "updateOverlay";
     public static final String TORCH = "torch";
    
     public static int SCREEN_HEIGHT;
@@ -122,6 +123,9 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             return true;
         } else if (action.equals(RESIZE)) {
             resize(args);
+            return true;
+        } else if (action.equals(UPDATE_OVERLAY)) {
+            updateOverlay(args);
             return true;
         } else if (action.equals(TORCH)) {
             torch(args);
@@ -335,7 +339,29 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             e.printStackTrace();
         }
     }
-
+    
+    private void updateOverlay(JSONArray data) {
+        if (data.length() > 0) {
+            // We extract all options and add them to the intent extra bundle.
+            try {
+                final Bundle overlayOptions = new Bundle();
+                setOptionsOnBundle(data.getJSONObject(0), overlayOptions);
+                
+                mWorker.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIParamParser.updatePickerUI(mBarcodePicker, overlayOptions);
+                        PhonegapParamParser.updatePicker(mBarcodePicker, overlayOptions, ScanditSDK.this);
+                    }
+                });
+                
+            } catch (JSONException e) {
+                Log.e("ScanditSDK", "The show call received too few arguments and has to return without starting.");
+                e.printStackTrace();
+            }
+        }
+    }
+    
     private void cancel(JSONArray data) {
         mWorker.getHandler().post(new Runnable() {
             @Override

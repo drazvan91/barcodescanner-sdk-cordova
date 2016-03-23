@@ -1,6 +1,6 @@
 
-function ScanOverlay(picker) {
-    this.picker = picker;
+function ScanOverlay() {
+    this.pickerIsShown = false;
     this.properties = {};
 }
 
@@ -131,7 +131,7 @@ ScanOverlay.prototype.setProperty = function(key, value) {
 }
 
 ScanOverlay.prototype.updateOverlayIfExists = function() {
-	if (this.picker.isShown) {
+	if (this.pickerIsShown) {
 		cordova.exec(null, null, "ScanditSDK", "updateOverlay", [this]);
 	}
 }

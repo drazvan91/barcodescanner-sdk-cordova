@@ -229,6 +229,17 @@
     });
 }
 
+- (void)updateOverlay:(CDVInvokedUrlCommand *)command {
+    NSUInteger argc = [command.arguments count];
+    if (argc > 0) {
+        NSDictionary *overlayOptions = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
+        [SBSUIParamParser updatePickerUI:self.scanditBarcodePicker fromOptions:overlayOptions];
+        [SBSPhonegapParamParser updatePicker:self.scanditBarcodePicker
+                                 fromOptions:overlayOptions
+                          withSearchDelegate:self];
+    }
+}
+
 - (void)cancel:(CDVInvokedUrlCommand *)command {
     dispatch_async(self.queue, ^{
         if (self.scanditBarcodePicker) {

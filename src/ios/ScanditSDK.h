@@ -37,6 +37,10 @@ dispatch_sync(dispatch_get_main_queue(), block);\
  */
 - (void)scan:(CDVInvokedUrlCommand *)command;
 
+- (void)applySettings:(CDVInvokedUrlCommand *)command;
+
+- (void)updateOverlay:(CDVInvokedUrlCommand *)command;
+
 - (void)cancel:(CDVInvokedUrlCommand *)command;
 
 - (void)pause:(CDVInvokedUrlCommand *)command;

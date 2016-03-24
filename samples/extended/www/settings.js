@@ -1,20 +1,27 @@
 ﻿(function (exports) {
     var app = angular.module('app');
     var SYMBOLOGIES = [
-           { ids: ["ean13", "upca"], title: "EAN-13 & UPC-A", enabled: true },
-           { ids: ["ean8"], title: "EAN-8", enabled: true },
-           { ids: ["upce"], title: "UPC-E", enabled: true },
-           { ids: ["code39"], title: "Code 39", enabled: true },
-           { ids: ["code93"], title: "Code 93", enabled: false },
-           { ids: ["code128"], title: "Code 128", enabled: true },
-           { ids: ["itf"], title: "Interleaved 2 of 5", enabled: true },
-           { ids: ["msi-plessey"], title: "MSI Plessey", enabled: false },
-           { ids: ["code11"], title: "Code 11", enabled: false },
-           { ids: ["codabar"], title: "Codabar", enabled: false },
-           { ids: ["qr"], title: "QR", enabled: true },
-           { ids: ["data-matrix"], title: "Data Matrix", enabled: true },
-           { ids: ["aztec"], title: "Aztec", enabled: false },
-           { ids: ["maxicode"], title: "Maxi Code", enabled: false },
+           { ids: ['ean13', 'upca'], title: "EAN-13 & UPC-A", enabled: true },
+           { ids: ['ean8'], title: "EAN-8", enabled: true },
+           { ids: ['upce'], title: "UPC-E", enabled: true },
+           { ids: ['two-digit-add-on'], title: "2-Digit Add-On", enabled: false },
+           { ids: ['five-digit-add-on'], title: "5-Digit Add-On", enabled: false },
+           { ids: ['code39'], title: "Code 39", enabled: true },
+           { ids: ['code93'], title: "Code 93", enabled: false },
+           { ids: ['code128'], title: "Code 128", enabled: true },
+           { ids: ['itf'], title: "Interleaved 2 of 5", enabled: true },
+           { ids: ['code25'], title: "Code 25", enabled: false },
+           { ids: ['msi-plessey'], title: "MSI Plessey", enabled: false },
+           { ids: ['code11'], title: "Code 11", enabled: false },
+           { ids: ['codabar'], title: "Codabar", enabled: false },
+           { ids: ['qr'], title: "QR", enabled: true },
+           { ids: ['pdf417'], title: "PDF417", enabled: false },
+           { ids: ['data-matrix'], title: "Data Matrix", enabled: true },
+           { ids: ['aztec'], title: "Aztec", enabled: false },
+           { ids: ['maxicode'], title: "Maxi Code", enabled: false },
+           { ids: ['databar'], title: "GS1 DataBar", enabled: false },
+           { ids: ['databar-limited'], title: "GS1 DataBar Limited", enabled: false },
+           { ids: ['databar-expanded'], title: "GS1 DataBar Expanded", enabled: false },
     ];
     var ui = {
         beep: true,
@@ -71,6 +78,10 @@
                 scanSettings.setSymbologyEnabled(id, s.enabled);
             });
         });
+        if (scanSettings.symbologies['two-digit-add-on'].enabled ||
+            scanSettings.symbologies['five-digit-add-on'].enabled) {
+            scanSettings.maxNumberOfCodesPerFrame = 2;
+        }
         return scanSettings;
     };
 
@@ -83,9 +94,11 @@
             overlay.setSearchBarPlaceholderText("Manual barcode data entry");
         }
         overlay.setTorchEnabled(ui.torch);
-        overlay.setTorchButtonMarginsAndSize(parseInt(ui.torch_xmargin), parseInt(ui.torch_ymargin), 40, 40);
+        overlay.setTorchButtonMarginsAndSize(parseInt(ui.torch_xmargin), 
+                                             parseInt(ui.torch_ymargin), 40, 40);
         overlay.setCameraSwitchVisibility(ui.torch);
-        overlay.setCameraSwitchButtonMarginsAndSize(parseInt(ui.cameraSwitch_xmargin), parseInt(ui.cameraSwitch_ymargin), 40, 40);
+        overlay.setCameraSwitchButtonMarginsAndSize(parseInt(ui.cameraSwitch_xmargin), 
+                                                    parseInt(ui.cameraSwitch_ymargin), 40, 40);
         overlay.setViewfinderDimension(parseFloat(ui.viewfinder_width),
                         parseFloat(ui.viewfinder_height),
                         parseFloat(ui.viewfinderLandscape_width),

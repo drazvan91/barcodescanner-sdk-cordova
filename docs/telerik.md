@@ -6,7 +6,7 @@ Supported Features
 
 The full functionality of the Scandit Phonegap plugin is available under Telerik when creating a Cordova hybrid app. However testing the picker using the simulator or the companion app is not possible.
 
-Including the Scandit plugin into your project
+Including the Scandit Barcode Scanner SDK plugin into your project
 ----------------------------------------------------
 
 * Browser-based IDE: Open the "Properties" tab of your project (in the "Code" page), go to "Plugins" and chose "Import". Select the zip file downloaded from scandit.com

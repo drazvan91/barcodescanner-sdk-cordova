@@ -6,7 +6,12 @@ angular.module('app').controller('AppController', function ($scope) {
    var landscapeMargins = [0, 0, 0, 0];
    var callback = null;
    $scope.ready = false;
-   document.addEventListener('deviceready', function () { $scope.ready = true; });
+   document.addEventListener('deviceready', function () { 
+        $scope.ready = true;
+        // required for windows. Without it, we can't register backbutton 
+        // handling for full-screen pickers.
+        ons.disableDeviceBackButtonHandler();
+   });
    $scope.scannedCode = '';
    $scope.paused = false;
 

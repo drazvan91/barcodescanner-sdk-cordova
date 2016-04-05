@@ -41,6 +41,7 @@
                     scope.scannedCode = '(' + code.symbology.toUpperCase() + ') ' + code.data;
                 }
                 scope.stopPicker();
+                exports.pickerOpen = false;
                 scope.$digest();
             });
         });

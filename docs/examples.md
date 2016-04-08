@@ -56,6 +56,20 @@ This shows the simplest way of using the plugin. The scanner is opened full scre
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN13, true);
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPC12, true);
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN8, true);
+                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.CODE39, true);
+
+                // Some 1d barcode symbologies allow you to encode variable-length data. By default, the
+                // Scandit BarcodeScanner SDK only scans barcodes in a certain length range. If your
+                // application requires scanning of one of these symbologies, and the length is falling
+                // outside the default range, you may need to adjust the "active symbol counts" for this
+                // symbology. This is shown in the following few lines of code.
+                var symSettings = settings.getSymbologySettings(Scandit.Barcode.Symbology.CODE39);
+                symSettings.activeSymbolCounts = [
+                    7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+                ];
+                // For details on defaults and how to calculate the symbol counts for each symbology, take
+                // a look at http://docs.scandit.com/stable/c_api/symbologies.html.
+
                 var picker = new Scandit.BarcodePicker(settings);
                 picker.show(success, null, failure);
                 picker.startScanning();

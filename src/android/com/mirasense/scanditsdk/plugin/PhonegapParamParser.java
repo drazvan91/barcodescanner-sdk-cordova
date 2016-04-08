@@ -55,7 +55,7 @@ public class PhonegapParamParser {
     public static void updateLayout(final Activity activity, final SearchBarBarcodePicker picker,
                                     Bundle bundle) {
         
-        if (picker == null) {
+        if (picker == null || bundle == null) {
             return;
         }
         

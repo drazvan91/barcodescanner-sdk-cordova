@@ -15,7 +15,11 @@ Overview         			{#cordova-guides}
 * \subpage cordova-integrate
 * \subpage cordova-examples
 * \subpage cordova-windows
-* \subpage cordova-telerik
+
+## Framework Support
+
+The Scandit SDK Cordova plugin works out of the box in the Ionic and IBM MobileFirst (formerly named Worklight) frameworks.
+How to setup the plugin on Telerik can be found in the \subpage cordova-telerik "Telerik Guide".
 
 ## Guides
 

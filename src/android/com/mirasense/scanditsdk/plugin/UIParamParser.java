@@ -48,6 +48,9 @@ public class UIParamParser {
 
 
     public static void updatePickerUI(BarcodePicker picker, Bundle bundle) {
+        if (picker == null || bundle == null) {
+            return;
+        }
         if (bundle.containsKey(paramBeep)) {
             picker.getOverlayView().setBeepEnabled(bundle.getBoolean(paramBeep));
         }

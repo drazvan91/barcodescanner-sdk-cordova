@@ -635,6 +635,13 @@ public class Scandit {
     	 * This function provides a convenient shortcut to enabling/disabling decoding of a
     	 * particular symbology without having to go through SymbologySettings.
     	 *
+    	 * Some 1d barcode symbologies allow you to encode variable-length data. By default, the
+    	 * Scandit BarcodeScanner SDK only scans barcodes in a certain length range. If your
+    	 * application requires scanning of one of these symbologies, and the length is falling
+    	 * outside the default range, you may need to adjust the \ref SymbologySettings.activeSymbolCounts
+    	 * for this symbology. For details on defaults and how to calculate the symbol counts for
+    	 * each symbology, take a look at <a href="../c_api/symbologies.html">the symbologies page</a>.
+    	 *
     	 * @param symbology The symbology to be enabled.
     	 * @param enabled true when decoding of the symbology should be enabled, false if not.
     	 *

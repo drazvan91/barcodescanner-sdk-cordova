@@ -84,8 +84,20 @@ function initPicker(scanSettings, margins, lMargins) {
         || (parseInt(margins[2])>0) || (parseInt(margins[3])>0)
         || (parseInt(lMargins[0])>0) || (parseInt(lMargins[1])>0)
         || (parseInt(lMargins[2])>0) || (parseInt(lMargins[3])>0)) {
-        picker.setMargins(new Scandit.Margins(margins[0], margins[1], margins[2], margins[3]),
-                          new Scandit.Margins(lMargins[0], lMargins[1], lMargins[2], lMargins[3]));
+        
+        var portraitConstraints = new Scandit.Constraints();
+        portraitConstraints.leftMargin = margins[0];
+        portraitConstraints.topMargin = margins[1];
+        portraitConstraints.rightMargin = margins[2];
+        portraitConstraints.bottomMargin = margins[3];
+        
+        var landscapeConstraints = new Scandit.Constraints();
+        landscapeConstraints.leftMargin = lMargins[0];
+        landscapeConstraints.topMargin = lMargins[1];
+        landscapeConstraints.rightMargin = lMargins[2];
+        landscapeConstraints.bottomMargin = lMargins[3];
+        
+        picker.setConstraints(portraitConstraints, landscapeConstraints);
     }
     // when continuous mode is false, scanning stops after the first code
     // has been successfully scanned. Set this property to true to continue

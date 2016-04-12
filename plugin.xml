@@ -34,7 +34,10 @@
 	<js-module src="src/symbologysettings.js" name="SymbologySettings">
 		<clobbers target="Scandit.SymbologySettings" />
 	</js-module>
-	<platform name="ios">      
+    <js-module name="Constraints" src="src/constraints.js">
+        <clobbers target="Scandit.Constraints"/>
+    </js-module>
+	<platform name="ios">
 		  <plugins-plist key="ScanditSDK" string="ScanditSDK"/>      
 		  <!-- feature tag in config.xml -->      
 		  <config-file parent="/widget" target="config.xml">        
@@ -62,6 +65,8 @@
           <source-file src="src/ios/SBSUIParamParser.m"/>
           <header-file src="src/ios/SBSLocalScanSession.h"/>
           <source-file src="src/ios/SBSLocalScanSession.m"/>
+          <header-file src="src/ios/SBSConstraints.h"/>
+          <source-file src="src/ios/SBSConstraints.m"/>
 
 		  
 		  <!-- Frameworks needed by Scandit SDK for iOS -->

@@ -19,6 +19,8 @@
 + (NSString *)paramContinuousMode;
 + (NSString *)paramPortraitMargins;
 + (NSString *)paramLandscapeMargins;
++ (NSString *)paramPortraitConstraints;
++ (NSString *)paramLandscapeConstraints;
 + (NSString *)paramAnimationDuration;
 
 + (NSString *)paramPaused;

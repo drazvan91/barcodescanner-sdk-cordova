@@ -217,7 +217,9 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                 }
 
                 if (options.containsKey(PhonegapParamParser.paramPortraitMargins)
-                        || options.containsKey(PhonegapParamParser.paramLandscapeMargins)) {
+                        || options.containsKey(PhonegapParamParser.paramLandscapeMargins)
+                        || options.containsKey(PhonegapParamParser.paramPortraitConstraints)
+                        || options.containsKey(PhonegapParamParser.paramLandscapeConstraints)) {
                     final AtomicBoolean done = new AtomicBoolean(false);
                     Runnable task = new Runnable() {
                         public void run() {
@@ -545,7 +547,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                 } else if (obj instanceof JSONObject) {
                     Bundle dictionary = new Bundle();
                     setOptionsOnBundle((JSONObject)obj, dictionary);
-                    bundle.putBundle(key, dictionary);
+                    bundle.putBundle(key.toLowerCase(), dictionary);
                 }
             }
         }
@@ -748,19 +750,35 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                         @Override
                         public void run() {
                             Bundle bundle = new Bundle();
-                            ArrayList<Object> list = new ArrayList<Object>();
-                            list.add((Integer) mBarcodePicker.portraitMargins.left);
-                            list.add((Integer) mBarcodePicker.portraitMargins.top);
-                            list.add((Integer) mBarcodePicker.portraitMargins.right);
-                            list.add((Integer) mBarcodePicker.portraitMargins.bottom);
-                            bundle.putSerializable(PhonegapParamParser.paramPortraitMargins, list);
-
-                            list = new ArrayList<Object>();
-                            list.add((Integer) mBarcodePicker.landscapeMargins.left);
-                            list.add((Integer) mBarcodePicker.landscapeMargins.top);
-                            list.add((Integer) mBarcodePicker.landscapeMargins.right);
-                            list.add((Integer) mBarcodePicker.landscapeMargins.bottom);
-                            bundle.putSerializable(PhonegapParamParser.paramLandscapeMargins, list);
+                            Bundle constraints = new Bundle();
+                            constraints.putInt(PhonegapParamParser.paramMarginLeft,
+                                               mBarcodePicker.portraitConstraints.getLeftMargin());
+                            constraints.putInt(PhonegapParamParser.paramMarginTop,
+                                               mBarcodePicker.portraitConstraints.getTopMargin());
+                            constraints.putInt(PhonegapParamParser.paramMarginRight,
+                                               mBarcodePicker.portraitConstraints.getRightMargin());
+                            constraints.putInt(PhonegapParamParser.paramMarginBottom,
+                                               mBarcodePicker.portraitConstraints.getBottomMargin());
+                            constraints.putInt(PhonegapParamParser.paramWidth,
+                                               mBarcodePicker.portraitConstraints.getWidth());
+                            constraints.putInt(PhonegapParamParser.paramHeight,
+                                               mBarcodePicker.portraitConstraints.getHeight());
+                            bundle.putBundle(PhonegapParamParser.paramPortraitConstraints, constraints);
+                            
+                            constraints = new Bundle();
+                            constraints.putInt(PhonegapParamParser.paramMarginLeft,
+                                               mBarcodePicker.landscapeConstraints.getLeftMargin());
+                            constraints.putInt(PhonegapParamParser.paramMarginTop,
+                                               mBarcodePicker.landscapeConstraints.getTopMargin());
+                            constraints.putInt(PhonegapParamParser.paramMarginRight,
+                                               mBarcodePicker.landscapeConstraints.getRightMargin());
+                            constraints.putInt(PhonegapParamParser.paramMarginBottom,
+                                               mBarcodePicker.landscapeConstraints.getBottomMargin());
+                            constraints.putInt(PhonegapParamParser.paramWidth,
+                                               mBarcodePicker.landscapeConstraints.getWidth());
+                            constraints.putInt(PhonegapParamParser.paramHeight,
+                                               mBarcodePicker.landscapeConstraints.getHeight());
+                            bundle.putBundle(PhonegapParamParser.paramLandscapeConstraints, constraints);
 
                             PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
                         }

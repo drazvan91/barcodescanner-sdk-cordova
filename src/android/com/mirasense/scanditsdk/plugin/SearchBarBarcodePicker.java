@@ -2,7 +2,6 @@ package com.mirasense.scanditsdk.plugin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.Display;
@@ -13,7 +12,6 @@ import android.widget.RelativeLayout;
 
 import com.scandit.barcodepicker.BarcodePicker;
 import com.scandit.barcodepicker.ScanSettings;
-import com.scandit.barcodepicker.internal.gui.view.SearchBar;
 import com.scandit.base.system.SbSystemUtils;
 
 /**
@@ -24,8 +22,8 @@ public class SearchBarBarcodePicker extends BarcodePicker {
     private ScanditSDKSearchBar mSearchBar;
     private ScanditSDKSearchBarListener mListener;
 
-    public static Rect portraitMargins = new Rect(0, 0, 0, 0);
-    public static Rect landscapeMargins = new Rect(0, 0, 0, 0);
+    public static Constraints portraitConstraints = new Constraints();
+    public static Constraints landscapeConstraints = new Constraints();
 
 
     public SearchBarBarcodePicker(Context context) {
@@ -36,54 +34,65 @@ public class SearchBarBarcodePicker extends BarcodePicker {
         super(context, settings);
     }
 
-    public void adjustSize(Activity activity, Rect newPortraitMargins,
-                           Rect newLandscapeMargins, double animationDuration) {
+    public void adjustSize(Activity activity, Constraints newPortraitConstraints,
+                           Constraints newLandscapeConstraints, double animationDuration) {
         final RelativeLayout.LayoutParams rLayoutParams = (RelativeLayout.LayoutParams) getLayoutParams();
-
         Display display = activity.getWindowManager().getDefaultDisplay();
         int screenWidth = display.getWidth();
         int screenHeight = display.getHeight();
 
-        final Rect oldMargins;
-        final Rect newMargins;
+        final Constraints oldConstraints;
+        final Constraints newConstraints;
         if (screenHeight > screenWidth) {
-            oldMargins = portraitMargins;;
-            newMargins = newPortraitMargins;
+            oldConstraints = portraitConstraints;
+            newConstraints = newPortraitConstraints;
         } else {
-            oldMargins = landscapeMargins;
-            newMargins = newLandscapeMargins;
+            oldConstraints = landscapeConstraints;
+            newConstraints = newLandscapeConstraints;
         }
 
-        if (animationDuration > 0) {
-            Animation anim = new Animation() {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t) {
-                    rLayoutParams.topMargin = SbSystemUtils.pxFromDp(getContext(),
-                            (int) (oldMargins.top + (newMargins.top
-                                    - oldMargins.top) * interpolatedTime));
-                    rLayoutParams.rightMargin = SbSystemUtils.pxFromDp(getContext(),
-                            (int) (oldMargins.right + (newMargins.right
-                                    - oldMargins.right) * interpolatedTime));
-                    rLayoutParams.bottomMargin = SbSystemUtils.pxFromDp(getContext(),
-                            (int) (oldMargins.bottom + (newMargins.bottom
-                                    - oldMargins.bottom) * interpolatedTime));
-                    rLayoutParams.leftMargin = SbSystemUtils.pxFromDp(getContext(),
-                            (int) (oldMargins.left + (newMargins.left
-                                    - oldMargins.left) * interpolatedTime));
-                    setLayoutParams(rLayoutParams);
+        Animation anim = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (newConstraints.getLeftMargin() == null) {
+                    rLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
                 }
-            };
-            anim.setDuration((int) (animationDuration * 1000));
-            startAnimation(anim);
-        } else {
-            rLayoutParams.topMargin = SbSystemUtils.pxFromDp(getContext(), newMargins.top);
-            rLayoutParams.rightMargin = SbSystemUtils.pxFromDp(getContext(), newMargins.right);
-            rLayoutParams.bottomMargin = SbSystemUtils.pxFromDp(getContext(), newMargins.bottom);
-            rLayoutParams.leftMargin = SbSystemUtils.pxFromDp(getContext(), newMargins.left);
-            setLayoutParams(rLayoutParams);
-        }
-        portraitMargins = newPortraitMargins;
-        landscapeMargins = newLandscapeMargins;
+                if (newConstraints.getTopMargin() == null) {
+                    rLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+                }
+
+                if (newConstraints.getLeftMargin() != null) {
+                    rLayoutParams.leftMargin = calculateInterpolatedValue(
+                            oldConstraints.getLeftMargin(), newConstraints.getLeftMargin(), interpolatedTime);
+                }
+                if (newConstraints.getTopMargin() != null) {
+                    rLayoutParams.topMargin = calculateInterpolatedValue(
+                            oldConstraints.getTopMargin(), newConstraints.getTopMargin(), interpolatedTime);
+                }
+                if (newConstraints.getRightMargin() != null) {
+                    rLayoutParams.rightMargin = calculateInterpolatedValue(
+                            oldConstraints.getRightMargin(), newConstraints.getRightMargin(), interpolatedTime);
+                }
+                if (newConstraints.getBottomMargin() != null) {
+                    rLayoutParams.bottomMargin = calculateInterpolatedValue(
+                            oldConstraints.getBottomMargin(), newConstraints.getBottomMargin(), interpolatedTime);
+                }
+                if (newConstraints.getWidth() != null) {
+                    rLayoutParams.width = calculateInterpolatedValue(
+                            oldConstraints.getWidth(), newConstraints.getWidth(), interpolatedTime);
+                }
+                if (newConstraints.getHeight() != null) {
+                    rLayoutParams.height = calculateInterpolatedValue(
+                            oldConstraints.getHeight(), newConstraints.getHeight(), interpolatedTime);
+                }
+                setLayoutParams(rLayoutParams);
+            }
+        };
+        anim.setDuration((int) (animationDuration * 1000));
+        startAnimation(anim);
+
+        portraitConstraints = newPortraitConstraints;
+        landscapeConstraints = newLandscapeConstraints;
     }
 
     public void setOnSearchBarListener(ScanditSDKSearchBarListener listener) {
@@ -103,10 +112,10 @@ public class SearchBarBarcodePicker extends BarcodePicker {
             rParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             rParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             addView(mSearchBar, rParams);
-            
+
             getOverlayView().setTorchButtonMarginsAndSize(15, 55, 40, 40);
             getOverlayView().setCameraSwitchButtonMarginsAndSize(15, 55, 40, 40);
-            
+
             requestChildFocus(null, null);
         } else if (!show && mSearchBar != null) {
             removeView(mSearchBar);
@@ -123,6 +132,15 @@ public class SearchBarBarcodePicker extends BarcodePicker {
         mListener.didEnter(mSearchBar.getText());
     }
 
+    private int calculateInterpolatedValue(Integer oldValue, Integer newValue, float interpolatedTime) {
+        if (oldValue != null) {
+            return SbSystemUtils.pxFromDp(getContext(),
+                    (int) (oldValue + (newValue - oldValue) * interpolatedTime));
+        } else {
+            return SbSystemUtils.pxFromDp(getContext(), newValue);
+        }
+    }
+
 
     public interface ScanditSDKSearchBarListener {
         /**
@@ -131,5 +149,67 @@ public class SearchBarBarcodePicker extends BarcodePicker {
          *  @param entry the text that has been entered by the user.
          */
         void didEnter(String entry);
+    }
+
+
+    /**
+     * Constraints for the barcode picker consisting of margins, width and height. The getters
+     * do not necessarily return the properties previously set but may return 0 for a margin if too
+     * few margins were set or return null for width/height if too many margins were set.
+     */
+    public static class Constraints {
+        private Integer mLeftMargin = null;
+        private Integer mTopMargin = null;
+        private Integer mRightMargin = null;
+        private Integer mBottomMargin = null;
+        private Integer mWidth = null;
+        private Integer mHeight = null;
+
+        public Constraints() {}
+
+        public Constraints(Rect margins) {
+            if (margins != null) {
+                mLeftMargin = margins.left;
+                mTopMargin = margins.top;
+                mRightMargin = margins.right;
+                mBottomMargin = margins.bottom;
+            }
+        }
+
+        public Integer getLeftMargin() {
+            if (mLeftMargin == null && (mRightMargin == null || mWidth == null)) return 0;
+            return mLeftMargin;
+        }
+        public void setLeftMargin(Integer value) { mLeftMargin = value; }
+
+        public Integer getTopMargin() {
+            if (mTopMargin == null && (mBottomMargin == null || mHeight == null)) return 0;
+            return mTopMargin;
+        }
+        public void setTopMargin(Integer value) { mTopMargin = value; }
+
+        public Integer getRightMargin() {
+            if (mRightMargin == null && mLeftMargin == null) return 0;
+            return mRightMargin;
+        }
+        public void setRightMargin(Integer value) { mRightMargin = value; }
+
+        public Integer getBottomMargin() {
+            if (mBottomMargin == null && mTopMargin == null) return 0;
+            return mBottomMargin;
+        }
+        public void setBottomMargin(Integer value) { mBottomMargin = value; }
+
+        public Integer getWidth() {
+            if (mLeftMargin != null && mRightMargin != null) return null;
+            return mWidth;
+        }
+        public void setWidth(Integer value) { mWidth = value; }
+
+        public Integer getHeight() {
+            if (mTopMargin != null && mBottomMargin != null) return null;
+            return mHeight;
+        }
+        public void setHeight(Integer value) { mHeight = value; }
     }
 }

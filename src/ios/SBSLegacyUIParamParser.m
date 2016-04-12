@@ -164,7 +164,9 @@
     }
     
     if (![options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
-        && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]) {
+            && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]
+            && ![options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]]
+            && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]) {
         // Show the toolbar that contains a cancel button.
         [picker.overlayController showToolBar:YES];
     }

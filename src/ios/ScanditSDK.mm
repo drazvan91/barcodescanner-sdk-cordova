@@ -140,7 +140,9 @@
             // Show the toolbar if we start modally. Need to do this here already such that other
             // toolbar options can be set afterwards.
             if (![options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
-                    && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]) {
+                    && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]
+                    && ![options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]]
+                    && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]) {
                 [self.scanditBarcodePicker.overlayController showToolBar:YES];
             }
             
@@ -164,13 +166,16 @@
             self.scanditBarcodePicker.overlayController.cancelDelegate = self;
         
             if ([options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
-                || [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]) {
+                    || [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]
+                    || [options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]]
+                    || [options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]) {
                 self.modallyPresented = NO;
                 [self.viewController addChildViewController:self.scanditBarcodePicker];
                 [self.viewController.view addSubview:self.scanditBarcodePicker.view];
                 [self.scanditBarcodePicker didMoveToParentViewController:self.viewController];
                 
-                [SBSPhonegapParamParser updateLayoutOfPicker:self.scanditBarcodePicker withOptions:options];
+                [SBSPhonegapParamParser updateLayoutOfPicker:self.scanditBarcodePicker
+                                                 withOptions:options];
                 
             } else {
                 self.modallyPresented = YES;
@@ -318,7 +323,11 @@
 - (NSDictionary *)lowerCaseOptionsFromOptions:(NSDictionary *)options {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     for (NSString *key in options) {
-        [result setObject:[options objectForKey:key] forKey:[key lowercaseString]];
+        NSObject *object = [options objectForKey:key];
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            object = [self lowerCaseOptionsFromOptions:(NSDictionary *)object];
+        }
+        [result setObject:object forKey:[key lowercaseString]];
     }
     return result;
 }

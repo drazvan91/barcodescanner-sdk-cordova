@@ -64,10 +64,59 @@ public class Scandit {
 		 * @brief Bottom right corner of the quadrilateral.
 		 */
 		public Point bottomRight;
-	}
+    }
+    
+    /**
+     * @brief Constraints for the scanner view. Margins have higher priority than width and height,
+     * for example if the horizontal margins and the width are all set, the width is ignored. If the
+     * width is set but no horizontal margins are set the plugin will set the left margin to 0. For
+     * the same scenario with the vertical margins and height, the top margin will be set to 0.
+     *
+     * @since 4.13.1
+     */
+    public class Constraints {
+        /**
+         * The left margin. Can be specified as an integer to mean device independent pixels/points
+         * or alternatively as a string with an added '%%' at the end. When expressing the margin
+         * in percent, it is set to the desired percentage of the screen width.
+         */
+        public number leftMargin;
+        /**
+         * The top margin. Can be specified as an integer to mean device independent pixels/points
+         * or alternatively as a string with an added '%%' at the end. When expressing the margin
+         * in percent, it is set to the desired percentage of the screen height.
+         */
+        public number topMargin;
+        /**
+         * The right margin. Can be specified as an integer to mean device independent pixels/points
+         * or alternatively as a string with an added '%%' at the end. When expressing the margins
+         * in percent, it is set to the desired percentage of the screen width.
+         */
+        public number rightMargin;
+        /**
+         * The left margin. Can be specified as an integer to mean device independent pixels/points
+         * or alternatively as a string with an added '%%' at the end. When expressing the margins
+         * in percent, it is set to the desired percentage of the screen height.
+         */
+        public number leftMargin;
+        /**
+         * The width. Can be specified as an integer to mean device independent pixels/points
+         * or alternatively as a string with an added '%%' at the end. When expressing the width
+         * in percent, it is set to the desired percentage of the screen width.
+         */
+        public number width;
+        /**
+         * The height. Can be specified as an integer to mean device independent pixels/points
+         * or alternatively as a string with an added '%%' at the end. When expressing the height
+         * in percent, it is set to the desired percentage of the screen height.
+         */
+        public number height;
+        
+    }
 	
 	/**
 	 * @brief Margins for a view.
+     * @deprecated Replaced by Scandit.Constraints.
 	 *
 	 * @since 4.11.0
 	 */
@@ -364,8 +413,30 @@ public class Scandit {
 	     * @since 4.11.0
 	     */
 	    public Orientation[] orientations;
+        
+        /**
+         * @brief Sets the view constraints of the barcode picker.
+         *
+         * A call to this function causes the barcode picker to be added as a subview on top of the webview
+         * instead of as full screen in a new view controller or activity.
+         *
+         * Margins, width and height may either be specified using device-independent pixels/points
+         * or in percent of the screen size. See {@link Constraints} for details.
+         *
+         * @param portraitConstraints Constraints for when the device is in portrait or upside-down
+         *        portrait orientation. Can be null to indicate no margins and full width and height.
+         * @param landscapeConstraints Constraints for when the device is in landscape left or right
+         *		  orientation. Can be null to indicate no margins and full width and height
+         * @param animationDuration The duration the layout change takes to animate. At 0 it will
+         *        instantly change.
+         *
+         * @since 4.11.0
+         */
+        public void setConstraints(Constraints portraitConstraints, Constraints, landscapeConstraints, number animationDuration);
 	    
 	    /**
+         * @deprecated Replaced by setConstraints(portraitConstraints, landscapeConstraints, animationDuration)
+         * to allow more customization.
 	     * @brief Sets the margins of the barcode picker.
 	     *
 	     * A call to this function causes the barcode picker to be added as a subview on top of the webview

@@ -3,6 +3,7 @@ var ScanOverlay = cordova.require("com.mirasense.scanditsdk.plugin.ScanOverlay")
 var ScanSettings = cordova.require("com.mirasense.scanditsdk.plugin.ScanSettings");
 var ScanSession = cordova.require("com.mirasense.scanditsdk.plugin.ScanSession");
 var Barcode = cordova.require("com.mirasense.scanditsdk.plugin.Barcode");
+var Constraints = cordova.require("com.mirasense.scanditsdk.plugin.Constraints");
 
 function BarcodePicker(scanSettings) {
 	if (scanSettings instanceof ScanSettings) {
@@ -35,12 +36,9 @@ BarcodePicker.Orientation = {
 BarcodePicker.prototype.show = function(success, manual, failure) {
 	var options = {"continuousMode": this.continuousMode};
 
-	if (this.portraitMargins != null) {
-		options["portraitMargins"] = this.portraitMargins;
-	}
-	if (this.landscapeMargins != null) {
-		options["landscapeMargins"] = this.landscapeMargins;
-	}
+    if (this.portraitConstraints != null) options["portraitConstraints"] = this.portraitConstraints;
+	if (this.landscapeConstraints != null) options["landscapeConstraints"] = this.landscapeConstraints;
+
 	if (this.orientations.length > 0) {
 		options["orientations"] = this.orientations;
 	}
@@ -125,28 +123,47 @@ BarcodePicker.prototype.setOrientations = function(orientations) {
 	}
 }
 
-BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDuration) {
+BarcodePicker.prototype.setConstraints = function(portrait, landscape, animationDuration) {
 	if (portrait == null) {
-		this.portraitMargins = [0, 0, 0, 0];
+		this.portraitConstraints = new Constraints();
 	} else {
-		this.portraitMargins = [portrait.left, portrait.top,
-								portrait.right, portrait.bottom];
+		this.portraitConstraints = portrait
 	}
 	if (landscape == null) {
-		this.landscapeMargins = [0, 0, 0, 0];
+		this.landscapeConstraints = new Constraints();
 	} else {
-		this.landscapeMargins = [landscape.left, landscape.top,
-								 landscape.right, landscape.bottom];
+		this.landscapeConstraints = landscape
 	}
 	if (this.isShown) {
 		var duration = 0;
 		if (typeof animationDuration !== "undefined") {
 			duration = parseFloat(animationDuration);
 		}
-    	cordova.exec(null, null, "ScanditSDK", "resize", [{"portraitMargins": this.portraitMargins,
-    													   "landscapeMargins": this.landscapeMargins,
+    	cordova.exec(null, null, "ScanditSDK", "resize", [{"portraitConstraints": this.portraitConstraints,
+    													   "landscapeConstraints": this.landscapeConstraints,
     													   "animationDuration": duration}]);
 	}
+}
+
+BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDuration) {
+    var portraitConstraints = null;
+    var landscapeConstraints = null;
+
+    if (portrait != null) {
+		portraitConstraints = new Constraints()
+        portraitConstraints.leftMargin = portrait.left;
+        portraitConstraints.topMargin = portrait.top;
+        portraitConstraints.rightMargin = portrait.right;
+        portraitConstraints.bottomMargin = portrait.bottom;
+	}
+	if (landscape != null) {
+        landscapeConstraints = new Constraints();
+        landscapeConstraints.leftMargin = landscape.left;
+        landscapeConstraints.topMargin = landscape.top;
+        landscapeConstraints.rightMargin = landscape.right;
+        landscapeConstraints.bottomMargin = landscape.bottom;
+	}
+    this.setConstraints(portraitConstraints, landscapeConstraints, animationDuration);
 }
 
 module.exports = BarcodePicker;

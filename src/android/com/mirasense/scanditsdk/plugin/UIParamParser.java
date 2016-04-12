@@ -239,6 +239,14 @@ public class UIParamParser {
         return true;
     }
 
+    public static Integer getSize(Bundle bundle, String key, int max) {
+        if (bundle.containsKey(key)) {
+            return getSize(bundle.get(key), max);
+        } else {
+            return null;
+        }
+    }
+
     // Converts % to pt if string ends with '%'
     public static Integer getSize(Object obj, int max) {
         if (obj instanceof Number) {

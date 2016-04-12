@@ -25,6 +25,7 @@
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
 #import "ScanditSDKSearchBar.h"
+#import "SBSConstraints.h"
 
 
 @protocol ScanditSDKSearchBarDelegate <NSObject>
@@ -34,8 +35,8 @@
 
 @interface ScanditSDKRotatingBarcodePicker : SBSBarcodePicker
 
-@property (nonatomic, assign) CGRect portraitMargins;
-@property (nonatomic, assign) CGRect landscapeMargins;
+@property (nonatomic, strong) SBSConstraints *portraitConstraints;
+@property (nonatomic, strong) SBSConstraints *landscapeConstraints;
 @property (nonatomic, weak) id<ScanditSDKSearchBarDelegate> searchDelegate;
 @property (nonatomic, strong, readonly) ScanditSDKSearchBar *manualSearchBar;
 

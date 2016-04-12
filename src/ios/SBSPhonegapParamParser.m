@@ -10,6 +10,7 @@
 
 #import "SBSLegacyUIParamParser.h"
 #import "SBSUIParamParser.h"
+#import "SBSConstraints.h"
 
 
 @implementation SBSPhonegapParamParser
@@ -17,7 +18,16 @@
 + (NSString *)paramContinuousMode { return [@"continuousMode" lowercaseString]; }
 + (NSString *)paramPortraitMargins { return [@"portraitMargins" lowercaseString]; }
 + (NSString *)paramLandscapeMargins { return [@"landscapeMargins" lowercaseString]; }
++ (NSString *)paramPortraitConstraints { return [@"portraitConstraints" lowercaseString]; }
++ (NSString *)paramLandscapeConstraints { return [@"landscapeConstraints" lowercaseString]; }
 + (NSString *)paramAnimationDuration { return [@"animationDuration" lowercaseString]; }
+
++ (NSString *)paramLeftMargin { return [@"leftMargin" lowercaseString]; }
++ (NSString *)paramTopMargin { return [@"topMargin" lowercaseString]; }
++ (NSString *)paramRightMargin { return [@"rightMargin" lowercaseString]; }
++ (NSString *)paramBottomMargin { return [@"bottomMargin" lowercaseString]; }
++ (NSString *)paramWidth { return [@"width" lowercaseString]; }
++ (NSString *)paramHeight { return [@"height" lowercaseString]; }
 
 + (NSString *)paramPaused { return [@"paused" lowercaseString]; }
 
@@ -150,52 +160,91 @@
     
     NSObject *portraitMargins = [options objectForKey:[self paramPortraitMargins]];
     NSObject *landscapeMargins = [options objectForKey:[self paramLandscapeMargins]];
+    NSObject *portraitConstraints = [options objectForKey:[self paramPortraitConstraints]];
+    NSObject *landscapeConstraints = [options objectForKey:[self paramLandscapeConstraints]];
+    
     if (portraitMargins || landscapeMargins) {
-        picker.portraitMargins = CGRectMake(0, 0, 0, 0);
-        picker.landscapeMargins = CGRectMake(0, 0, 0, 0);
+        picker.portraitConstraints = [[SBSConstraints alloc]
+                                      initWithMargins:[SBSPhonegapParamParser
+                                                       extractMarginsRectFromObject:portraitMargins]];
+        picker.landscapeConstraints = [[SBSConstraints alloc]
+                                       initWithMargins:[SBSPhonegapParamParser
+                                                        extractMarginsRectFromObject:landscapeMargins]];
+        
+        [picker adjustSize:animationDuration];
+        
+    } else if (portraitConstraints || landscapeConstraints) {
+        picker.portraitConstraints = [[SBSConstraints alloc] init];
+        picker.landscapeConstraints = [[SBSConstraints alloc] init];
+        
+        picker.portraitConstraints = [SBSPhonegapParamParser
+                                      extractConstraintsFromObject:portraitConstraints];
+        
+        picker.landscapeConstraints = [SBSPhonegapParamParser
+                                       extractConstraintsFromObject:landscapeConstraints];
+        
+        [picker adjustSize:animationDuration];
     }
+}
+
++ (CGRect)extractMarginsRectFromObject:(NSObject *)margins {
+    if (!margins) return CGRectZero;
+    
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenRect.size.width;
     CGFloat screenHeight = screenRect.size.height;
-   
+    
+    if ([margins isKindOfClass:[NSString class]]) {
+        return [SBSLegacyUIParamParser rectFromParameter:margins];
+    } else if ([margins isKindOfClass:[NSArray class]]) {
+        NSArray *marginsArray = (NSArray *) margins;
+        if ([marginsArray count] == 4 && ([SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSNumber class]]
+                                          || [SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSString class]])) {
+            
+            return CGRectMake([SBSUIParamParser getSize:marginsArray[0] relativeTo:screenWidth],
+                              [SBSUIParamParser getSize:marginsArray[1] relativeTo:screenHeight],
+                              [SBSUIParamParser getSize:marginsArray[2] relativeTo:screenWidth],
+                              [SBSUIParamParser getSize:marginsArray[3] relativeTo:screenHeight]);
+        }
+    } else {
+        NSLog(@"SBS Plugin: failed to parse portrait margins - wrong type");
+    }
+    return CGRectZero;
+}
 
-    if (portraitMargins) {
-        if ([portraitMargins isKindOfClass:[NSString class]]) {
-            picker.portraitMargins = [SBSLegacyUIParamParser rectFromParameter:portraitMargins];
-        } else if ([portraitMargins isKindOfClass:[NSArray class]]) {
-            NSArray *marginsArray = (NSArray *) portraitMargins;
-            if ([marginsArray count] == 4 && 
-                            ([SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSNumber class]]
-                             || [SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSString class]])) {
-                picker.portraitMargins = CGRectMake([SBSUIParamParser getSize:marginsArray[0] relativeTo:screenWidth],
-                                                    [SBSUIParamParser getSize:marginsArray[1] relativeTo:screenHeight],
-                                                    [SBSUIParamParser getSize:marginsArray[2] relativeTo:screenWidth],
-                                                    [SBSUIParamParser getSize:marginsArray[3] relativeTo:screenHeight]);
-            }
-        } else {
-            NSLog(@"SBS Plugin: failed to parse portrait margins - wrong type");
-        }
-    }
++ (SBSConstraints *)extractConstraintsFromObject:(NSObject *)constraints {
+    if (!constraints) return [[SBSConstraints alloc] init];
     
-    if (landscapeMargins) {
-        if ([landscapeMargins isKindOfClass:[NSString class]]) {
-            picker.landscapeMargins = [SBSLegacyUIParamParser rectFromParameter:portraitMargins];
-        } else if ([landscapeMargins isKindOfClass:[NSArray class]]) {
-            NSArray *marginsArray = (NSArray *) landscapeMargins;
-            if ([marginsArray count] == 4 && 
-                            ([SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSNumber class]]
-                             || [SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSString class]])) {
-                picker.landscapeMargins = CGRectMake([SBSUIParamParser getSize:marginsArray[0] relativeTo:screenHeight],
-                                                    [SBSUIParamParser getSize:marginsArray[1] relativeTo:screenWidth],
-                                                    [SBSUIParamParser getSize:marginsArray[2] relativeTo:screenHeight],
-                                                    [SBSUIParamParser getSize:marginsArray[3] relativeTo:screenWidth]);
-            }
-        } else {
-            NSLog(@"SBS Plugin: failed to parse landscape margins - wrong type");
-        }
-    }
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat screenHeight = screenRect.size.height;
     
-    [picker adjustSize:animationDuration];
+    SBSConstraints *result = [[SBSConstraints alloc] init];
+    
+    if ([constraints isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *constraintsDict = (NSDictionary *)constraints;
+        result.leftMargin = [SBSUIParamParser
+                             getSizeOrNull:[constraintsDict objectForKey:[SBSPhonegapParamParser paramLeftMargin]]
+                             relativeTo:screenWidth];
+        result.topMargin = [SBSUIParamParser
+                            getSizeOrNull:[constraintsDict objectForKey:[SBSPhonegapParamParser paramTopMargin]]
+                            relativeTo:screenHeight];
+        result.rightMargin = [SBSUIParamParser
+                              getSizeOrNull:[constraintsDict objectForKey:[SBSPhonegapParamParser paramRightMargin]]
+                              relativeTo:screenWidth];
+        result.bottomMargin = [SBSUIParamParser
+                               getSizeOrNull:[constraintsDict objectForKey:[SBSPhonegapParamParser paramBottomMargin]]
+                               relativeTo:screenHeight];
+        result.width = [SBSUIParamParser
+                        getSizeOrNull:[constraintsDict objectForKey:[SBSPhonegapParamParser paramWidth]]
+                        relativeTo:screenWidth];
+        result.height = [SBSUIParamParser
+                         getSizeOrNull:[constraintsDict objectForKey:[SBSPhonegapParamParser paramHeight]]
+                         relativeTo:screenHeight];
+    } else {
+        NSLog(@"SBS Plugin: failed to parse constraints - wrong type");
+    }
+    return result;
 }
 
 + (BOOL)isPausedSpecifiedInOptions:(NSDictionary *)options {

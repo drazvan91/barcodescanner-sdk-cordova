@@ -330,6 +330,14 @@
     return YES;
 }
 
++ (NSNumber *)getSizeOrNull:(NSObject *)obj relativeTo:(int)max {
+    if (obj) {
+        return [NSNumber numberWithFloat:[SBSUIParamParser getSize:obj relativeTo:max]];
+    } else {
+        return nil;
+    }
+}
+
 + (float)getSize:(NSObject *)obj relativeTo:(int)max {
     if ([obj isKindOfClass:[NSNumber class]]) {
         return [(NSNumber *) obj floatValue];

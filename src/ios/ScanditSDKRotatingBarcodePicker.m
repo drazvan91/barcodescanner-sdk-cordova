@@ -37,6 +37,8 @@
 @property (nonatomic, strong) NSLayoutConstraint *topConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *rightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *bottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *widthConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 @property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
 @end
 
@@ -45,8 +47,8 @@
 
 - (instancetype)initWithSettings:(SBSScanSettings *)settings{
     if (self = [super initWithSettings:settings]) {
-        [self setPortraitMargins:CGRectMake(0, 0, 0, 0)];
-        [self setLandscapeMargins:CGRectMake(0, 0, 0, 0)];
+        self.portraitConstraints = [[SBSConstraints alloc] init];
+        self.landscapeConstraints = [[SBSConstraints alloc] init];
     }
     
     return self;
@@ -66,68 +68,126 @@
     if (self.parentViewController && self.view.superview) {
 
         [UIView animateWithDuration:animationDuration animations:^{
-            CGRect margins = self.portraitMargins;
+            SBSConstraints *constraints = self.portraitConstraints;
             if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
-                margins = self.landscapeMargins;
+                constraints = self.landscapeConstraints;
             }
             
             [self.view setTranslatesAutoresizingMaskIntoConstraints:NO];
             
-            if (!self.leftConstraint) {
-                self.leftConstraint = [NSLayoutConstraint constraintWithItem:self.view
-                                                                   attribute:NSLayoutAttributeLeading
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.view.superview
-                                                                   attribute:NSLayoutAttributeLeading
-                                                                  multiplier:1.0
-                                                                    constant:margins.origin.x];
-                [self.view.superview addConstraint:self.leftConstraint];
-            } else {
-                self.leftConstraint.constant = margins.origin.x;
+            if (constraints.leftMargin) {
+                if (!self.leftConstraint) {
+                    self.leftConstraint = [NSLayoutConstraint
+                                           constraintWithItem:self.view
+                                           attribute:NSLayoutAttributeLeading
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:self.view.superview
+                                           attribute:NSLayoutAttributeLeading
+                                           multiplier:1.0
+                                           constant:[constraints.leftMargin floatValue]];
+                    [self.view.superview addConstraint:self.leftConstraint];
+                } else {
+                    self.leftConstraint.constant = [constraints.leftMargin floatValue];
+                }
+            } else if (self.leftConstraint) {
+                [self.view.superview removeConstraint:self.leftConstraint];
             }
             
-            if (!self.topConstraint) {
-                self.topConstraint = [NSLayoutConstraint constraintWithItem:self.view
-                                                                  attribute:NSLayoutAttributeTop
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self.view.superview
-                                                                  attribute:NSLayoutAttributeTop
-                                                                 multiplier:1.0
-                                                                   constant:margins.origin.y];
-                [self.view.superview addConstraint:self.topConstraint];
-            } else {
-                self.topConstraint.constant = margins.origin.y;
+            if (constraints.topMargin) {
+                if (!self.topConstraint) {
+                    self.topConstraint = [NSLayoutConstraint
+                                          constraintWithItem:self.view
+                                          attribute:NSLayoutAttributeTop
+                                          relatedBy:NSLayoutRelationEqual
+                                          toItem:self.view.superview
+                                          attribute:NSLayoutAttributeTop
+                                          multiplier:1.0
+                                          constant:[constraints.topMargin floatValue]];
+                    [self.view.superview addConstraint:self.topConstraint];
+                } else {
+                    self.topConstraint.constant = [constraints.topMargin floatValue];
+                }
+            } else if (self.topConstraint) {
+                [self.view.superview removeConstraint:self.topConstraint];
             }
             
-            if (!self.rightConstraint) {
-                self.rightConstraint = [NSLayoutConstraint constraintWithItem:self.view
-                                                                    attribute:NSLayoutAttributeTrailing
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.view.superview
-                                                                    attribute:NSLayoutAttributeTrailing
-                                                                   multiplier:1.0
-                                                                     constant:-margins.size.width];
-                [self.view.superview addConstraint:self.rightConstraint];
-            } else {
-                self.rightConstraint.constant = -margins.size.width;
+            if (constraints.rightMargin) {
+                if (!self.rightConstraint) {
+                    self.rightConstraint = [NSLayoutConstraint
+                                            constraintWithItem:self.view
+                                            attribute:NSLayoutAttributeTrailing
+                                            relatedBy:NSLayoutRelationEqual
+                                            toItem:self.view.superview
+                                            attribute:NSLayoutAttributeTrailing
+                                            multiplier:1.0
+                                            constant:-[constraints.rightMargin floatValue]];
+                    [self.view.superview addConstraint:self.rightConstraint];
+                } else {
+                    self.rightConstraint.constant = -[constraints.rightMargin floatValue];
+                }
+            } else if (self.rightConstraint) {
+                [self.view.superview removeConstraint:self.rightConstraint];
             }
             
-            if (!self.bottomConstraint) {
-                self.bottomConstraint = [NSLayoutConstraint constraintWithItem:self.view
-                                                                     attribute:NSLayoutAttributeBottom
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.view.superview
-                                                                     attribute:NSLayoutAttributeBottom
-                                                                    multiplier:1.0
-                                                                      constant:-margins.size.height];
-                [self.view.superview addConstraint:self.bottomConstraint];
-            } else {
-                self.bottomConstraint.constant = -margins.size.height;
+            if (constraints.bottomMargin) {
+                if (!self.bottomConstraint) {
+                    self.bottomConstraint = [NSLayoutConstraint
+                                             constraintWithItem:self.view
+                                             attribute:NSLayoutAttributeBottom
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:self.view.superview
+                                             attribute:NSLayoutAttributeBottom
+                                             multiplier:1.0
+                                             constant:-[constraints.bottomMargin floatValue]];
+                    [self.view.superview addConstraint:self.bottomConstraint];
+                } else {
+                    self.bottomConstraint.constant = -[constraints.bottomMargin floatValue];
+                }
+            } else if (self.bottomConstraint) {
+                [self.view.superview removeConstraint:self.bottomConstraint];
             }
+            
+            if (constraints.width) {
+                if (!self.widthConstraint) {
+                    self.widthConstraint = [NSLayoutConstraint
+                                            constraintWithItem:self.view
+                                            attribute:NSLayoutAttributeWidth
+                                            relatedBy:NSLayoutRelationEqual
+                                            toItem:nil
+                                            attribute:NSLayoutAttributeNotAnAttribute
+                                            multiplier:1.0
+                                            constant:[constraints.width floatValue]];
+                    [self.view.superview addConstraint:self.widthConstraint];
+                } else {
+                    self.widthConstraint.constant = [constraints.width floatValue];
+                }
+            } else if (self.widthConstraint) {
+                [self.view.superview removeConstraint:self.widthConstraint];
+            }
+            
+            if (constraints.height) {
+                if (!self.heightConstraint) {
+                    self.heightConstraint = [NSLayoutConstraint
+                                             constraintWithItem:self.view
+                                             attribute:NSLayoutAttributeHeight
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:nil
+                                             attribute:NSLayoutAttributeNotAnAttribute
+                                             multiplier:1.0
+                                             constant:[constraints.height floatValue]];
+                    [self.view.superview addConstraint:self.heightConstraint];
+                } else {
+                    self.heightConstraint.constant = [constraints.height floatValue];
+                }
+            } else if (self.heightConstraint) {
+                [self.view.superview removeConstraint:self.heightConstraint];
+            }
+            
             [self.view layoutIfNeeded];
         }];
     }
 }
+
 
 #pragma mark - Search Bar
 

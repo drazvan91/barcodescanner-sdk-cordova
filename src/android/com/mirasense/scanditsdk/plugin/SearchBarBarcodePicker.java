@@ -33,14 +33,15 @@ public class SearchBarBarcodePicker extends BarcodePicker {
     public SearchBarBarcodePicker(Context context, ScanSettings settings) {
         super(context, settings);
     }
-
+    
     public void adjustSize(Activity activity, Constraints newPortraitConstraints,
                            Constraints newLandscapeConstraints, double animationDuration) {
-        final RelativeLayout.LayoutParams rLayoutParams = (RelativeLayout.LayoutParams) getLayoutParams();
+        final RelativeLayout.LayoutParams rLayoutParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         Display display = activity.getWindowManager().getDefaultDisplay();
         int screenWidth = display.getWidth();
         int screenHeight = display.getHeight();
-
+        
         final Constraints oldConstraints;
         final Constraints newConstraints;
         if (screenHeight > screenWidth) {
@@ -50,15 +51,19 @@ public class SearchBarBarcodePicker extends BarcodePicker {
             oldConstraints = landscapeConstraints;
             newConstraints = newLandscapeConstraints;
         }
-
+        
         Animation anim = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 if (newConstraints.getLeftMargin() == null) {
                     rLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+                } else {
+                    rLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                 }
                 if (newConstraints.getTopMargin() == null) {
                     rLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+                } else {
+                    rLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
                 }
 
                 if (newConstraints.getLeftMargin() != null) {

@@ -66,7 +66,7 @@
 
 - (void)adjustSize:(CGFloat)animationDuration {
     if (self.parentViewController && self.view.superview) {
-
+        
         [UIView animateWithDuration:animationDuration animations:^{
             SBSConstraints *constraints = self.portraitConstraints;
             if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
@@ -74,6 +74,26 @@
             }
             
             [self.view setTranslatesAutoresizingMaskIntoConstraints:NO];
+            
+            // Remove all no longer needed constraints.
+            if (!constraints.leftMargin && self.leftConstraint) {
+                [self.view.superview removeConstraint:self.leftConstraint];
+            }
+            if (!constraints.topMargin && self.topConstraint) {
+                [self.view.superview removeConstraint:self.topConstraint];
+            }
+            if (!constraints.rightMargin && self.rightConstraint) {
+                [self.view.superview removeConstraint:self.rightConstraint];
+            }
+            if (!constraints.bottomMargin && self.bottomConstraint) {
+                [self.view.superview removeConstraint:self.bottomConstraint];
+            }
+            if (!constraints.width && self.widthConstraint) {
+                [self.view.superview removeConstraint:self.widthConstraint];
+            }
+            if (!constraints.height && self.heightConstraint) {
+                [self.view.superview removeConstraint:self.heightConstraint];
+            }
             
             if (constraints.leftMargin) {
                 if (!self.leftConstraint) {
@@ -89,8 +109,6 @@
                 } else {
                     self.leftConstraint.constant = [constraints.leftMargin floatValue];
                 }
-            } else if (self.leftConstraint) {
-                [self.view.superview removeConstraint:self.leftConstraint];
             }
             
             if (constraints.topMargin) {
@@ -107,8 +125,6 @@
                 } else {
                     self.topConstraint.constant = [constraints.topMargin floatValue];
                 }
-            } else if (self.topConstraint) {
-                [self.view.superview removeConstraint:self.topConstraint];
             }
             
             if (constraints.rightMargin) {
@@ -125,8 +141,6 @@
                 } else {
                     self.rightConstraint.constant = -[constraints.rightMargin floatValue];
                 }
-            } else if (self.rightConstraint) {
-                [self.view.superview removeConstraint:self.rightConstraint];
             }
             
             if (constraints.bottomMargin) {
@@ -143,8 +157,6 @@
                 } else {
                     self.bottomConstraint.constant = -[constraints.bottomMargin floatValue];
                 }
-            } else if (self.bottomConstraint) {
-                [self.view.superview removeConstraint:self.bottomConstraint];
             }
             
             if (constraints.width) {
@@ -161,8 +173,6 @@
                 } else {
                     self.widthConstraint.constant = [constraints.width floatValue];
                 }
-            } else if (self.widthConstraint) {
-                [self.view.superview removeConstraint:self.widthConstraint];
             }
             
             if (constraints.height) {
@@ -179,8 +189,6 @@
                 } else {
                     self.heightConstraint.constant = [constraints.height floatValue];
                 }
-            } else if (self.heightConstraint) {
-                [self.view.superview removeConstraint:self.heightConstraint];
             }
             
             [self.view layoutIfNeeded];

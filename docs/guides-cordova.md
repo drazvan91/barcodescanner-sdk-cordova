@@ -22,6 +22,7 @@ Overview         			{#cordova-guides}
 
 * \subpage cordova-cropped-or-scaled-picker
 * \subpage cordova-restrict-scanning-area
+* \subpage cordova-active-symbols-counts
 
 ### Version/edition upgrades
 

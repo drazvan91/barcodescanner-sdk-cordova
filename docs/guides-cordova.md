@@ -27,6 +27,7 @@ How to setup the plugin on Telerik can be found in the \subpage cordova-telerik 
 
 * \subpage cordova-cropped-or-scaled-picker
 * \subpage cordova-restrict-scanning-area
+* \subpage cordova-active-symbols-counts
 
 ### Version/edition upgrades
 

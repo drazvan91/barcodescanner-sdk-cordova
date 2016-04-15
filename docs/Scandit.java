@@ -711,7 +711,7 @@ public class Scandit {
     	 * application requires scanning of one of these symbologies, and the length is falling
     	 * outside the default range, you may need to adjust the \ref SymbologySettings.activeSymbolCounts
     	 * for this symbology. For details on defaults and how to calculate the symbol counts for
-    	 * each symbology, take a look at <a href="../c_api/symbologies.html">the symbologies page</a>.
+    	 * each symbology, take a look at <a href="../phonegap/cordova-active-symbols-counts.html">the barcode length page</a>.
     	 *
     	 * @param symbology The symbology to be enabled.
     	 * @param enabled true when decoding of the symbology should be enabled, false if not.

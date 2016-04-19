@@ -36,6 +36,11 @@ public class PhonegapParamParser {
 
     public static void updatePicker(SearchBarBarcodePicker picker, Bundle bundle,
                                     SearchBarBarcodePicker.ScanditSDKSearchBarListener listener) {
+        
+        if (picker == null || bundle == null) {
+            return;
+        }
+        
         if (bundle.containsKey(paramSearchBar)) {
             picker.showSearchBar(bundle.getBoolean(paramSearchBar));
             picker.setOnSearchBarListener(listener);

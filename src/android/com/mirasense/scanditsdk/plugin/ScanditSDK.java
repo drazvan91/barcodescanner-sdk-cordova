@@ -381,11 +381,26 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     }
 
     private void start(JSONArray data) {
+        final Bundle options = new Bundle();
+
+        if (data.length() > 0) {
+            try {
+                setOptionsOnBundle(data.getJSONObject(0), options);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         mWorker.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (mBarcodePicker != null) {
-                    mBarcodePicker.startScanning();
+                    if (options.containsKey(PhonegapParamParser.paramPaused)
+                            && options.getBoolean(PhonegapParamParser.paramPaused)) {
+                        mBarcodePicker.startScanning(true);
+                    } else {
+                        mBarcodePicker.startScanning();
+                    }
                 } else {
                     ScanditSDKActivity.start();
                 }

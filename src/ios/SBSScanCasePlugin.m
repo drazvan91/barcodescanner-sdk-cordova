@@ -35,7 +35,8 @@ const static NSString* kSBSScanCaseDidScanEvent = @"didScan";
 @property (nonatomic, strong) SBSScanCase* scanCase;
 @property (nonatomic, strong) NSCondition* didScanCondition;
 @property (nonatomic, assign) SBSScanCaseState desiredState;
-@property (nonatomic, assign) BOOL didScanCallbackFinished;
+@property (nonatomic, assign) BOOL didScanCallbackFinish;
+@property (nonatomic, assign) BOOL immediatelySwitchToDesiredState;
 @end
 
 
@@ -46,7 +47,7 @@ const static NSString* kSBSScanCaseDidScanEvent = @"didScan";
         _scanCase = nil;
         _didScanCondition = [[NSCondition alloc] init];
         _desiredState = SBSScanCaseStateActive;
-        _didScanCallbackFinished = YES;
+        _didScanCallbackFinish = YES;
     }
     return self;
 }
@@ -72,7 +73,11 @@ const static NSString* kSBSScanCaseDidScanEvent = @"didScan";
 - (void)finishDidScanCallback:(CDVInvokedUrlCommand*)command {
     NSString* state = [command.arguments objectAtIndex:0];
     self.desiredState = SBSScanStateFromString(state);
-    self.didScanCallbackFinished = YES;
+    if (self.immediatelySwitchToDesiredState) {
+        self.scanCase.state = self.desiredState;
+        self.immediatelySwitchToDesiredState = NO;
+    }
+    self.didScanCallbackFinish = YES;
     [self.didScanCondition signal];
 }
 
@@ -87,37 +92,49 @@ const static NSString* kSBSScanCaseDidScanEvent = @"didScan";
     [result setKeepCallback:@(YES)];
     // async is OK
     [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-
+    
 }
 
 - (SBSScanCaseState)scanCase:(SBSScanCase *)scanCase
                      didScan:(SBSScanCaseSession *)session {
     NSArray* resultArray = @[kSBSScanCaseDidScanEvent, @{
-       @"newlyRecognizedCodes" : SBSJSObjectsFromCodeArray(session.newlyRecognizedCodes),
-       @"newlyLocalizedCodes" : SBSJSObjectsFromCodeArray(session.newlyLocalizedCodes),
-       @"allRecognizedCodes" : SBSJSObjectsFromCodeArray(session.allRecognizedCodes),
-    }];
+                                 @"newlyRecognizedCodes" : SBSJSObjectsFromCodeArray(session.newlyRecognizedCodes),
+                                 @"newlyLocalizedCodes" : SBSJSObjectsFromCodeArray(session.newlyLocalizedCodes),
+                                 @"allRecognizedCodes" : SBSJSObjectsFromCodeArray(session.allRecognizedCodes),
+                                 }];
     CDVPluginResult * result =
-        [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultArray];
+    [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultArray];
     [result setKeepCallback:@(YES)];
-    [self.didScanCondition lock];
-    self.didScanCallbackFinished = NO;
-    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-    while (!self.didScanCallbackFinished) {
-        [self.didScanCondition wait];
+    
+    if (![NSThread isMainThread]) {
+        [self.didScanCondition lock];
+        self.didScanCallbackFinish = NO;
     }
-    return self.desiredState;
+    
+    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+    
+    if ([NSThread isMainThread]) {
+        // We are on the main thread where the callback will be invoked on as well, we can't
+        // wait for a response and have to immediately continue.
+        self.immediatelySwitchToDesiredState = YES;
+        return self.scanCase.state;
+    } else {
+        while (!self.didScanCallbackFinish) {
+            [self.didScanCondition wait];
+        }
+        return self.desiredState;
+    }
 }
 
 - (void)scanCase:(SBSScanCase *)scanCase
   didChangeState:(SBSScanCaseState)state
           reason:(SBSScanCaseStateChangeReason)reason {
     NSArray* resultArray = @[kSBSScanCaseDidChangeStateEvent, @{
-         @"state" : SBSScanStateToString(state),
-         @"reason" : SBSScanStateChangeReasonToString(reason)
-    }];
+                                 @"state" : SBSScanStateToString(state),
+                                 @"reason" : SBSScanStateChangeReasonToString(reason)
+                                 }];
     CDVPluginResult * result =
-        [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultArray];
+    [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultArray];
     [result setKeepCallback:@(YES)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
 }

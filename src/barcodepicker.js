@@ -19,6 +19,11 @@ function BarcodePicker(scanSettings) {
 	}
 
     this.isShown = false;
+    
+    this.executingCallback = false;
+    this.pausedDuringCallback = false;
+    this.stoppedDuringCallback = false;
+    
 	this.continuousMode = false;
 	this.portraitMargins = null;
 	this.landscapeMargins = null;
@@ -42,17 +47,34 @@ BarcodePicker.prototype.show = function(success, manual, failure) {
 	if (this.orientations.length > 0) {
 		options["orientations"] = this.orientations;
 	}
-
+	var picker = this;
 	cordova.exec(function(session) {
+		picker.executingCallback = true;
+    	picker.pausedDuringCallback = false;
+    	picker.stoppedDuringCallback = false;
+    	
 		if (typeof session === 'string' || session instanceof String) {
-			manual(session);
-		} else {
+			if (manual) {			
+				manual(session);
+			}
+		} else if (success) {
 			var newlyRecognized = BarcodePicker.codeArrayFromGenericArray(session.newlyRecognizedCodes);
 			var newlyLocalized = BarcodePicker.codeArrayFromGenericArray(session.newlyLocalizedCodes);
 			var all = BarcodePicker.codeArrayFromGenericArray(session.allRecognizedCodes);
 			var properSession = new ScanSession(newlyRecognized, newlyLocalized, all);
+    		
 			success(properSession);
 		}
+		
+		picker.executingCallback = false;
+		var nextStep = 0;
+		if (picker.stoppedDuringCallback) {
+			nextStep = 2;
+		} else if (picker.pausedDuringCallback) {
+			nextStep = 1;
+		}
+		cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep]);
+	
 	}, failure, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);
 
     this.isShown = true;
@@ -94,13 +116,21 @@ BarcodePicker.prototype.startScanning = function(paused) {
 
 BarcodePicker.prototype.stopScanning = function() {
 	if (this.isShown) {
-    	cordova.exec(null, null, "ScanditSDK", "stop", []);
+		if (this.executingCallback) {
+			this.stoppedDuringCallback = true;
+		} else {
+	    	cordova.exec(null, null, "ScanditSDK", "stop", []);
+	    }
     }
 }
 
 BarcodePicker.prototype.pauseScanning = function() {
 	if (this.isShown) {
-	    cordova.exec(null, null, "ScanditSDK", "pause", []);
+		if (this.executingCallback) {
+			this.pausedDuringCallback = true;
+		} else {
+	    	cordova.exec(null, null, "ScanditSDK", "pause", []);
+	    }
 	}
 }
 

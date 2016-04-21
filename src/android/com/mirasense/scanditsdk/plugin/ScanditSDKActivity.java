@@ -204,11 +204,12 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
                 } else {
                     bundle.putString("jsonString", ScanditSDKResultRelay.jsonForSession(session).toString());
                 }
-                ScanditSDKResultRelay.onResult(bundle);
+                int nextState = ScanditSDKResultRelay.onResult(bundle);
+                switchToNextScanState(nextState, session);
             }
         }
     }
-
+    
     @Override
     public void didEnter(String entry) {
         if (!mContinuousMode) {
@@ -229,7 +230,8 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
             } else {
                 bundle.putString("string", entry.trim());
             }
-            ScanditSDKResultRelay.onResult(bundle);
+            int nextState = ScanditSDKResultRelay.onResult(bundle);
+            switchToNextScanState(nextState, null);
         }
     }
     
@@ -237,7 +239,23 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
     public void onBackPressed() {
         didCancel();
     }
-
+    
+    private void switchToNextScanState(int nextState, ScanSession session) {
+        if (nextState == 2) {
+            if (session != null) {
+                session.stopScanning();
+            } else if (mBarcodePicker != null) {
+                mBarcodePicker.stopScanning();
+            }
+        } else if (nextState == 1) {
+            if (session != null) {
+                session.pauseScanning();
+            } else if (mBarcodePicker != null) {
+                mBarcodePicker.pauseScanning();
+            }
+        }
+    }
+    
     public static void cancel() {
         if (sActiveActivity != null) {
             sActiveActivity.didCancel();

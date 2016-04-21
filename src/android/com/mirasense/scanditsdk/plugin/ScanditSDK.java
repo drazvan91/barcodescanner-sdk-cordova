@@ -54,8 +54,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCallback,
-        OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
-
+OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
+    
     public static final String INIT_LICENSE = "initLicense";
     public static final String SHOW = "show";
     public static final String SCAN = "scan";
@@ -68,7 +68,8 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
     public static final String RESIZE = "resize";
     public static final String UPDATE_OVERLAY = "updateOverlay";
     public static final String TORCH = "torch";
-   
+    public static final String FINISH_DID_SCAN = "finishDidScanCallback";
+    
     public static int SCREEN_HEIGHT;
     public static int SCREEN_WIDTH;
 
@@ -83,7 +84,11 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
 
     private ScanditWorker mWorker = null;
     private boolean mLegacyMode = false;
-
+    
+    private int mNextState;
+    private boolean mDidScanCallbackFinish;
+    
+    
     
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -94,46 +99,37 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         
         if (action.equals(INIT_LICENSE)) {
             initLicense(args);
-            return true;
         } else if (action.equals(SHOW)) {
             mCallbackContext = callbackContext;
             show(args);
-            return true;
         } else if (action.equals(SCAN)) {
             mCallbackContext = callbackContext;
             scan(args);
-            return true;
         } else if (action.equals(APPLY_SETTINGS)) {
             applySettings(args);
-            return true;
         } else if (action.equals(CANCEL)) {
             cancel(args);
-            return true;
         } else if (action.equals(PAUSE)) {
             pause(args);
-            return true;
         } else if (action.equals(RESUME)) {
             resume(args);
-            return true;
         } else if (action.equals(STOP)) {
             stop(args);
-            return true;
         } else if (action.equals(START)) {
             start(args);
-            return true;
         } else if (action.equals(RESIZE)) {
             resize(args);
-            return true;
         } else if (action.equals(UPDATE_OVERLAY)) {
             updateOverlay(args);
-            return true;
         } else if (action.equals(TORCH)) {
             torch(args);
-            return true;
+        } else if (action.equals(FINISH_DID_SCAN)) {
+            finishDidScanCallback(args);
         } else {
             callbackContext.error("Invalid Action: " + action);
             return false;
         }
+        return true;
     }
 
     private void initLicense(JSONArray data) {
@@ -323,6 +319,8 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                                         LegacyUIParamParser.updatePickerUI(cordova.getActivity(), mBarcodePicker, bundle);
                                     }
                                     PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
+                                    done.set(true);
+                                    notify();
                                 }
                             }
                         };
@@ -379,35 +377,20 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             }
         });
     }
-
+    
     private void start(JSONArray data) {
-        final Bundle options = new Bundle();
-
-        if (data.length() > 0) {
-            try {
-                setOptionsOnBundle(data.getJSONObject(0), options);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         mWorker.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (mBarcodePicker != null) {
-                    if (options.containsKey(PhonegapParamParser.paramPaused)
-                            && options.getBoolean(PhonegapParamParser.paramPaused)) {
-                        mBarcodePicker.startScanning(true);
-                    } else {
-                        mBarcodePicker.startScanning();
-                    }
+                    mBarcodePicker.startScanning();
                 } else {
                     ScanditSDKActivity.start();
                 }
             }
         });
     }
-
+    
     private void pause(JSONArray data) {
         mWorker.getHandler().post(new Runnable() {
             @Override
@@ -474,13 +457,7 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             }
         });
     }
-
-    /**
-     * Switches the torch on or off. Pass true to turn it on, false to turn it off.
-     * You call this the following way from java script:
-     *
-     * cordova.exec(null, null, "ScanditSDK", "torch", [true]);
-     */
+    
     private void torch(final JSONArray data) {
         if (data.length() < 1) {
             Log.e("ScanditSDK", "The torch call received too few arguments and has to return without starting.");
@@ -509,13 +486,29 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         });
     }
     
+    private void finishDidScanCallback(final JSONArray data) {
+        if (data.length() > 0) {
+            try {
+                mNextState = data.getInt(0);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mNextState = 0;
+        }
+        synchronized (this) {
+            mDidScanCallbackFinish = true;
+            notify();
+        }
+    }
+    
     private void removeSubviewPicker() {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 if (mBarcodePicker != null) {
                     mBarcodePicker.stopScanning();
                 }
-
+                
                 ViewGroup viewGroup = getViewGroupToAddTo();
                 if (viewGroup != null) {
                     viewGroup.removeView(mLayout);
@@ -525,10 +518,10 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             }
         });
     }
-
+    
     private void setOptionsOnBundle(JSONObject options, Bundle bundle) {
         @SuppressWarnings("unchecked")
-        Iterator<String> iter = (Iterator<String>) options.keys();
+        Iterator<String> iter = options.keys();
         while (iter.hasNext()) {
             String key = iter.next();
             Object obj = options.opt(key);
@@ -575,17 +568,17 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             PluginResult result = resultForBundle(data.getExtras());
             mPendingOperation = false;
             mHandler.stop();
-            mCallbackContext.sendPluginResult(result);
-
+            sendPluginResultBlocking(result);
+            
         } else if (resultCode == ScanditSDKActivity.CANCEL) {
             mPendingOperation = false;
             mHandler.stop();
             mCallbackContext.error("Canceled");
         }
     }
-
+    
     @Override
-    public void onResultByRelay(Bundle bundle) {
+    public int onResultByRelay(Bundle bundle) {
         PluginResult result = resultForBundle(bundle);
         if (mContinuousMode) {
             result.setKeepCallback(true);
@@ -593,9 +586,10 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             mPendingOperation = false;
             mHandler.stop();
         }
-        mCallbackContext.sendPluginResult(result);
+        
+        return sendPluginResultBlocking(result);
     }
-
+    
     private PluginResult resultForBundle(Bundle bundle) {
         PluginResult result;
         if (bundle.containsKey("jsonString")) {
@@ -641,10 +635,51 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
                 mPendingOperation = false;
                 mHandler.stop();
             }
-            mCallbackContext.sendPluginResult(result);
+            
+            int nextState = sendPluginResultBlocking(result);
+            switchToNextScanState(nextState, session);
         }
     }
-
+    
+    private int sendPluginResultBlocking(PluginResult result) {
+        if (mLegacyMode || !mContinuousMode) {
+            mCallbackContext.sendPluginResult(result);
+            return 0;
+            
+        } else {
+            mDidScanCallbackFinish = false;
+            mNextState = 0;
+            
+            try {
+                mCallbackContext.sendPluginResult(result);
+                synchronized (this) {
+                    while (!mDidScanCallbackFinish) {
+                        wait();
+                    }
+                }
+            } catch (InterruptedException e) {
+            }
+            
+            return mNextState;
+        }
+    }
+    
+    private void switchToNextScanState(int nextState, ScanSession session) {
+        if (nextState == 2) {
+            if (session != null) {
+                session.stopScanning();
+            } else if (mBarcodePicker != null) {
+                mBarcodePicker.stopScanning();
+            }
+        } else if (nextState == 1) {
+            if (session != null) {
+                session.pauseScanning();
+            } else if (mBarcodePicker != null) {
+                mBarcodePicker.pauseScanning();
+            }
+        }
+    }
+    
     @Override
     public void didEnter(String entry) {
         PluginResult result;
@@ -663,9 +698,9 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             mPendingOperation = false;
             mHandler.stop();
         }
-        mCallbackContext.sendPluginResult(result);
+        sendPluginResultBlocking(result);
     }
-
+    
     private ViewGroup getViewGroupToAddTo() {
         if (webView instanceof WebView) {
             return (ViewGroup) webView;
@@ -687,12 +722,12 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
         }
         return null;
     }
-
+    
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         DisplayMetrics display =  this.cordova.getActivity().
-                getApplicationContext().getResources().getDisplayMetrics();
+        getApplicationContext().getResources().getDisplayMetrics();
         SCREEN_WIDTH = (int) (display.widthPixels * 160.f / display.densityDpi);
         SCREEN_HEIGHT = (int) (display.heightPixels * 160.f / display.densityDpi);
     }

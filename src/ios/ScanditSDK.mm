@@ -41,6 +41,11 @@
 @property (nonatomic, strong) ScanditSDKRotatingBarcodePicker *scanditBarcodePicker;
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, assign) BOOL legacyMode;
+
+@property (nonatomic, strong) NSCondition* didScanCondition;
+@property (nonatomic, assign) int nextState;
+@property (nonatomic, assign) BOOL immediatelySwitchToNextState;
+@property (nonatomic, assign) BOOL didScanCallbackFinish;
 @end
 
 
@@ -278,9 +283,7 @@
 }
 
 - (void)stop:(CDVInvokedUrlCommand *)command {
-    NSLog(@"stopScanning");
     dispatch_async(self.queue, ^{
-        NSLog(@"stopScanning execute");
         [self.scanditBarcodePicker stopScanning];
     });
 }
@@ -315,6 +318,22 @@
         NSNumber *enabled = [command.arguments objectAtIndex:0];
         [self.scanditBarcodePicker switchTorchOn:[enabled boolValue]];
     });
+}
+
+- (void)finishDidScanCallback:(CDVInvokedUrlCommand*)command {
+    if ([command.arguments count] > 0) {
+        int nextState = [[command.arguments objectAtIndex:0] intValue];
+        if (self.immediatelySwitchToNextState) {
+            [self switchToNextScanState:nextState withSession:nil];
+            self.immediatelySwitchToNextState = NO;
+        } else {
+            self.nextState = nextState;
+        }
+    } else {
+        self.nextState = 0;
+    }
+    self.didScanCallbackFinish = YES;
+    [self.didScanCondition signal];
 }
 
 
@@ -352,22 +371,7 @@
 }
 
 - (void)scannedSession:(SBSScanSession *)session {
-    CDVPluginResult *pluginResult;
-    if (self.legacyMode) {
-        SBSCode *newCode = [session.newlyRecognizedCodes objectAtIndex:0];
-        NSArray *result = [[NSArray alloc] initWithObjects:[newCode data], [newCode symbologyString], nil];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                          messageAsArray:result];
-        
-    } else {
-        NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                [self jsObjectsFromCodeArray:session.newlyRecognizedCodes], @"newlyRecognizedCodes",
-                                [self jsObjectsFromCodeArray:session.newlyLocalizedCodes], @"newlyLocalizedCodes",
-                                [self jsObjectsFromCodeArray:session.allRecognizedCodes], @"allRecognizedCodes", nil];
-        
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                     messageAsDictionary:result];
-    }
+    CDVPluginResult *pluginResult = [self resultForSession:session];
     
     if (!self.continuousMode) {
         if (session) {
@@ -389,8 +393,67 @@
     } else {
         [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
     }
-	
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    
+    int nextState = [self sendPluginResultBlocking:pluginResult];
+    [self switchToNextScanState:nextState withSession:session];
+}
+
+- (CDVPluginResult *)resultForSession:(SBSScanSession *)session {
+    if (self.legacyMode) {
+        SBSCode *newCode = [session.newlyRecognizedCodes objectAtIndex:0];
+        NSArray *result = [[NSArray alloc] initWithObjects:[newCode data], [newCode symbologyString], nil];
+        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:result];
+        
+    } else {
+        NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                [self jsObjectsFromCodeArray:session.newlyRecognizedCodes], @"newlyRecognizedCodes",
+                                [self jsObjectsFromCodeArray:session.newlyLocalizedCodes], @"newlyLocalizedCodes",
+                                [self jsObjectsFromCodeArray:session.allRecognizedCodes], @"allRecognizedCodes", nil];
+        
+        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+    }
+}
+
+- (int)sendPluginResultBlocking:(CDVPluginResult *)result {
+    if (self.legacyMode || !self.continuousMode) {
+        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        return 0;
+        
+    } else {
+        if (![NSThread isMainThread]) {
+            [self.didScanCondition lock];
+            self.didScanCallbackFinish = NO;
+        }
+        
+        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        
+        if ([NSThread isMainThread]) {
+            // We are on the main thread where the callback will be invoked on as well, we can't
+            // wait for a response and have to immediately continue.
+            self.immediatelySwitchToNextState = YES;
+        } else {
+            while (!self.didScanCallbackFinish) {
+                [self.didScanCondition wait];
+            }
+        }
+        return self.nextState;
+    }
+}
+
+- (void)switchToNextScanState:(int)nextState withSession:(SBSScanSession *)session {
+    if (nextState == 2) {
+        if (session) {
+            [session stopScanning];
+        } else if (self.scanditBarcodePicker) {
+            [self.scanditBarcodePicker stopScanning];
+        }
+    } else if (nextState == 1) {
+        if (session) {
+            [session pauseScanning];
+        } else if (self.scanditBarcodePicker) {
+            [self.scanditBarcodePicker pauseScanning];
+        }
+    }
 }
 
 - (NSArray *)jsObjectsFromCodeArray:(NSArray *)codes {
@@ -461,7 +524,7 @@
         [self.scanditBarcodePicker.overlayController resetUI];
     }
     
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    [self sendPluginResultBlocking:pluginResult];
 }
 
 @end

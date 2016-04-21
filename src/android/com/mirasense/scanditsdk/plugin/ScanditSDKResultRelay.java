@@ -37,12 +37,13 @@ public class ScanditSDKResultRelay {
         mCallback = callback;
     }
     
-    public static void onResult(Bundle bundle) {
+    public static int onResult(Bundle bundle) {
         if (mCallback != null) {
-            mCallback.onResultByRelay(bundle);
+            return mCallback.onResultByRelay(bundle);
         }
+        return 0;
     }
-
+    
     public static JSONObject jsonForSession(ScanSession session) {
         JSONObject json = new JSONObject();
         try {
@@ -74,6 +75,6 @@ public class ScanditSDKResultRelay {
     }
     
     public interface ScanditSDKResultRelayCallback {
-        void onResultByRelay(Bundle bundle);
+        int onResultByRelay(Bundle bundle);
     }
 }

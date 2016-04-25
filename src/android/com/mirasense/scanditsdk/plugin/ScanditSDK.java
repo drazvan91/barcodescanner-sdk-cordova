@@ -301,38 +301,25 @@ public class ScanditSDK extends CordovaPlugin implements ScanditSDKResultRelayCa
             }
         });
     }
-
+    
     private void applySettings(JSONArray data) {
         if (data.length() < 1) {
             Log.e("ScanditSDK", "The applySettings call received too few arguments and has to return without starting.");
             return;
         }
         try {
-            final Bundle bundle = new Bundle();
-            setOptionsOnBundle(data.getJSONObject(0), bundle);
-
+            final JSONObject settings = data.getJSONObject(0);
+            
             mWorker.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     if (mBarcodePicker != null) {
-                        final AtomicBoolean done = new AtomicBoolean(false);
-                        Runnable task = new Runnable() {
-                            public void run() {
-                                synchronized (this) {
-                                    if (mLegacyMode) {
-                                        LegacyUIParamParser.updatePickerUI(cordova.getActivity(), mBarcodePicker, bundle);
-                                    }
-                                    PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
-                                }
-                            }
-                        };
-                        cordova.getActivity().runOnUiThread(task);
-                        synchronized (task) {
-                            while (!done.get()) {
-                                try {
-                                    task.wait();
-                                } catch (InterruptedException e) {}
-                            }
+                        try {
+                            ScanSettings scanSettings = ScanSettings.createWithJson(settings);
+                            mBarcodePicker.applyScanSettings(scanSettings);
+                        } catch (JSONParseException e) {
+                            Log.e("ScanditSDK", "Exception when creating settings");
+                            e.printStackTrace();
                         }
                     }
                 }

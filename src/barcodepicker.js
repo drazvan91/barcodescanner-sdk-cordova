@@ -116,7 +116,7 @@ BarcodePicker.prototype.startScanning = function(paused) {
 
 BarcodePicker.prototype.stopScanning = function() {
 	if (this.isShown) {
-		if (this.executingCallback) {
+	    if (this.executingCallback && (!cordova.platformId || cordova.platformId !== "windows")) {
 			this.stoppedDuringCallback = true;
 		} else {
 	    	cordova.exec(null, null, "ScanditSDK", "stop", []);
@@ -126,7 +126,7 @@ BarcodePicker.prototype.stopScanning = function() {
 
 BarcodePicker.prototype.pauseScanning = function() {
 	if (this.isShown) {
-		if (this.executingCallback) {
+	    if (this.executingCallback && (!cordova.platformId || cordova.platformId !== "windows")) {
 			this.pausedDuringCallback = true;
 		} else {
 	    	cordova.exec(null, null, "ScanditSDK", "pause", []);

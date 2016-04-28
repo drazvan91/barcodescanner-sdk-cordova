@@ -1,3 +1,4 @@
+
 //  SBSTypeConversion.m
 //  HelloCordova
 //
@@ -12,13 +13,22 @@
 NSArray *SBSJSObjectsFromCodeArray(NSArray *codes) {
     NSMutableArray *finalArray = [[NSMutableArray alloc] init];
     for (SBSCode *code in codes) {
-        NSMutableDictionary *dict =
-            [NSMutableDictionary dictionaryWithObjectsAndKeys:
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                      [code symbologyName], @"symbology",
                                      [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
                                      [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
+        [dict setObject:@(code.compositeFlag) forKey:@"compositeFlag"];
         if ([code isRecognized]) {
-            [dict setObject:[code data] forKey:@"data"];
+            [dict setObject:code.data forKey:@"data"];
+            // convert raw data to array of integers
+            NSData* rawData = code.rawData;
+            NSMutableArray* rawDataAsIntArray = [NSMutableArray arrayWithCapacity:rawData.length];
+            const uint8_t* bytes = (const uint8_t*)[rawData bytes];
+            for (NSUInteger i = 0; i < rawData.length; ++i) {
+                int byte = bytes[i];
+                [rawDataAsIntArray addObject:@(byte)];
+            }
+            [dict setObject:rawDataAsIntArray forKey:@"rawData"];
         }
         [finalArray addObject:dict];
     }

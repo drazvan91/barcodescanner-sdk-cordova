@@ -87,6 +87,8 @@ BarcodePicker.codeArrayFromGenericArray = function(genericArray) {
 		var code = new Barcode(genericArray[i].gs1DataCarrier, genericArray[i].recognized);
 		code.symbology = genericArray[i].symbology;
 		code.data = genericArray[i].data;
+		code.rawData = genericArray[i].rawData;
+		code.compositeFlag = genericArray[i].compositeFlag;
 		codeArray.push(code);
 	}
 	return codeArray;

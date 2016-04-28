@@ -66,6 +66,15 @@ public class ScanditSDKResultRelay {
                 object.put("gs1DataCarrier", code.isGs1DataCarrier());
                 object.put("recognized", code.isRecognized());
                 object.put("data", code.getData());
+                object.put("compositeFlag", code.getCompositeFlag());
+                if (code.isRecognized()) {
+                    JSONArray bytes = new JSONArray();
+                    byte[] rawData = code.getRawData();
+                    for (byte theByte : rawData) {
+                        bytes.put((int)theByte);
+                    }
+                    object.put("rawData", bytes);
+                }
                 array.put(object);
             } catch (JSONException e) {
                 e.printStackTrace();

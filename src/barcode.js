@@ -23,6 +23,7 @@ Barcode.Symbology = {
 	QR: "qr",
 	DATA_MATRIX: "data-matrix",
 	PDF417: "pdf417",
+	MICRO_PDF417: "micropdf417",
 	MSI_PLESSEY: "msi-plessey",
 	GS1_DATABAR: "databar",
 	GS1_DATABAR_LIMITED: "databar-limited",

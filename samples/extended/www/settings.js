@@ -16,6 +16,7 @@
            { ids: ['codabar'], title: "Codabar", enabled: false },
            { ids: ['qr'], title: "QR", enabled: true },
            { ids: ['pdf417'], title: "PDF417", enabled: false },
+           { ids: ['micropdf417'], title: "MicroPDF417", enabled: false },
            { ids: ['data-matrix'], title: "Data Matrix", enabled: true },
            { ids: ['aztec'], title: "Aztec", enabled: false },
            { ids: ['maxicode'], title: "Maxi Code", enabled: false },

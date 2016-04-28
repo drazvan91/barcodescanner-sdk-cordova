@@ -42,6 +42,7 @@ function ScanSettings() {
     this.symbologies[Barcode.Symbology.DATA_MATRIX] = new SymbologySettings();
     
     this.symbologies[Barcode.Symbology.PDF417] = new SymbologySettings();
+    this.symbologies[Barcode.Symbology.MICRO_PDF417] = new SymbologySettings();
     
     this.symbologies[Barcode.Symbology.MSI_PLESSEY] = new SymbologySettings();
     this.symbologies[Barcode.Symbology.MSI_PLESSEY].activeSymbolCounts = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];

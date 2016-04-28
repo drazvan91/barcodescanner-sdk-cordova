@@ -1,3 +1,4 @@
+
 //
 //  Copyright 2010 Mirasense AG
 //
@@ -23,7 +24,7 @@
 #import "SBSUIParamParser.h"
 #import "SBSPhonegapParamParser.h"
 #import "SBSLocalScanSession.h"
-
+#import "SBSTypeConversion.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
 
@@ -406,9 +407,9 @@
         
     } else {
         NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                [self jsObjectsFromCodeArray:session.newlyRecognizedCodes], @"newlyRecognizedCodes",
-                                [self jsObjectsFromCodeArray:session.newlyLocalizedCodes], @"newlyLocalizedCodes",
-                                [self jsObjectsFromCodeArray:session.allRecognizedCodes], @"allRecognizedCodes", nil];
+                                SBSJSObjectsFromCodeArray(session.newlyRecognizedCodes), @"newlyRecognizedCodes",
+                                SBSJSObjectsFromCodeArray(session.newlyLocalizedCodes), @"newlyLocalizedCodes",
+                                SBSJSObjectsFromCodeArray(session.allRecognizedCodes), @"allRecognizedCodes", nil];
         
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
     }
@@ -455,22 +456,6 @@
         }
     }
 }
-
-- (NSArray *)jsObjectsFromCodeArray:(NSArray *)codes {
-    NSMutableArray *finalArray = [[NSMutableArray alloc] init];
-    for (SBSCode *code in codes) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                     [code symbologyName], @"symbology",
-                                     [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
-                                     [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
-        if ([code isRecognized]) {
-            [dict setObject:[code data] forKey:@"data"];
-        }
-        [finalArray addObject:dict];
-    }
-    return finalArray;
-}
-
 
 #pragma mark - SBSOverlayControllerDidCancelDelegate
 

@@ -266,6 +266,48 @@ public class Scandit {
     		 */
 			TWO_DIGIT_ADD_ON
 		}
+
+
+        /**
+         * @brief Composite flags for barcodes/2D codes.
+         */
+        public enum CompositeFlag {
+            /**
+            * @brief Code is not part of a composite code.
+            */
+            NONE,
+            /**
+            * @brief Code could be part of a composite code.
+            *
+            * This flag is set by linear (1d) symbologies that have no composite flag support 
+            * but can be part of a composite code like the EAN/UPC symbology family.
+            */
+            UNKNOWN,
+            /**
+            * @brief Code is the linear component of a composite code.
+            *
+            * This flag can be set by GS1 DataBar or GS1-128 (Code 128).
+            */
+            LINKED,
+            /**
+            * @brief Code is a GS1 Composite Code Type A (CC-A).
+            *
+            * This flag can be set by MicroPDF417 codes.
+            */
+            GS1_TYPE_A,
+            /**
+             * @brief Code is a GS1 Composite Code Type B (CC-B).
+             *
+             * This flag can be set by MicroPDF417 codes.
+             */
+             GS1_TYPE_B,
+             /**
+             * @brief Code is a GS1 Composite Code Type C (CC-C).
+             *
+             * This flag can be set by PDF417 codes.
+             */
+             GS1_TYPE_C,
+        };
 		
 		/**
 		 * The symbology of a recognized barcode. Codes for which {@link isRecognized()} returns 
@@ -302,12 +344,33 @@ public class Scandit {
 		 *
 		 * For some types of barcodes/2D codes (for example DATAMATRIX, AZTEC, PDF417), the
 		 * data string may contain non-printable characters and nul-bytes in the middle of
-		 * the string. Use {@link getRawData()} if your application scans these types of codes
+		 * the string. Use {@link rawData} if your application scans these types of codes
 		 * and you are expecting binary/non-printable data.
 		 *
 		 * @return the data contained in the code.
 		 */
 		public String data;
+
+
+        /**
+         * @brief The data contained in the barcode/2D code, e.g. the 13 digit number of an 
+         *     EAN13 code.
+         *
+         * The data is stored as an array of integers, where each item in the array corresponds 
+         * to the char code. Use this property instead of {@link data} if your application 
+         * expects to scan codes containing binary data that can not be represented as UTF-8 
+         * strings.
+         */
+        public int[] rawData;
+
+
+        /**
+         * @brief the composite flag of the barcode
+         *
+         * For codes that have been localized but not recognized, CompositeFlag.UNKNOWN is 
+         * returned.
+         */
+		public CompositeFlag compositeFlag;
 		
 		/**
 		 * @brief The location of the code in the image.

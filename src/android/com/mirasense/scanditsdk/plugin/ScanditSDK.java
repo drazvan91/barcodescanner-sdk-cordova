@@ -283,6 +283,11 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
                     }
 
                 } else {
+                    int flags = cordova.getActivity().getWindow().getAttributes().flags;
+                    if ((flags & WindowManager.LayoutParams.FLAG_SECURE) != 0) {
+                        options.putBoolean("secure", true);
+                    }
+
                     ScanditSDKResultRelay.setCallback(ScanditSDK.this);
                     Intent intent = new Intent(cordova.getActivity(), ScanditSDKActivity.class);
                     if (settings != null) {

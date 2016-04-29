@@ -94,6 +94,10 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        if (options.getBoolean("secure")) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
+
         ScanSettings scanSettings;
         if (mLegacyMode) {
             scanSettings = LegacySettingsParamParser.getSettings(options);

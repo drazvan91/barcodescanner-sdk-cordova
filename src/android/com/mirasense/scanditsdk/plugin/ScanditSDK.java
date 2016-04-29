@@ -191,11 +191,6 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
             return;
         }
 
-        int flags = cordova.getActivity().getWindow().getAttributes().flags;
-        if ((flags & WindowManager.LayoutParams.FLAG_SECURE) != 0) {
-            options.putBoolean("secure", true);
-        }
-
         if (data.length() > 1) {
             // We extract all options and add them to the intent extra bundle.
             try {
@@ -288,6 +283,11 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
                     }
 
                 } else {
+                    int flags = cordova.getActivity().getWindow().getAttributes().flags;
+                    if ((flags & WindowManager.LayoutParams.FLAG_SECURE) != 0) {
+                        options.putBoolean("secure", true);
+                    }
+
                     ScanditSDKResultRelay.setCallback(ScanditSDK.this);
                     Intent intent = new Intent(cordova.getActivity(), ScanditSDKActivity.class);
                     if (settings != null) {

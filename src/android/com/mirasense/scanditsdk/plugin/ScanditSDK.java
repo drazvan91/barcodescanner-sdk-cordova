@@ -314,15 +314,19 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
             mWorker.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
-                    if (mBarcodePicker != null) {
-                        try {
-                            ScanSettings scanSettings = ScanSettings.createWithJson(settings);
-                            mBarcodePicker.applyScanSettings(scanSettings);
-                        } catch (JSONParseException e) {
-                            Log.e("ScanditSDK", "Exception when creating settings");
-                            e.printStackTrace();
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            if (mBarcodePicker != null) {
+                                try {
+                                    ScanSettings scanSettings = ScanSettings.createWithJson(settings);
+                                    mBarcodePicker.applyScanSettings(scanSettings);
+                                } catch (JSONParseException e) {
+                                    Log.e("ScanditSDK", "Exception when creating settings");
+                                    e.printStackTrace();
+                                }
+                            }
                         }
-                    }
+                    });
                 }
             });
         } catch (JSONException e) {

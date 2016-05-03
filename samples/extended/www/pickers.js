@@ -29,6 +29,7 @@
 	    }
         var scope = angular.element(document.body).scope();
         scope.$apply(function () {
+            exports.canClose = false;
             scope.setMargin(marginLeft, marginTop, marginRight, marginBottom);
             scope.setLandscapeMargin(marginLeft, marginTop, marginRight, marginBottom);
             scope.startPicker();
@@ -53,16 +54,16 @@
                 buttons[i].disabled = true;
             }
             setTimeout(function () {
-                exports.canClose = true
+                exports.canClose = exports.pickerOpen;
             }, 2000);
 	    }
     }
 
     exports.hide = function () {
-	    if(exports.canClose) {
+	    if(exports.canClose && exports.pickerOpen) {
 	        var scope = angular.element(document.body).scope();
-                scope.$apply(function () {
-                    scope.stopPicker();
+            scope.$apply(function () {
+                scope.stopPicker();
 	        });
 	        exports.pickerOpen = false;
 	        exports.canClose = false;

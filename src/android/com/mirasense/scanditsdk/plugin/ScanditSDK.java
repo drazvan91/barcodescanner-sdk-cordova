@@ -19,6 +19,7 @@ package com.mirasense.scanditsdk.plugin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -70,8 +71,7 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
     public static final String TORCH = "torch";
     public static final String FINISH_DID_SCAN = "finishDidScanCallback";
     
-    public static int SCREEN_HEIGHT;
-    public static int SCREEN_WIDTH;
+    private Point mScreenDimensions = null;
 
     private CallbackContext mCallbackContext;
     private boolean mContinuousMode = false;
@@ -256,7 +256,8 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
                                 RelativeLayout.LayoutParams rLayoutParams = new RelativeLayout.LayoutParams(
                                         RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
                                 mLayout.addView(mBarcodePicker, rLayoutParams);
-                                PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, options);
+                                PhonegapParamParser.updateLayout(cordova.getActivity(),
+                                        mBarcodePicker, options, mScreenDimensions);
 
                                 // Only already start in legacy mode.
                                 if (mLegacyMode) {
@@ -444,7 +445,8 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
                             if (mLegacyMode) {
                                 LegacyUIParamParser.updatePickerUI(cordova.getActivity(), mBarcodePicker, bundle);
                             }
-                            PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
+                            PhonegapParamParser.updateLayout(cordova.getActivity(),
+                                    mBarcodePicker, bundle, mScreenDimensions);
                         }
                     });
                 }
@@ -722,8 +724,9 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
         super.initialize(cordova, webView);
         DisplayMetrics display =  this.cordova.getActivity().
         getApplicationContext().getResources().getDisplayMetrics();
-        SCREEN_WIDTH = (int) (display.widthPixels * 160.f / display.densityDpi);
-        SCREEN_HEIGHT = (int) (display.heightPixels * 160.f / display.densityDpi);
+        int width = (int) (display.widthPixels * 160.f / display.densityDpi);
+        int height = (int) (display.heightPixels * 160.f / display.densityDpi);
+        mScreenDimensions = new Point(Math.min(width, height), Math.max(width, height));
     }
 
     @Override
@@ -824,7 +827,8 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
                                                   mBarcodePicker.landscapeConstraints.getHeight());
                             bundle.putBundle(PhonegapParamParser.paramLandscapeConstraints, constraints);
                             
-                            PhonegapParamParser.updateLayout(cordova.getActivity(), mBarcodePicker, bundle);
+                            PhonegapParamParser.updateLayout(cordova.getActivity(),
+                                    mBarcodePicker, bundle, mScreenDimensions);
                         }
                     });
                     mLastRotation = displayRotation;

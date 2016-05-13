@@ -61,15 +61,22 @@
                                 duration:(NSTimeInterval)duration {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
-    [self adjustSize:0];
+    [self adjustSize:0 newOrientation:toInterfaceOrientation];
 }
 
+
 - (void)adjustSize:(CGFloat)animationDuration {
+    [self adjustSize:animationDuration newOrientation:UIInterfaceOrientationUnknown];
+}
+
+- (void)adjustSize:(CGFloat)animationDuration newOrientation:(UIInterfaceOrientation)newOrientation {
     if (self.parentViewController && self.view.superview) {
         
         [UIView animateWithDuration:animationDuration animations:^{
             SBSConstraints *constraints = self.portraitConstraints;
-            if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+            if ((newOrientation == UIInterfaceOrientationUnknown
+                && UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
+                || UIInterfaceOrientationIsLandscape(newOrientation)) {
                 constraints = self.landscapeConstraints;
             }
             

@@ -43,7 +43,7 @@ public class ScanditSDKSearchBar extends RelativeLayout {
         mSearchEditText.setLines(1);
         mSearchEditText.setEllipsize(TruncateAt.START);
         mSearchEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        mSearchEditText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        mSearchEditText.setImeOptions(EditorInfo.IME_ACTION_GO);
         rParams = new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         rParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);

@@ -1,6 +1,7 @@
 package com.mirasense.scanditsdk.plugin;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,8 +61,8 @@ public class PhonegapParamParser {
     }
 
     public static void updateLayout(final Activity activity, final SearchBarBarcodePicker picker,
-                                    Bundle bundle) {
-        
+                                    Bundle bundle, Point screenDimensions) {
+
         if (picker == null || bundle == null) {
             return;
         }
@@ -79,11 +80,13 @@ public class PhonegapParamParser {
             Rect landscapeMargins = null;
             
             if (bundle.containsKey(paramPortraitMargins)) {
-                portraitMargins = extractMarginsRect(bundle, paramPortraitMargins);
+                portraitMargins = extractMarginsRect(bundle, paramPortraitMargins,
+                        screenDimensions.x, screenDimensions.y);
             }
             
             if (bundle.containsKey(paramLandscapeMargins)) {
-                portraitMargins = extractMarginsRect(bundle, paramLandscapeMargins);
+                portraitMargins = extractMarginsRect(bundle, paramLandscapeMargins,
+                        screenDimensions.y, screenDimensions.x);
             }
             
             SearchBarBarcodePicker.Constraints portraitConstraints =
@@ -98,18 +101,20 @@ public class PhonegapParamParser {
             SearchBarBarcodePicker.Constraints landscapeConstraints = new SearchBarBarcodePicker.Constraints();
             
             if (bundle.containsKey(paramPortraitConstraints)) {
-                portraitConstraints = extractConstraints(bundle, paramPortraitConstraints);
+                portraitConstraints = extractConstraints(bundle, paramPortraitConstraints,
+                        screenDimensions.x, screenDimensions.y);
             }
-            
+
             if (bundle.containsKey(paramLandscapeConstraints)) {
-                landscapeConstraints = extractConstraints(bundle, paramLandscapeConstraints);
+                landscapeConstraints = extractConstraints(bundle, paramLandscapeConstraints,
+                        screenDimensions.y, screenDimensions.x);
             }
-            
+
             picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
         }
     }
-    
-    private static Rect extractMarginsRect(Bundle bundle, String key) {
+
+    private static Rect extractMarginsRect(Bundle bundle, String key, int width, int height) {
         Rect result = null;
         if (bundle.getSerializable(key) != null
             && bundle.getSerializable(key) instanceof List) {
@@ -118,10 +123,10 @@ public class PhonegapParamParser {
                 (UIParamParser.checkClassOfListObjects(list, Integer.class) ||
                  UIParamParser.checkClassOfListObjects(list, String.class))) {
                     result = new Rect(
-                                      UIParamParser.getSize(list.get(0), ScanditSDK.SCREEN_WIDTH),
-                                      UIParamParser.getSize(list.get(1), ScanditSDK.SCREEN_HEIGHT),
-                                      UIParamParser.getSize(list.get(2), ScanditSDK.SCREEN_WIDTH),
-                                      UIParamParser.getSize(list.get(3), ScanditSDK.SCREEN_HEIGHT));
+                                      UIParamParser.getSize(list.get(0), width),
+                                      UIParamParser.getSize(list.get(1), height),
+                                      UIParamParser.getSize(list.get(2), width),
+                                      UIParamParser.getSize(list.get(3), height));
                 }
         } else if (bundle.getString(key) != null) {
             String portraitMarginsString = bundle.getString(key);
@@ -129,10 +134,10 @@ public class PhonegapParamParser {
             if (split.length == 4) {
                 try {
                     result = new Rect(
-                                      UIParamParser.getSize(split[0], ScanditSDK.SCREEN_WIDTH),
-                                      UIParamParser.getSize(split[1], ScanditSDK.SCREEN_HEIGHT),
-                                      UIParamParser.getSize(split[2], ScanditSDK.SCREEN_WIDTH),
-                                      UIParamParser.getSize(split[3], ScanditSDK.SCREEN_HEIGHT));
+                                      UIParamParser.getSize(split[0], width),
+                                      UIParamParser.getSize(split[1], height),
+                                      UIParamParser.getSize(split[2], width),
+                                      UIParamParser.getSize(split[3], height));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
@@ -142,23 +147,18 @@ public class PhonegapParamParser {
         }
         return result;
     }
-    
-    private static SearchBarBarcodePicker.Constraints extractConstraints(Bundle bundle, String key) {
+
+    private static SearchBarBarcodePicker.Constraints extractConstraints(Bundle bundle, String key,
+                                                                         int width, int height) {
         SearchBarBarcodePicker.Constraints result = new SearchBarBarcodePicker.Constraints();
         Bundle constraintsBundle = bundle.getBundle(key);
         if (constraintsBundle != null) {
-            result.setLeftMargin(UIParamParser.getSize(
-                                                       constraintsBundle, paramMarginLeft, ScanditSDK.SCREEN_WIDTH));
-            result.setTopMargin(UIParamParser.getSize(
-                                                      constraintsBundle, paramMarginTop, ScanditSDK.SCREEN_HEIGHT));
-            result.setRightMargin(UIParamParser.getSize(
-                                                        constraintsBundle, paramMarginRight, ScanditSDK.SCREEN_WIDTH));
-            result.setBottomMargin(UIParamParser.getSize(
-                                                         constraintsBundle, paramMarginBottom, ScanditSDK.SCREEN_HEIGHT));
-            result.setWidth(UIParamParser.getSize(
-                                                  constraintsBundle, paramWidth, ScanditSDK.SCREEN_WIDTH));
-            result.setHeight(UIParamParser.getSize(
-                                                   constraintsBundle, paramHeight, ScanditSDK.SCREEN_HEIGHT));
+            result.setLeftMargin(UIParamParser.getSize(constraintsBundle, paramMarginLeft, width));
+            result.setTopMargin(UIParamParser.getSize(constraintsBundle, paramMarginTop, height));
+            result.setRightMargin(UIParamParser.getSize(constraintsBundle, paramMarginRight, width));
+            result.setBottomMargin(UIParamParser.getSize(constraintsBundle, paramMarginBottom, height));
+            result.setWidth(UIParamParser.getSize(constraintsBundle, paramWidth, width));
+            result.setHeight(UIParamParser.getSize(constraintsBundle, paramHeight, height));
         } else {
             Log.e("ScanditSDK", "Failed to parse '" + key + "' - wrong type.");
         }

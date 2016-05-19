@@ -1,4 +1,3 @@
-
 var ScanOverlay = cordova.require("com.mirasense.scanditsdk.plugin.ScanOverlay");
 var ScanSettings = cordova.require("com.mirasense.scanditsdk.plugin.ScanSettings");
 var ScanSession = cordova.require("com.mirasense.scanditsdk.plugin.ScanSession");
@@ -37,45 +36,71 @@ BarcodePicker.Orientation = {
 	LANDSCAPE_LEFT: "landscapeRight"
 }
 
+BarcodePicker.prototype.show = function () {
+    var callbacks = {};
+    if (typeof arguments[0] === 'function' || arguments.length !== 1) {
+        // old method signature: BarcodePicker.show(success, manual, failure)
+        callbacks.didScan = arguments[0];
+        callbacks.didManualSearch = arguments.length > 1 && arguments[1] || null;
+        callbacks.didCancel = arguments.length > 2 && arguments[2] || null;
+    } else {
+        // new method signature: BarcodePicker.show({ didScan : function() });
+        callbacks = arguments[0];
+    }
+    // copy to options object. Previously we were directly passing 'this' to cordova, 
+    // but this caused the complete picker instance to be serialized.
+    var options = { continuousMode : this.continuousMode };
 
-BarcodePicker.prototype.show = function(success, manual, failure) {
-	var options = {"continuousMode": this.continuousMode};
+    if (this.portraitConstraints != null) {
+        options.portraitConstraints = this.portraitConstraints;
+    }
+    if (this.landscapeConstraints != null) {
+        options.landscapeConstraints = this.landscapeConstraints;
+    }
 
-    if (this.portraitConstraints != null) options["portraitConstraints"] = this.portraitConstraints;
-	if (this.landscapeConstraints != null) options["landscapeConstraints"] = this.landscapeConstraints;
+    if (this.orientations.length > 0) {
+        options.orientations = this.orientations;
+    }
+    var picker = this;
+    cordova.exec(function (args) {
+        var event = args[0];
+        if (event === 'didManualSearch') {
+            if (callbacks.didManualSearch) {
+                callbacks.didManualSearch(args[1]);
+            }
+            return;
+        }
+        if (event === 'didScan') {
+            picker.executingCallback = true;
+            picker.pausedDuringCallback = false;
+            picker.stoppedDuringCallback = false;
+            var session = args[1];
+            var newlyRecognized = BarcodePicker.codeArrayFromGenericArray(session.newlyRecognizedCodes);
+            var newlyLocalized = BarcodePicker.codeArrayFromGenericArray(session.newlyLocalizedCodes);
+            var all = BarcodePicker.codeArrayFromGenericArray(session.allRecognizedCodes);
+            var properSession = new ScanSession(newlyRecognized, newlyLocalized, all);
+            if (callbacks.didScan) {
+                callbacks.didScan(properSession);
+            }
 
-	if (this.orientations.length > 0) {
-		options["orientations"] = this.orientations;
-	}
-	var picker = this;
-	cordova.exec(function(session) {
-		picker.executingCallback = true;
-    	picker.pausedDuringCallback = false;
-    	picker.stoppedDuringCallback = false;
-    	
-		if (typeof session === 'string' || session instanceof String) {
-			if (manual) {			
-				manual(session);
-			}
-		} else if (success) {
-			var newlyRecognized = BarcodePicker.codeArrayFromGenericArray(session.newlyRecognizedCodes);
-			var newlyLocalized = BarcodePicker.codeArrayFromGenericArray(session.newlyLocalizedCodes);
-			var all = BarcodePicker.codeArrayFromGenericArray(session.allRecognizedCodes);
-			var properSession = new ScanSession(newlyRecognized, newlyLocalized, all);
-    		
-			success(properSession);
-		}
-		
-		picker.executingCallback = false;
-		var nextStep = 0;
-		if (picker.stoppedDuringCallback) {
-			nextStep = 2;
-		} else if (picker.pausedDuringCallback) {
-			nextStep = 1;
-		}
-		cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep]);
-	
-	}, failure, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);
+            // inform plugin that callback has finished executing. Required for synchronization on 
+            // Android/iOS. Windows doesn't require it.
+            var nextStep = 0;
+            if (picker.stoppedDuringCallback) {
+                nextStep = 2;
+            } else if (picker.pausedDuringCallback) {
+                nextStep = 1;
+            }
+            cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep]);
+            picker.executingCallback = false;
+            return;
+        }
+        if (event === 'didStop') {
+            if (callbacks.didStop) {
+                callbacks.didStop();
+            }
+        }
+    }, callbacks.didCancel, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);
 
     this.isShown = true;
     this.getOverlayView().pickerIsShown = true;

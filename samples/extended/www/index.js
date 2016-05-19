@@ -1,6 +1,7 @@
 ﻿angular.module('app', ['onsen']);
 
 angular.module('app').controller('AppController', function ($scope) {
+
    var picker = null;
    var margins = [0, 0, 0, 0];
    var landscapeMargins = [0, 0, 0, 0];
@@ -14,15 +15,27 @@ angular.module('app').controller('AppController', function ($scope) {
    });
    $scope.scannedCode = '';
    $scope.paused = false;
-
+   $scope.startWhenClosed = false;
    $scope.startPicker = function () {
+       if (picker !== null) {
+           $scope.startWhenClosed = true;
+           return;
+       }
        $scope.paused = false;
        picker = initPicker(getScanSettings(), margins, landscapeMargins);
        applyUISettings(picker);
-       picker.show(function (session) {
-           callback(session, false);
-       }, function (session) {
-           callback(session, true); 
+       picker.show({
+           didScan: function (session) { callback(session, false) },
+           didManualSearch: function (enteredData) { callback(enteredData, true) },
+           didStop: function () {
+               // cancel
+               picker = null;
+               if ($scope.startWhenClosed) {
+                   setTimeout(function () {
+                       $scope.startPicker();
+                   }, 1);
+               }
+           }
        });
        picker.startScanning();
    };
@@ -39,8 +52,8 @@ angular.module('app').controller('AppController', function ($scope) {
 
    $scope.stopPicker = function () {
        if (picker !== null) {
+           $scope.startWhenClosed = false;
            picker.cancel();
-           picker = null;
        }
        $scope.paused = true;
    };

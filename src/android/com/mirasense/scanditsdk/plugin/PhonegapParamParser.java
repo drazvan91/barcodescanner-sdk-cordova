@@ -1,3 +1,14 @@
+//  Copyright 2016 Scandit AG
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+//  in compliance with the License. You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the
+//  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+//  express or implied. See the License for the specific language governing permissions and
+//  limitations under the License.
 package com.mirasense.scanditsdk.plugin;
 
 import android.app.Activity;
@@ -35,8 +46,8 @@ public class PhonegapParamParser {
     public static final String paramPaused = "paused".toLowerCase();
 
 
-    public static void updatePicker(SearchBarBarcodePicker picker, Bundle bundle,
-                                    SearchBarBarcodePicker.ScanditSDKSearchBarListener listener) {
+    public static void updatePicker(BarcodePickerWithSearchBar picker, Bundle bundle,
+                                    BarcodePickerWithSearchBar.SearchBarListener listener) {
         
         if (picker == null || bundle == null) {
             return;
@@ -60,7 +71,7 @@ public class PhonegapParamParser {
         }
     }
 
-    public static void updateLayout(final Activity activity, final SearchBarBarcodePicker picker,
+    public static void updateLayout(final Activity activity, final BarcodePickerWithSearchBar picker,
                                     Bundle bundle, Point screenDimensions) {
 
         if (picker == null || bundle == null) {
@@ -89,16 +100,16 @@ public class PhonegapParamParser {
                         screenDimensions.y, screenDimensions.x);
             }
             
-            SearchBarBarcodePicker.Constraints portraitConstraints =
-            new SearchBarBarcodePicker.Constraints(portraitMargins);
-            SearchBarBarcodePicker.Constraints landscapeConstraints =
-            new SearchBarBarcodePicker.Constraints(landscapeMargins);
+            BarcodePickerWithSearchBar.Constraints portraitConstraints =
+            new BarcodePickerWithSearchBar.Constraints(portraitMargins);
+            BarcodePickerWithSearchBar.Constraints landscapeConstraints =
+            new BarcodePickerWithSearchBar.Constraints(landscapeMargins);
             picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
             
             
         } else if (bundle.containsKey(paramPortraitConstraints) || bundle.containsKey(paramLandscapeConstraints)) {
-            SearchBarBarcodePicker.Constraints portraitConstraints = new SearchBarBarcodePicker.Constraints();
-            SearchBarBarcodePicker.Constraints landscapeConstraints = new SearchBarBarcodePicker.Constraints();
+            BarcodePickerWithSearchBar.Constraints portraitConstraints = new BarcodePickerWithSearchBar.Constraints();
+            BarcodePickerWithSearchBar.Constraints landscapeConstraints = new BarcodePickerWithSearchBar.Constraints();
             
             if (bundle.containsKey(paramPortraitConstraints)) {
                 portraitConstraints = extractConstraints(bundle, paramPortraitConstraints,
@@ -148,9 +159,9 @@ public class PhonegapParamParser {
         return result;
     }
 
-    private static SearchBarBarcodePicker.Constraints extractConstraints(Bundle bundle, String key,
+    private static BarcodePickerWithSearchBar.Constraints extractConstraints(Bundle bundle, String key,
                                                                          int width, int height) {
-        SearchBarBarcodePicker.Constraints result = new SearchBarBarcodePicker.Constraints();
+        BarcodePickerWithSearchBar.Constraints result = new BarcodePickerWithSearchBar.Constraints();
         Bundle constraintsBundle = bundle.getBundle(key);
         if (constraintsBundle != null) {
             result.setLeftMargin(UIParamParser.getSize(constraintsBundle, paramMarginLeft, width));

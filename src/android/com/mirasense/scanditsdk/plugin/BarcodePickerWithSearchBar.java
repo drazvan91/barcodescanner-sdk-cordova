@@ -1,3 +1,14 @@
+//  Copyright 2016 Scandit AG
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+//  in compliance with the License. You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the
+//  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+//  express or implied. See the License for the specific language governing permissions and
+//  limitations under the License.
 package com.mirasense.scanditsdk.plugin;
 
 import android.app.Activity;
@@ -15,22 +26,23 @@ import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.base.system.SbSystemUtils;
 
 /**
- * Created by mo on 29/10/15.
+ * A small wrapper around the barcode picker to add support for a search bar into which barcode
+ * data can be entered manually.
  */
-public class SearchBarBarcodePicker extends BarcodePicker {
+public class BarcodePickerWithSearchBar extends BarcodePicker {
 
-    private ScanditSDKSearchBar mSearchBar;
-    private ScanditSDKSearchBarListener mListener;
+    private SearchBar mSearchBar;
+    private SearchBarListener mListener;
 
     public static Constraints portraitConstraints = new Constraints();
     public static Constraints landscapeConstraints = new Constraints();
 
 
-    public SearchBarBarcodePicker(Context context) {
+    public BarcodePickerWithSearchBar(Context context) {
         super(context);
     }
 
-    public SearchBarBarcodePicker(Context context, ScanSettings settings) {
+    public BarcodePickerWithSearchBar(Context context, ScanSettings settings) {
         super(context, settings);
     }
     
@@ -100,13 +112,13 @@ public class SearchBarBarcodePicker extends BarcodePicker {
         landscapeConstraints = newLandscapeConstraints;
     }
 
-    public void setOnSearchBarListener(ScanditSDKSearchBarListener listener) {
+    public void setOnSearchBarListener(SearchBarListener listener) {
         mListener = listener;
     }
 
     public void showSearchBar(boolean show) {
         if (show && mSearchBar == null) {
-            mSearchBar = new ScanditSDKSearchBar(getContext(), new OnClickListener() {
+            mSearchBar = new SearchBar(getContext(), new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onSearchClicked();
@@ -147,7 +159,7 @@ public class SearchBarBarcodePicker extends BarcodePicker {
     }
 
 
-    public interface ScanditSDKSearchBarListener {
+    public interface SearchBarListener {
         /**
          *  Called whenever a string was entered in the search bar and the button to search was pressed.
          *

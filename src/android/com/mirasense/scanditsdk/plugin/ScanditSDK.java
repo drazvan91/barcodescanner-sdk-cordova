@@ -34,10 +34,12 @@ import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ScanditLicense;
+import com.scandit.barcodepicker.internal.Code;
 import com.scandit.barcodepicker.internal.ScanditSDKGlobals;
 import com.mirasense.scanditsdk.plugin.ScanditSDKResultRelay.ScanditSDKResultRelayCallback;
 import com.scandit.base.system.SbSystemUtils;
 import com.scandit.base.util.JSONParseException;
+import com.scandit.recognition.Barcode;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -618,7 +620,9 @@ OnScanListener, SearchBarBarcodePicker.ScanditSDKSearchBarListener {
             PluginResult result;
             if (mLegacyMode) {
                 JSONArray args = new JSONArray();
-                args.put(session.getNewlyRecognizedCodes().get(0).getData());
+                Barcode code = session.getNewlyRecognizedCodes().get(0);
+                args.put(code.getData());
+                args.put(Code.symbologyToString(code.getSymbology(), code.isGs1DataCarrier()));
                 args.put(session.getNewlyRecognizedCodes().get(0).getSymbologyName());
                 result = new PluginResult(Status.OK, args);
             } else {

@@ -31,7 +31,9 @@ import android.view.WindowManager;
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
+import com.scandit.barcodepicker.internal.Code;
 import com.scandit.base.util.JSONParseException;
+import com.scandit.recognition.Barcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -190,10 +192,10 @@ public class ScanditSDKActivity extends Activity implements OnScanListener, Sear
                 session.stopScanning();
 
                 Intent intent = new Intent();
+                Barcode code = session.getNewlyRecognizedCodes().get(0);
                 if (mLegacyMode) {
-                    intent.putExtra("barcode", session.getNewlyRecognizedCodes().get(0).getData());
-                    intent.putExtra("symbology",
-                            session.getNewlyRecognizedCodes().get(0).getSymbologyName());
+                    intent.putExtra("barcode", code.getData());
+                    intent.putExtra("symbology", Code.symbologyToString(code.getSymbology(), code.isGs1DataCarrier()));
                 } else {
                     intent.putExtra("jsonString", ScanditSDKResultRelay.jsonForSession(session).toString());
                 }

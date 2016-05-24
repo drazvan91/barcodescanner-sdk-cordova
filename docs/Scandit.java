@@ -94,11 +94,11 @@ public class Scandit {
          */
         public number rightMargin;
         /**
-         * The left margin. Can be specified as an integer to mean device independent pixels/points
+         * The bottom margin. Can be specified as an integer to mean device independent pixels/points
          * or alternatively as a string with an added '%%' at the end. When expressing the margins
          * in percent, it is set to the desired percentage of the screen height.
          */
-        public number leftMargin;
+        public number bottomMargin;
         /**
          * The width. Can be specified as an integer to mean device independent pixels/points
          * or alternatively as a string with an added '%%' at the end. When expressing the width

@@ -54,6 +54,8 @@ public class SubViewPickerController
 
     private SubViewPickerOrientationHandler mOrientationHandler = null;
     private boolean mCloseWhenDidScanCallbackFinishes = false;
+    // Can't use Size, because the class is not available in all the releases we support.
+    // chosen such that dim.x <= dim.y
     private Point mScreenDimensions = null;
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
@@ -341,13 +343,10 @@ public class SubViewPickerController
 
     @Override
     public void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState) {
-        // don't produce stop events in legacy mode. They would be interpreted as scan events.
+        // don't produce events in legacy mode. They would be interpreted as scan events.
         if (mLegacyMode) return;
 
-        if (newState == PickerStateMachine.STOPPED) {
-
-            JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_STOP_EVENT, (String)null);
-            mCallbackContext.sendPluginResult(Marshal.createOkResult(didStopArgs));
-        }
+        JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
+        mCallbackContext.sendPluginResult(Marshal.createOkResult(didStopArgs));
     }
 }

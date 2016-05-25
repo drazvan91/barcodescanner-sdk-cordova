@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
  */
 class PickerStateMachine {
 
-
+    // must match values of JS wrapper
     public final static int STOPPED =  2;
     public final static int PAUSED =   1;
     public final static int ACTIVE =   3;

@@ -425,6 +425,30 @@ public class Scandit {
 			 */
 			LANDSCAPE_LEFT
 		}
+
+
+        /**
+         * @brief List of states the picker can be in. Used as arguments for the didChangeState 
+         *     callback.
+         *
+         * @since 4.15
+         */
+		public enum State {
+		    /**
+		     * @brief The picker is in stopped state: the camera preview is off, barcode scanning is off
+		     */
+		    STOPPED,
+            /**
+             * @brief The picker is in active state. The camera preview is running and barcode scanning 
+             *    is active.
+             */
+            ACTIVE,
+            /**
+             * @brief The picker is in paused state. The camera preview is running and barcode scanning 
+             *     is inactive.
+             */
+            PAUSED
+        };
         
         /**
          * Visibly shows the picker to the user. This should be called after the picker has been
@@ -432,16 +456,34 @@ public class Scandit {
          * {@link startScanning() startScanning()} if you want to start the video feed and scan for
          * barcodes.
          *
-         * @param success callback to be invoked whenever codes have been successfully scanned. 
+         * @param didScan callback to be invoked whenever codes have been successfully scanned. 
          *    The callback receives the scan session as the first and only argument which contains 
          *    a list of recognized codes. 
-         * @param manual callback to be invoked when the user enters a text in the search bar. 
+         * @param didManualSearch callback to be invoked when the user enters a text in the search bar. 
          *    The entered text is passed as the first argument to the callback. If you do not 
          *    use the search bar, you may pass null. 
-         * @param failure callback to be invoked upon failure, or when cancel is called on the 
+         * @param didCancel callback to be invoked upon failure, or when cancel is called on the 
          *    picker. The callback is passed a reason for failure as the only argument.
          */
-        public void show(function success, function manual=null, function failure=null);
+        public void show(function didScan, function didManualSearch=null, function didCancel=null);
+
+        /**
+         * Visibly shows the picker to the user. This should be called after the picker has been
+         * fully configured. Once it is shown make sure to call
+         * {@link startScanning() startScanning()} if you want to start the video feed and scan 
+         * for barcodes.
+         *
+         * @param callbacks A dictionary containing one or more callbacks that are invoked when a 
+         *    certain events happens. Supported names for the callbacks are didScan, didChangeState, 
+         *    didCancel and didManualSearch. The behavior of didScan, didCancel, didManualSearch 
+         *    is as defined in the documentation for {@link show(function,function,function)}. 
+         *    didChangeState is a callback that gets invoked whenever the picker changes state, 
+         *    e.g. when the picker changes from stopped to active, or from active to paused. The 
+         *    argument to the callback is the new state (see {@link BarcodePicker.State} for 
+         *    possible values).
+         */
+        public void show(object callbacks);
+
         
         /**
          * Cancels the picker by stopping it and removing it from the screen. If the picker is not

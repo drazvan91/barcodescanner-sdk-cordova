@@ -38,7 +38,8 @@ import org.json.JSONObject;
 
 
 /**
- * Activity integrating the barcode scanner.
+ * Activity implementing the full-screen picker support. This activity is launched by the
+ * FullScreenPickerController
  *
  */
 public class FullScreenPickerActivity
@@ -252,21 +253,27 @@ public class FullScreenPickerActivity
 
     @Override
     public void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState) {
-        // don't produce stop events in legacy mode. They would be interpreted as scan events.
+        // don't produce events in legacy mode. They would be interpreted as scan events.
         if (mLegacyMode) return;
 
         if (newState == PickerStateMachine.STOPPED) {
-            Bundle resultBundle = new Bundle();
-            JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_STOP_EVENT, (String)null);
-            resultBundle.putString("jsonString", didStopArgs.toString());
-            resultBundle.putBoolean("waitForResult", false);
-            ResultRelay.relayResult(resultBundle);
+
         }
+        Bundle resultBundle = new Bundle();
+        JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
+        resultBundle.putString("jsonString", didStopArgs.toString());
+        resultBundle.putBoolean("waitForResult", false);
+        ResultRelay.relayResult(resultBundle);
     }
 
     public static void applyScanSettings(ScanSettings scanSettings) {
         if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
 
         sActiveActivity.mPickerStateMachine.applyScanSettings(scanSettings);
+    }
+
+    public static void updateUI(Bundle overlayOptions) {
+        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
+        UIParamParser.updatePickerUI(sActiveActivity.mPickerStateMachine.getPicker(), overlayOptions);
     }
 }

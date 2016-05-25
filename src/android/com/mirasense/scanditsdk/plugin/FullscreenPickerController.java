@@ -51,7 +51,7 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
 
     @Override
     public void updateUI(Bundle overlayOptions) {
-        // FIXME: needs to be implemented
+        FullScreenPickerActivity.updateUI(overlayOptions);
     }
 
     @Override

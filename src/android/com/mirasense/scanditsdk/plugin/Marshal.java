@@ -29,6 +29,14 @@ public class Marshal {
         args.put(arg);
         return args;
     }
+
+    public static JSONArray createEventArgs(String eventName, int arg) {
+        JSONArray args = new JSONArray();
+        args.put(eventName);
+        args.put(arg);
+        return args;
+    }
+
     public static JSONArray createEventArgs(String eventName, String arg) {
         JSONArray args = new JSONArray();
         args.put(eventName);

@@ -73,7 +73,6 @@ public class PhonegapParamParser {
 
     public static void updateLayout(final Activity activity, final BarcodePickerWithSearchBar picker,
                                     Bundle bundle, Point screenDimensions) {
-
         if (picker == null || bundle == null) {
             return;
         }
@@ -86,43 +85,55 @@ public class PhonegapParamParser {
             }
         }
         
-        if (bundle.containsKey(paramPortraitMargins) || bundle.containsKey(paramLandscapeMargins)) {
-            Rect portraitMargins = null;
-            Rect landscapeMargins = null;
-            
-            if (bundle.containsKey(paramPortraitMargins)) {
-                portraitMargins = extractMarginsRect(bundle, paramPortraitMargins,
-                        screenDimensions.x, screenDimensions.y);
-            }
-            
-            if (bundle.containsKey(paramLandscapeMargins)) {
-                portraitMargins = extractMarginsRect(bundle, paramLandscapeMargins,
-                        screenDimensions.y, screenDimensions.x);
-            }
-            
-            BarcodePickerWithSearchBar.Constraints portraitConstraints =
-            new BarcodePickerWithSearchBar.Constraints(portraitMargins);
-            BarcodePickerWithSearchBar.Constraints landscapeConstraints =
-            new BarcodePickerWithSearchBar.Constraints(landscapeMargins);
-            picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
-            
-            
-        } else if (bundle.containsKey(paramPortraitConstraints) || bundle.containsKey(paramLandscapeConstraints)) {
-            BarcodePickerWithSearchBar.Constraints portraitConstraints = new BarcodePickerWithSearchBar.Constraints();
-            BarcodePickerWithSearchBar.Constraints landscapeConstraints = new BarcodePickerWithSearchBar.Constraints();
-            
-            if (bundle.containsKey(paramPortraitConstraints)) {
-                portraitConstraints = extractConstraints(bundle, paramPortraitConstraints,
-                        screenDimensions.x, screenDimensions.y);
-            }
-
-            if (bundle.containsKey(paramLandscapeConstraints)) {
-                landscapeConstraints = extractConstraints(bundle, paramLandscapeConstraints,
-                        screenDimensions.y, screenDimensions.x);
-            }
-
-            picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
+        if (bundle.containsKey(paramPortraitMargins) ||
+            bundle.containsKey(paramLandscapeMargins)) {
+            adjustWithMargins(activity, picker, bundle, screenDimensions, animationDuration);
+            return;
         }
+        if (bundle.containsKey(paramPortraitConstraints) ||
+            bundle.containsKey(paramLandscapeConstraints)) {
+            adjustWithConstraints(activity, picker, bundle, screenDimensions, animationDuration);
+        }
+    }
+
+    private static void adjustWithConstraints(Activity activity, BarcodePickerWithSearchBar picker,
+                                              Bundle bundle, Point screenDimensions,
+                                              double animationDuration) {
+        BarcodePickerWithSearchBar.Constraints portraitConstraints = new BarcodePickerWithSearchBar.Constraints();
+        BarcodePickerWithSearchBar.Constraints landscapeConstraints = new BarcodePickerWithSearchBar.Constraints();
+
+        if (bundle.containsKey(paramPortraitConstraints)) {
+            portraitConstraints = extractConstraints(bundle, paramPortraitConstraints,
+                    screenDimensions.x, screenDimensions.y);
+        }
+
+        if (bundle.containsKey(paramLandscapeConstraints)) {
+            landscapeConstraints = extractConstraints(bundle, paramLandscapeConstraints,
+                    screenDimensions.y, screenDimensions.x);
+        }
+
+        picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
+    }
+
+    private static void adjustWithMargins(Activity activity, BarcodePickerWithSearchBar picker, Bundle bundle, Point screenDimensions, double animationDuration) {
+        Rect portraitMargins = null;
+        Rect landscapeMargins = null;
+
+        if (bundle.containsKey(paramPortraitMargins)) {
+            portraitMargins = extractMarginsRect(bundle, paramPortraitMargins,
+                    screenDimensions.x, screenDimensions.y);
+        }
+
+        if (bundle.containsKey(paramLandscapeMargins)) {
+            portraitMargins = extractMarginsRect(bundle, paramLandscapeMargins,
+                    screenDimensions.y, screenDimensions.x);
+        }
+
+        BarcodePickerWithSearchBar.Constraints portraitConstraints =
+        new BarcodePickerWithSearchBar.Constraints(portraitMargins);
+        BarcodePickerWithSearchBar.Constraints landscapeConstraints =
+        new BarcodePickerWithSearchBar.Constraints(landscapeMargins);
+        picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
     }
 
     private static Rect extractMarginsRect(Bundle bundle, String key, int width, int height) {

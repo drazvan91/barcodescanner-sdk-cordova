@@ -36,6 +36,12 @@ BarcodePicker.Orientation = {
 	LANDSCAPE_LEFT: "landscapeRight"
 }
 
+BarcodePicker.State = {
+    STOPPED : 2,
+    PAUSED : 1,
+    ACTIVE : 3
+};
+
 BarcodePicker.prototype.show = function () {
     var callbacks = {};
     if (typeof arguments[0] === 'function' || arguments.length !== 1) {
@@ -63,10 +69,12 @@ BarcodePicker.prototype.show = function () {
     }
     var picker = this;
     cordova.exec(function (args) {
+        // all the events are serialized as an array, where the first argument is the event name 
+        // the remaining elements are the event arguments.
         var event = args[0];
         if (event === 'didManualSearch') {
             if (callbacks.didManualSearch) {
-                callbacks.didManualSearch(args[1]);
+              callbacks.didManualSearch(args[1]);
             }
             return;
         }
@@ -79,8 +87,16 @@ BarcodePicker.prototype.show = function () {
             var newlyLocalized = BarcodePicker.codeArrayFromGenericArray(session.newlyLocalizedCodes);
             var all = BarcodePicker.codeArrayFromGenericArray(session.allRecognizedCodes);
             var properSession = new ScanSession(newlyRecognized, newlyLocalized, all);
+            var exceptionRaisedDuringDidScan = null;
             if (callbacks.didScan) {
-                callbacks.didScan(properSession);
+                // catch exception thrown in the callback, so we can release the lock held for 
+                // synchronizing didScan in the picker. Otherwise we would keep the lock forever. 
+                try {
+                    callbacks.didScan(properSession);
+                } catch(e) {
+                    exceptionRaisedDuringDidScan = e;
+                }
+
             }
 
             // inform plugin that callback has finished executing. Required for synchronization on 
@@ -93,11 +109,14 @@ BarcodePicker.prototype.show = function () {
             }
             cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep]);
             picker.executingCallback = false;
+            if (exceptionRaisedDuringDidScan) {
+                 throw exceptionRaisedDuringDidScan;
+            }
             return;
         }
-        if (event === 'didStop') {
-            if (callbacks.didStop) {
-                callbacks.didStop();
+        if (event === 'didChangeState') {
+            if (callbacks.didChangeState) {
+                callbacks.didChangeState(args[1]);
             }
         }
     }, callbacks.didCancel, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);

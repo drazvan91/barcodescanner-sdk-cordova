@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.OrientationEventListener;
 
 import com.scandit.base.system.SbSystemUtils;
 

@@ -27,8 +27,8 @@ angular.module('app').controller('AppController', function ($scope) {
        picker.show({
            didScan: function (session) { callback(session, false) },
            didManualSearch: function (enteredData) { callback(enteredData, true) },
-           didStop: function () {
-               // cancel
+           didChangeState: function (newState) {
+               if (newState !== Scandit.BarcodePicker.State.STOPPED) return;
                picker = null;
                if ($scope.startWhenClosed) {
                    setTimeout(function () {

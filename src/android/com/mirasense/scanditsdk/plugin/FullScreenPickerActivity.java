@@ -128,7 +128,8 @@ public class FullScreenPickerActivity
         // Set all the UI options.
         PhonegapParamParser.updatePicker(picker, options, this);
 
-        if (settings == null) {
+        if (mLegacyMode) {
+            assert settings == null;
             LegacyUIParamParser.updatePickerUI(this, picker, options);
         } else {
             UIParamParser.updatePickerUI(picker, overlayOptions);

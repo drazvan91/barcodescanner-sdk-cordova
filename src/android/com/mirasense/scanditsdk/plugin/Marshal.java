@@ -50,12 +50,7 @@ public class Marshal {
         return result;
     }
 
-    public static boolean shouldRunInContinuousMode(Bundle options) {
-        return options != null &&
-                options.containsKey(PhonegapParamParser.paramContinuousMode) &&
-                options.getBoolean(PhonegapParamParser.paramContinuousMode)
-        ;
-    }
+
 
     public static PluginResult createFailResult(String message) {
         PluginResult result = new PluginResult(PluginResult.Status.ERROR, message);
@@ -67,8 +62,5 @@ public class Marshal {
         return createFailResult("Canceled");
     }
 
-    public static boolean shouldStartInPausedState(Bundle options) {
-        return options != null && options.containsKey(PhonegapParamParser.paramPaused) &&
-                options.getBoolean(PhonegapParamParser.paramPaused);
-    }
+
 }

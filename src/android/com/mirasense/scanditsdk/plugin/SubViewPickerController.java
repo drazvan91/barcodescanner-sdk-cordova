@@ -80,7 +80,7 @@ public class SubViewPickerController
     public void show(final JSONObject settings, final Bundle options, final Bundle overlayOptions,
                      boolean legacyMode) {
         mLegacyMode = legacyMode;
-        mContinuousMode = Marshal.shouldRunInContinuousMode(options);
+        mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
         mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin,
                                                                   null);
         mCloseWhenDidScanCallbackFinishes = false;
@@ -133,7 +133,7 @@ public class SubViewPickerController
                 if (!mLegacyMode) return;
 
                 // In legacy mode, start scanning when show is called.
-                int state = Marshal.shouldStartInPausedState(options)
+                int state = PhonegapParamParser.shouldStartInPausedState(options)
                                 ? PickerStateMachine.PAUSED
                                 : PickerStateMachine.ACTIVE;
                 mPickerStateMachine.setState(state);

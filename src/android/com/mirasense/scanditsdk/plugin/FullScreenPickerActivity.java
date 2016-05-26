@@ -135,10 +135,10 @@ public class FullScreenPickerActivity
             PhonegapParamParser.updatePicker(picker, overlayOptions, this);
         }
 
-        mContinuousMode = Marshal.shouldRunInContinuousMode(options);
+        mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
 
 
-        mStateBeforeSuspend = Marshal.shouldStartInPausedState(options)
+        mStateBeforeSuspend = PhonegapParamParser.shouldStartInPausedState(options)
                 ? PickerStateMachine.PAUSED
                 : PickerStateMachine.ACTIVE;
     }

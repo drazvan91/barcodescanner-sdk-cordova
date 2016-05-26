@@ -25,7 +25,7 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
         if ((flags & WindowManager.LayoutParams.FLAG_SECURE) != 0) {
             options.putBoolean("secure", true);
         }
-        mContinuousMode = Marshal.shouldRunInContinuousMode(options);
+        mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
         // The activity sends the result to the result relay, which will then invoke onRelayedResult.
         ResultRelay.setCallback(this);
         Intent intent = new Intent(mPlugin.cordova.getActivity(), FullScreenPickerActivity.class);

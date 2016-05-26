@@ -186,4 +186,16 @@ public class PhonegapParamParser {
         }
         return result;
     }
+
+    public static boolean shouldRunInContinuousMode(Bundle options) {
+        return options != null &&
+                options.containsKey(PhonegapParamParser.paramContinuousMode) &&
+                options.getBoolean(PhonegapParamParser.paramContinuousMode)
+                ;
+    }
+
+    public static boolean shouldStartInPausedState(Bundle options) {
+        return options != null && options.containsKey(PhonegapParamParser.paramPaused) &&
+                options.getBoolean(PhonegapParamParser.paramPaused);
+    }
 }

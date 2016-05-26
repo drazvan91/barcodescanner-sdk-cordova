@@ -77,6 +77,8 @@
           <source-file src="src/ios/SBSLocalScanSession.m"/>
           <header-file src="src/ios/SBSConstraints.h"/>
           <source-file src="src/ios/SBSConstraints.m"/>
+          <header-file src="src/ios/SBSPickerStateMachine.h"/>
+          <source-file src="src/ios/SBSPickerStateMachine.m"/>
 
 		  
 		  <!-- Frameworks needed by Scandit SDK for iOS -->

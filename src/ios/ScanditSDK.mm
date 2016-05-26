@@ -220,8 +220,7 @@
 }
 
 - (void)startScanning:(NSNumber*)startPaused {
-    SBSPickerState state = [startPaused boolValue] ? SBSPickerStatePaused : SBSPickerStateActive;
-    [self.pickerStateMachine setDesiredState:state];
+    [self.pickerStateMachine startScanningInPausedState:[startPaused boolValue]];
 }
 
 - (void)returnBuffer {
@@ -291,11 +290,7 @@
         if (argc >= 1) {
             options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
         }
-        if ([SBSPhonegapParamParser isPausedSpecifiedInOptions:options]) {
-            [self.pickerStateMachine setDesiredState:SBSPickerStatePaused];
-        } else {
-            [self.pickerStateMachine setDesiredState:SBSPickerStateActive];
-        }
+        [self.pickerStateMachine startScanningInPausedState:[SBSPhonegapParamParser isPausedSpecifiedInOptions:options]];
     });
 }
 

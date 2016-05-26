@@ -39,6 +39,8 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Controls a subview picker, e.g. a picker shown in the actual plugin activity, displayed on
  * top of the webview.
@@ -54,9 +56,11 @@ public class SubViewPickerController
 
     private SubViewPickerOrientationHandler mOrientationHandler = null;
     private boolean mCloseWhenDidScanCallbackFinishes = false;
+    private AtomicBoolean mPendingClose = new AtomicBoolean(false);
     // Can't use Size, because the class is not available in all the releases we support.
     // chosen such that dim.x <= dim.y
     private Point mScreenDimensions = null;
+
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
 
@@ -79,6 +83,7 @@ public class SubViewPickerController
     @Override
     public void show(final JSONObject settings, final Bundle options, final Bundle overlayOptions,
                      boolean legacyMode) {
+        mPendingClose.set(false);
         mLegacyMode = legacyMode;
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
         mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin,
@@ -130,6 +135,11 @@ public class SubViewPickerController
                 PhonegapParamParser.updateLayout(pluginActivity, mPickerStateMachine.getPicker(),
                         options, mScreenDimensions);
 
+
+                if (mPendingClose.compareAndSet(true, false)) {
+                    // picker was closed(canceled) in the meantime. close it now.
+                    SubViewPickerController.this.close();
+                }
                 if (!mLegacyMode) return;
 
                 // In legacy mode, start scanning when show is called.
@@ -137,6 +147,7 @@ public class SubViewPickerController
                                 ? PickerStateMachine.PAUSED
                                 : PickerStateMachine.ACTIVE;
                 mPickerStateMachine.setState(state);
+
             }
         });
     }
@@ -221,6 +232,11 @@ public class SubViewPickerController
 
     @Override
     public void close() {
+        if (mPickerStateMachine == null) {
+            // we don't have a picker yet. must be closed when it is created.
+            mPendingClose.set(true);
+            return;
+        }
         if (!mDidScanCallbackFinish) {
             // we get here if the didScan callback is still in progress. We need to delay
             // processing the cancel call to avoid a dead-lock. The picker will be closed

@@ -52,7 +52,7 @@ public class FullScreenPickerActivity
     public static final int MANUAL = 2;
 
     private static FullScreenPickerActivity sActiveActivity = null;
-
+    private static boolean sPendingClose = false;
     private boolean mContinuousMode = false;
 
     private boolean mLegacyMode = false;
@@ -159,6 +159,11 @@ public class FullScreenPickerActivity
     protected void onResume() {
         super.onResume();
         sActiveActivity = this;
+        if (sPendingClose) {
+            // close has been issued before we had the chance to start the picker.
+            sPendingClose = false;
+            FullScreenPickerActivity.close();
+        }
         // Once the activity is in the foreground again, restore previous picker state.
         mPickerStateMachine.setState(mStateBeforeSuspend);
 
@@ -243,6 +248,8 @@ public class FullScreenPickerActivity
     public static void close() {
         if (sActiveActivity != null) {
             sActiveActivity.didCancel();
+        } else {
+            sPendingClose = true;
         }
     }
 

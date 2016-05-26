@@ -173,41 +173,40 @@ public class FullScreenPickerActivity
         finish();
     }
 
+    private Bundle bundleForScanResult(ScanSession session) {
+
+        Bundle bundle = new Bundle();
+        if (mLegacyMode) {
+            Barcode code = session.getNewlyRecognizedCodes().get(0);
+            bundle.putString("barcode", code.getData());
+            bundle.putString("symbology", Code.symbologyToString(code.getSymbology(),
+                    code.isGs1DataCarrier()));
+            return bundle;
+        }
+        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
+                ResultRelay.jsonForSession(session));
+        bundle.putString("jsonString", eventArgs.toString());
+        return bundle;
+    }
+
     @Override
     public void didScan(ScanSession session) {
         if (!mContinuousMode) {
             mPickerStateMachine.switchToNextScanState(2, session);
-
             Intent intent = new Intent();
-            Barcode code = session.getNewlyRecognizedCodes().get(0);
-            if (mLegacyMode) {
-                intent.putExtra("barcode", code.getData());
-                intent.putExtra("symbology", Code.symbologyToString(code.getSymbology(),
-                                code.isGs1DataCarrier()));
-            } else {
-                JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
-                        ResultRelay.jsonForSession(session));
-                intent.putExtra("jsonString", eventArgs.toString());
-            }
+            intent.getExtras();
+            intent.putExtras(bundleForScanResult(session));
             setResult(SCAN, intent);
             finish();
-        } else {
-            Bundle bundle = new Bundle();
-            if (mLegacyMode) {
-                bundle.putString("barcode", session.getNewlyRecognizedCodes().get(0).getData());
-                bundle.putString("symbology",
-                        session.getNewlyRecognizedCodes().get(0).getSymbologyName());
-            } else {
-                JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
-                        ResultRelay.jsonForSession(session));
-                bundle.putString("jsonString", eventArgs.toString());
-            }
-            int nextState = ResultRelay.relayResult(bundle);
-            mPickerStateMachine.switchToNextScanState(nextState, session);
+            return;
         }
+        Bundle bundle = bundleForScanResult(session);
+        int nextState = ResultRelay.relayResult(bundle);
+        mPickerStateMachine.switchToNextScanState(nextState, session);
     }
 
-    private void addManualSearchResultToBundle(String entry, Bundle bundle) {
+    private Bundle manualSearchResultsToBundle(String entry) {
+        Bundle bundle = new Bundle();
         if (mLegacyMode) {
             bundle.putString("barcode", entry.trim());
             bundle.putString("symbology", "UNKNOWN");
@@ -217,19 +216,20 @@ public class FullScreenPickerActivity
         }
         // no need to wait for result
         bundle.putBoolean("waitForResult", false);
+        return bundle;
     }
     
     @Override
     public void didEnter(String entry) {
         if (!mContinuousMode) {
             Intent intent = new Intent();
-            addManualSearchResultToBundle(entry.trim(), intent.getExtras());
+            intent.putExtras(manualSearchResultsToBundle(entry.trim()));
             setResult(MANUAL, intent);
             finish();
             return;
         }
-        Bundle bundle = new Bundle();
-        addManualSearchResultToBundle(entry.trim(), bundle);
+
+        Bundle bundle = manualSearchResultsToBundle(entry.trim());
         ResultRelay.relayResult(bundle);
     }
     

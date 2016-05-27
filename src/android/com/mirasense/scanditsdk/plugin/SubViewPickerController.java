@@ -110,11 +110,13 @@ public class SubViewPickerController
                     } catch (JSONParseException e) {
                         Log.e("ScanditSDK", "Exception while creating settings");
                         e.printStackTrace();
-                        sendRuntimeError("Exception while creating settings: " + e.getMessage() + ". Falling back to default scan settings.");
+                        sendRuntimeError("Exception while creating settings: " + e.getMessage() +
+                                         ". Falling back to default scan settings.");
                         scanSettings = ScanSettings.create();
                     }
                 }
-                BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(pluginActivity, scanSettings);
+                BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(pluginActivity,
+                                                                                   scanSettings);
                 picker.setOnScanListener(SubViewPickerController.this);
                 mPickerStateMachine = new PickerStateMachine(picker, SubViewPickerController.this);
                 mOrientationHandler.setScreenDimensions(mScreenDimensions);
@@ -160,6 +162,19 @@ public class SubViewPickerController
             mCloseWhenDidScanCallbackFinishes = false;
             this.close();
         }
+    }
+
+    @Override
+    public void startScanning() {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mPickerStateMachine == null) {
+                    return;
+                }
+                mPickerStateMachine.startScanning();
+            }
+        });
     }
 
     @Override

@@ -69,7 +69,7 @@ class PickerStateMachine {
         }
         switch (state) {
             case ACTIVE:
-                transitionToActiveState();
+                transitionToActiveState(false);
                 break;
             case PAUSED:
                 transitionToPausedState();
@@ -85,6 +85,13 @@ class PickerStateMachine {
         }
         mCurrentState = state;
         return state;
+    }
+
+    public void startScanning() {
+        if (mCurrentState == ACTIVE) {
+            return;
+        }
+        transitionToActiveState(true);
     }
 
     private void transitionToStoppedState() {
@@ -103,12 +110,17 @@ class PickerStateMachine {
         }
     }
 
-    private void transitionToActiveState() {
+    private void transitionToActiveState(boolean useStartInsteadOfResume) {
         if (mCurrentState == STOPPED) {
             mPicker.startScanning();
         }
         if (mCurrentState == PAUSED) {
-            mPicker.resumeScanning();
+            if (useStartInsteadOfResume) {
+                mPicker.startScanning();
+            } else {
+                mPicker.resumeScanning();
+            }
+
         }
     }
 

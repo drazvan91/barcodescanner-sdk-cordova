@@ -19,9 +19,6 @@ import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.recognition.Barcode;
 import com.scandit.recognition.SymbologySettings;
 
-/**
- * Created by mo on 14/12/15.
- */
 public class LegacySettingsParamParser {
     public static final String paramPreferFrontCamera = "preferFrontCamera".toLowerCase();
     public static final String param1DScanning = "1DScanning".toLowerCase();

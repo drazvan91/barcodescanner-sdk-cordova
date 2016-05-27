@@ -86,6 +86,11 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
     }
 
     @Override
+    public void startScanning() {
+        FullScreenPickerActivity.startScanning();
+    }
+
+    @Override
     public int onRelayedResult(Bundle bundle) {
         PluginResult result = resultForBundle(bundle);
         if (bundle.getBoolean("waitForResult", true)) {

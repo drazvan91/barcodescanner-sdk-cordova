@@ -198,7 +198,7 @@ public class FullScreenPickerActivity
     @Override
     public void didScan(ScanSession session) {
         if (!mContinuousMode) {
-            mPickerStateMachine.switchToNextScanState(2, session);
+            mPickerStateMachine.switchToNextScanState(PickerStateMachine.STOPPED, session);
             Intent intent = new Intent();
             intent.getExtras();
             intent.putExtras(bundleForScanResult(session));
@@ -283,5 +283,10 @@ public class FullScreenPickerActivity
     public static void updateUI(Bundle overlayOptions) {
         if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
         UIParamParser.updatePickerUI(sActiveActivity.mPickerStateMachine.getPicker(), overlayOptions);
+    }
+
+    public static void startScanning() {
+        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
+        sActiveActivity.mPickerStateMachine.startScanning();
     }
 }

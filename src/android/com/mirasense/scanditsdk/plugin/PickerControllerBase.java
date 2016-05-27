@@ -13,11 +13,15 @@
 package com.mirasense.scanditsdk.plugin;
 
 
+import android.util.Log;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Base class for the picker controllers.
@@ -28,9 +32,10 @@ abstract class PickerControllerBase implements IPickerController {
 
     protected boolean mLegacyMode = false;
     protected boolean mContinuousMode = false;
-    protected boolean mDidScanCallbackFinish = true;
+    protected AtomicInteger mInFlightDidScanCallbackId = new AtomicInteger(0);
+    protected AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
     protected int mNextState = 0;
-
+    private Object mSync = new Object();
     PickerControllerBase(CordovaPlugin plugin, CallbackContext callbacks) {
         mPlugin = plugin;
         mCallbackContext = callbacks;
@@ -47,9 +52,9 @@ abstract class PickerControllerBase implements IPickerController {
         } else {
             mNextState = 0;
         }
-        synchronized (this) {
-            mDidScanCallbackFinish = true;
-            notify();
+        synchronized (mSync) {
+            mInFlightDidScanCallbackId.set(0); // zero means no in-flight didScan callback
+            mSync.notifyAll();
         }
     }
 
@@ -59,14 +64,15 @@ abstract class PickerControllerBase implements IPickerController {
             mCallbackContext.sendPluginResult(result);
             return 0;
         }
-        mDidScanCallbackFinish = false;
+        int currentId = mLastDidScanCallbackId.incrementAndGet();
+        mInFlightDidScanCallbackId.set(currentId);
         mNextState = 0;
 
         try {
             mCallbackContext.sendPluginResult(result);
-            synchronized (this) {
-                while (!mDidScanCallbackFinish) {
-                    wait();
+            synchronized (mSync) {
+                while (mInFlightDidScanCallbackId.get() == currentId) {
+                    mSync.wait();
                 }
             }
         } catch (InterruptedException e) {

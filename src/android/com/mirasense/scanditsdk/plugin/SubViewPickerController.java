@@ -252,13 +252,15 @@ public class SubViewPickerController
             mPendingClose.set(true);
             return;
         }
-        if (!mDidScanCallbackFinish) {
+        if (mInFlightDidScanCallbackId.get() != 0) {
             // we get here if the didScan callback is still in progress. We need to delay
             // processing the cancel call to avoid a dead-lock. The picker will be closed
             // (removed) when finishDidScanCallback is called.
             mCloseWhenDidScanCallbackFinishes = true;
             return;
         }
+        // say that there is a pending close.
+        mPendingClose.set(true);
         mCloseWhenDidScanCallbackFinishes = false;
         runOnUiThread(new Runnable() {
             @Override
@@ -266,6 +268,7 @@ public class SubViewPickerController
                 mOrientationHandler.stop();
                 internalRemoveSubviewPicker();
                 mCallbackContext.sendPluginResult(Marshal.createCancel());
+                mPendingClose.set(false);
             }
         });
     }
@@ -351,6 +354,10 @@ public class SubViewPickerController
 
     @Override
     public void didScan(ScanSession session) {
+        // don't do anything if there is a pending close operation. otherwise we will deadlock
+        if (mPendingClose.get()) {
+            return;
+        }
         PluginResult result;
         if (mLegacyMode) {
             JSONArray args = new JSONArray();
@@ -367,7 +374,6 @@ public class SubViewPickerController
         if (!mContinuousMode) {
             removeSubviewPicker();
         }
-
         int nextState = sendPluginResultBlocking(result);
         mPickerStateMachine.switchToNextScanState(nextState, session);
     }

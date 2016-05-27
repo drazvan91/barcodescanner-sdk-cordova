@@ -36,6 +36,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Activity implementing the full-screen picker support. This activity is launched by the
@@ -52,7 +54,7 @@ public class FullScreenPickerActivity
     public static final int MANUAL = 2;
 
     private static FullScreenPickerActivity sActiveActivity = null;
-    private static boolean sPendingClose = false;
+    private static AtomicBoolean sPendingClose = new AtomicBoolean(false);
     private boolean mContinuousMode = false;
 
     private boolean mLegacyMode = false;
@@ -159,9 +161,8 @@ public class FullScreenPickerActivity
     protected void onResume() {
         super.onResume();
         sActiveActivity = this;
-        if (sPendingClose) {
+        if (sPendingClose.compareAndSet(true, false)) {
             // close has been issued before we had the chance to start the picker.
-            sPendingClose = false;
             FullScreenPickerActivity.close();
         }
         // Once the activity is in the foreground again, restore previous picker state.
@@ -177,6 +178,7 @@ public class FullScreenPickerActivity
         mPickerStateMachine.setState(PickerStateMachine.STOPPED);
         setResult(CANCEL);
         finish();
+        sPendingClose.set(false);
     }
 
     private Bundle bundleForScanResult(ScanSession session) {
@@ -197,6 +199,10 @@ public class FullScreenPickerActivity
 
     @Override
     public void didScan(ScanSession session) {
+        if (sPendingClose.get()) {
+            // return if there is a pending close. Otherwise we might deadlock
+            return;
+        }
         if (!mContinuousMode) {
             mPickerStateMachine.switchToNextScanState(PickerStateMachine.STOPPED, session);
             Intent intent = new Intent();
@@ -249,7 +255,7 @@ public class FullScreenPickerActivity
         if (sActiveActivity != null) {
             sActiveActivity.didCancel();
         } else {
-            sPendingClose = true;
+            sPendingClose.set(true);
         }
     }
 

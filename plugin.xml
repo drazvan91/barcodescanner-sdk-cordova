@@ -122,15 +122,22 @@
 		<!-- copy Scandit SDK resources (images, beep) -->      
         <resource-file src="src/android/scanditsdk-community-android_4.0.0/ScanditBarcodeScanner.aar" target="libs/ScanditBarcodeScanner.aar" />
         <!-- add plugin source code -->
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDK.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>            
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDKActivity.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>            
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDKResultRelay.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>          
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDKSearchBar.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>      
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/SearchBarBarcodePicker.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>        
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/LegacySettingsParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/LegacyUIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/PhonegapParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/UIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>
-		<source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditWorker.java" target-dir="src/com/mirasense/scanditsdk/plugin"/>
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/BarcodePickerWithSearchBar.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullScreenPickerActivity.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullscreenPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/IPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/LegacySettingsParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/LegacyUIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/Marshal.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/PhonegapParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/PickerControllerBase.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/PickerStateMachine.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/ResultRelay.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDK.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditWorker.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/SearchBar.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/SubViewPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/SubViewPickerOrientationHandler.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/UIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
 	</platform>
 </plugin>

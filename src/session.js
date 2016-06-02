@@ -1,16 +1,17 @@
 
-function ScanSession(newlyRecognizedCodes, newlyLocalizedCodes, allRecognizedCodes) {
+function ScanSession(newlyRecognizedCodes, newlyLocalizedCodes, allRecognizedCodes, picker) {
 	this.newlyRecognizedCodes = newlyRecognizedCodes;
 	this.newlyLocalizedCodes = newlyLocalizedCodes;
 	this.allRecognizedCodes = allRecognizedCodes;
+	this.picker = picker;
 }
 
 ScanSession.prototype.stopScanning = function() {
-    cordova.exec(null, null, "ScanditSDK", "stop", []);
+    this.picker.stopScanning();
 }
 
 ScanSession.prototype.pauseScanning = function() {
-    cordova.exec(null, null, "ScanditSDK", "pause", []);
+    this.picker.pauseScanning();
 }
 
 module.exports = ScanSession;

@@ -61,7 +61,7 @@ BarcodePicker.prototype.show = function(success, manual, failure) {
 			var newlyRecognized = BarcodePicker.codeArrayFromGenericArray(session.newlyRecognizedCodes);
 			var newlyLocalized = BarcodePicker.codeArrayFromGenericArray(session.newlyLocalizedCodes);
 			var all = BarcodePicker.codeArrayFromGenericArray(session.allRecognizedCodes);
-			var properSession = new ScanSession(newlyRecognized, newlyLocalized, all);
+			var properSession = new ScanSession(newlyRecognized, newlyLocalized, all, picker);
     		
 			success(properSession);
 		}

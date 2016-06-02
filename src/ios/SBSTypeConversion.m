@@ -12,12 +12,27 @@
 #import "SBSTypeConversion.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
+@interface SBSCode (Handle)
+
+// private property to get the unterlying data handle. Used for generating unique Ids.
+@property (readonly, nonatomic) void* handle;
+
+@end
+
+@implementation SBSCode (UniqueId)
+
+- (long)uniqueId {
+    return (long)self.handle;
+}
+
+@end
 
 NSArray *SBSJSObjectsFromCodeArray(NSArray *codes) {
     NSMutableArray *finalArray = [[NSMutableArray alloc] init];
     for (SBSCode *code in codes) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                      [code symbologyName], @"symbology",
+                                     [NSNumber numberWithLong:code.uniqueId], @"uniqueId",
                                      [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
                                      [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
         [dict setObject:@(code.compositeFlag) forKey:@"compositeFlag"];

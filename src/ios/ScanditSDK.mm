@@ -17,7 +17,6 @@
 #import "SBSLegacyUIParamParser.h"
 #import "SBSUIParamParser.h"
 #import "SBSPhonegapParamParser.h"
-#import "SBSLocalScanSession.h"
 #import "SBSTypeConversion.h"
 #import "SBSPickerStateMachine.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
@@ -33,11 +32,10 @@
 @property (readwrite, assign) BOOL hasPendingOperation;
 @property (nonatomic, assign) BOOL continuousMode;
 @property (nonatomic, assign) BOOL modallyPresented;
-@property (nonatomic, assign) BOOL startAnimationDone;
-@property (nonatomic, strong) SBSLocalScanSession *bufferedResult;
 @property (nonatomic, strong) SBSPickerStateMachine *pickerStateMachine;
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, assign) BOOL legacyMode;
+@property (nonatomic, strong) NSArray *rejectedCodeIds;
 
 @property (nonatomic, strong) NSCondition* didScanCondition;
 @property (nonatomic, assign) int nextState;
@@ -182,10 +180,13 @@
             self.picker.scanDelegate = self;
             self.picker.overlayController.cancelDelegate = self;
         
-            if ([options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
-                    || [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]
-                    || [options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]]
-                    || [options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]) {
+            BOOL showAsSubView =
+                [options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]] ||
+                [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]] ||
+                [options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]] ||
+                [options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]
+            ;
+            if (showAsSubView) {
                 self.modallyPresented = NO;
                 [self.viewController addChildViewController:picker];
                 [self.viewController.view addSubview:self.picker.view];
@@ -197,16 +198,8 @@
             } else {
                 self.modallyPresented = YES;
                 
-                self.startAnimationDone = NO;
-                self.bufferedResult = nil;
-                
                 // Present the barcode picker modally and start scanning.
-                [self.viewController presentViewController:self.picker animated:YES completion:^{
-                    self.startAnimationDone = YES;
-                    if (self.bufferedResult != nil) {
-                        [self performSelector:@selector(returnBuffer) withObject:nil afterDelay:0.01];
-                    }
-                }];
+                [self.viewController presentViewController:self.picker animated:YES completion:nil];
             }
             
             // Only already start in legacy mode.
@@ -221,14 +214,6 @@
 
 - (void)startScanning:(NSNumber*)startPaused {
     [self.pickerStateMachine startScanningInPausedState:[startPaused boolValue]];
-}
-
-- (void)returnBuffer {
-    if (self.bufferedResult != nil) {
-        [self scannedSession:self.bufferedResult];
-        
-        self.bufferedResult = nil;
-    }
 }
 
 - (void)applySettings:(CDVInvokedUrlCommand *)command {
@@ -333,16 +318,17 @@
 }
 
 - (void)finishDidScanCallback:(CDVInvokedUrlCommand*)command {
-    if ([command.arguments count] > 0) {
-        int nextState = [[command.arguments objectAtIndex:0] intValue];
+    NSArray *args = command.arguments;
+    self.nextState = 0;
+    if ([args count] > 1) {
+        int nextState = [args[0] intValue];
+        self.rejectedCodeIds = args[1];
         if (self.immediatelySwitchToNextState) {
             [self switchToNextScanState:nextState withSession:nil];
             self.immediatelySwitchToNextState = NO;
         } else {
             self.nextState = nextState;
         }
-    } else {
-        self.nextState = 0;
     }
     self.didScanCallbackFinish = YES;
     [self.didScanCondition signal];
@@ -367,29 +353,29 @@
 #pragma mark - SBSScanDelegate methods
 
 - (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
-    if (self.modallyPresented) {
-        if (!self.startAnimationDone) {
-            // If the initial animation hasn't finished yet we buffer the result and return it as soon
-            // as the animation finishes.
-            self.bufferedResult = [[SBSLocalScanSession alloc]
-                                   initWithScanSession:session andPicker:picker];
-            return;
-        } else {
-            self.bufferedResult = nil;
-        }
-    }
-    
     [self scannedSession:session];
 }
 
 - (void)scannedSession:(SBSScanSession *)session {
     CDVPluginResult *pluginResult = [self resultForSession:session];
     
+
+    int nextState = [self sendPluginResultBlocking:pluginResult];
     if (!self.continuousMode) {
-        if (session) {
-            [session pauseScanning];
+        nextState = SBSPickerStateStopped;
+    }
+    [self switchToNextScanState:nextState withSession:session];
+    NSArray* newlyRecognized = session.newlyRecognizedCodes;
+    for (NSNumber* codeId in self.rejectedCodeIds) {
+        long value = [codeId longValue];
+        for (SBSCode* code in newlyRecognized) {
+            if (code.uniqueId == value) {
+                [session rejectCode:code];
+                break;
+            }
         }
-        [self.pickerStateMachine setDesiredState:SBSPickerStateStopped];
+    }
+    if (!self.continuousMode) {
         dispatch_main_sync_safe(^{
             if (self.modallyPresented) {
                 [self.viewController dismissViewControllerAnimated:YES completion:nil];
@@ -402,8 +388,6 @@
             self.hasPendingOperation = NO;
         });
     }
-    int nextState = [self sendPluginResultBlocking:pluginResult];
-    [self switchToNextScanState:nextState withSession:session];
 }
 
 - (CDVPluginResult*)createResultForEvent:(NSString*)name value:(NSObject*)value {
@@ -432,29 +416,28 @@
 }
 
 - (int)sendPluginResultBlocking:(CDVPluginResult *)result {
-    if (self.legacyMode || !self.continuousMode) {
+    if (self.legacyMode) {
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
         return 0;
         
-    } else {
-        if (![NSThread isMainThread]) {
-            [self.didScanCondition lock];
-            self.didScanCallbackFinish = NO;
-        }
-        
+    }
+    if (![NSThread isMainThread]) {
+        [self.didScanCondition lock];
+        self.didScanCallbackFinish = NO;
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-        
-        if ([NSThread isMainThread]) {
-            // We are on the main thread where the callback will be invoked on as well, we can't
-            // wait for a response and have to immediately continue.
-            self.immediatelySwitchToNextState = YES;
-        } else {
-            while (!self.didScanCallbackFinish) {
-                [self.didScanCondition wait];
-            }
+        while (!self.didScanCallbackFinish) {
+            [self.didScanCondition wait];
         }
         return self.nextState;
     }
+    // We are on the main thread where the callback will be invoked on as well, we
+    // have to manually assemble the command to be executed.
+    NSString* command = @"cordova.callbacks['%@'].success(%@);";
+    NSString* commandSubst =
+        [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
+    [self.commandDelegate evalJs:commandSubst scheduledOnRunLoop:NO];
+    return self.nextState;
+
 }
 
 - (void)switchToNextScanState:(int)nextState withSession:(SBSScanSession *)session {

@@ -21,6 +21,7 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -34,6 +35,7 @@ abstract class PickerControllerBase implements IPickerController {
     protected boolean mContinuousMode = false;
     protected AtomicInteger mInFlightDidScanCallbackId = new AtomicInteger(0);
     protected AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
+
     protected int mNextState = 0;
     private Object mSync = new Object();
     PickerControllerBase(CordovaPlugin plugin, CallbackContext callbacks) {
@@ -43,14 +45,23 @@ abstract class PickerControllerBase implements IPickerController {
 
     @Override
     public void finishDidScanCallback(JSONArray data) {
+        mNextState = 0;
         if (data != null && data.length() > 0) {
             try {
                 mNextState = data.getInt(0);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else {
-            mNextState = 0;
+            ArrayList<Long> rejectedCodeIds = new ArrayList<Long>();
+            try {
+                JSONArray jsonData = data.getJSONArray(1);
+                for (int i = 0; i < jsonData.length(); ++i) {
+                    rejectedCodeIds.add(jsonData.getLong(i));
+                }
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+            setRejectedCodeIds(rejectedCodeIds);
         }
         synchronized (mSync) {
             mInFlightDidScanCallbackId.set(0); // zero means no in-flight didScan callback
@@ -58,9 +69,11 @@ abstract class PickerControllerBase implements IPickerController {
         }
     }
 
+    protected abstract void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds);
+
 
     protected int sendPluginResultBlocking(PluginResult result) {
-        if (mLegacyMode || !mContinuousMode) {
+        if (mLegacyMode) {
             mCallbackContext.sendPluginResult(result);
             return 0;
         }

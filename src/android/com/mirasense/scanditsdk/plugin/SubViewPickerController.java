@@ -39,6 +39,8 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -60,6 +62,7 @@ public class SubViewPickerController
     // Can't use Size, because the class is not available in all the releases we support.
     // chosen such that dim.x <= dim.y
     private Point mScreenDimensions = null;
+    private ArrayList<Long> mRejectedCodeIds;
 
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
@@ -162,6 +165,11 @@ public class SubViewPickerController
             mCloseWhenDidScanCallbackFinishes = false;
             this.close();
         }
+    }
+
+    @Override
+    protected void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds) {
+        mRejectedCodeIds = rejectedCodeIds;
     }
 
     @Override
@@ -371,11 +379,16 @@ public class SubViewPickerController
                     ResultRelay.jsonForSession(session));
             result = Marshal.createOkResult(eventArgs);
         }
+
+        int nextState = sendPluginResultBlocking(result);
+        if (!mContinuousMode) {
+            nextState = PickerStateMachine.PAUSED;
+        }
+        mPickerStateMachine.switchToNextScanState(nextState, session);
+        Marshal.rejectCodes(session, mRejectedCodeIds);
         if (!mContinuousMode) {
             removeSubviewPicker();
         }
-        int nextState = sendPluginResultBlocking(result);
-        mPickerStateMachine.switchToNextScanState(nextState, session);
     }
 
     @Override

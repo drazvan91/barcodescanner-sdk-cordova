@@ -13,9 +13,15 @@ package com.mirasense.scanditsdk.plugin;
 
 import android.os.Bundle;
 
+import com.scandit.barcodepicker.ScanSession;
+import com.scandit.recognition.Barcode;
+
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains helpers for marshalling data to JS in the format understood by the JS portion of the
@@ -62,5 +68,19 @@ public class Marshal {
         return createFailResult("Canceled");
     }
 
+
+    public static void rejectCodes(ScanSession session, ArrayList<Long> rejectedCodeIds) {
+        if (rejectedCodeIds == null) {
+            return;
+        }
+        List<Barcode> newlyRecognized = session.getNewlyRecognizedCodes();
+        for (Long id : rejectedCodeIds) {
+            for (Barcode code : newlyRecognized) {
+                if (code.getHandle() == id) {
+                    session.rejectCode(code);
+                }
+            }
+        }
+    }
 
 }

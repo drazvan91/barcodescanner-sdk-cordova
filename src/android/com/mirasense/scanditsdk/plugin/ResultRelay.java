@@ -61,6 +61,7 @@ public class ResultRelay {
                 object.put("recognized", code.isRecognized());
                 object.put("data", code.getData());
                 object.put("compositeFlag", code.getCompositeFlag());
+                object.put("uniqueId", code.getHandle());
                 if (code.isRecognized()) {
                     JSONArray bytes = new JSONArray();
                     byte[] rawData = code.getRawData();

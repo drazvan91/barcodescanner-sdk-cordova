@@ -15,6 +15,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+@interface SBSCode (UniqueId)
+
+@property (readonly, nonatomic) long uniqueId;
+
+@end
     
 NSArray *SBSJSObjectsFromCodeArray(NSArray *codes);
 NSString* SBSScanStateToString(SBSScanCaseState state);

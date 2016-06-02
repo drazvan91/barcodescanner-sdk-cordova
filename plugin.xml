@@ -73,8 +73,6 @@
 		  <header-file src="src/ios/SBSScanCasePlugin.h"/>
 		  <source-file src="src/ios/SBSScanCasePlugin.m"/>
           <source-file src="src/ios/SBSUIParamParser.m"/>
-          <header-file src="src/ios/SBSLocalScanSession.h"/>
-          <source-file src="src/ios/SBSLocalScanSession.m"/>
           <header-file src="src/ios/SBSConstraints.h"/>
           <source-file src="src/ios/SBSConstraints.m"/>
           <header-file src="src/ios/SBSPickerStateMachine.h"/>

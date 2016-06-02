@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -61,12 +62,19 @@ public class FullScreenPickerActivity
     
     private PickerStateMachine mPickerStateMachine = null;
     private int mStateBeforeSuspend = PickerStateMachine.STOPPED;
-
+    private static ArrayList<Long> rejectedCodeIds;
+    private ArrayList<Long> mRejectedCodeIds;
 
     public static void setState(int state) {
         if (sActiveActivity == null)
             return;
         sActiveActivity.mPickerStateMachine.setState(state);
+    }
+
+    public static void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds) {
+        if (sActiveActivity == null)
+            return;
+        sActiveActivity.mRejectedCodeIds = rejectedCodeIds;
     }
 
     @Override
@@ -203,18 +211,25 @@ public class FullScreenPickerActivity
             // return if there is a pending close. Otherwise we might deadlock
             return;
         }
-        if (!mContinuousMode) {
-            mPickerStateMachine.switchToNextScanState(PickerStateMachine.STOPPED, session);
-            Intent intent = new Intent();
-            intent.getExtras();
-            intent.putExtras(bundleForScanResult(session));
-            setResult(SCAN, intent);
-            finish();
-            return;
-        }
         Bundle bundle = bundleForScanResult(session);
         int nextState = ResultRelay.relayResult(bundle);
+        if (!mContinuousMode) {
+            nextState = PickerStateMachine.PAUSED;
+        }
         mPickerStateMachine.switchToNextScanState(nextState, session);
+        Marshal.rejectCodes(session, mRejectedCodeIds);
+        if (!mContinuousMode) {
+            final Intent intent = new Intent();
+            intent.putExtras(bundleForScanResult(session));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setResult(SCAN, intent);
+                    finish();
+                }
+            });
+
+        }
     }
 
     private Bundle manualSearchResultsToBundle(String entry) {

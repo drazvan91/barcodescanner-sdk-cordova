@@ -14,9 +14,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 class FullscreenPickerController extends PickerControllerBase implements ResultRelay.Callback {
     FullscreenPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
+    }
+
+    @Override
+    protected void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds) {
+        FullScreenPickerActivity.setRejectedCodeIds(rejectedCodeIds);
     }
 
     @Override

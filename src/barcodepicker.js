@@ -1,3 +1,4 @@
+
 var ScanOverlay = cordova.require("com.mirasense.scanditsdk.plugin.ScanOverlay");
 var ScanSettings = cordova.require("com.mirasense.scanditsdk.plugin.ScanSettings");
 var ScanSession = cordova.require("com.mirasense.scanditsdk.plugin.ScanSession");
@@ -86,7 +87,7 @@ BarcodePicker.prototype.show = function () {
             var newlyRecognized = BarcodePicker.codeArrayFromGenericArray(session.newlyRecognizedCodes);
             var newlyLocalized = BarcodePicker.codeArrayFromGenericArray(session.newlyLocalizedCodes);
             var all = BarcodePicker.codeArrayFromGenericArray(session.allRecognizedCodes);
-            var properSession = new ScanSession(newlyRecognized, newlyLocalized, all);
+            var properSession = new ScanSession(newlyRecognized, newlyLocalized, all, picker);
             var exceptionRaisedDuringDidScan = null;
             if (callbacks.didScan) {
                 // catch exception thrown in the callback, so we can release the lock held for 
@@ -107,7 +108,8 @@ BarcodePicker.prototype.show = function () {
             } else if (picker.pausedDuringCallback) {
                 nextStep = 1;
             }
-            cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep]);
+            cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback",
+                         [nextStep, properSession.rejectedCodes]);
             picker.executingCallback = false;
             if (exceptionRaisedDuringDidScan) {
                  throw exceptionRaisedDuringDidScan;
@@ -128,11 +130,13 @@ BarcodePicker.prototype.show = function () {
 BarcodePicker.codeArrayFromGenericArray = function(genericArray) {
 	var codeArray = [];
 	for (var i = 0; i < genericArray.length; i++) {
-		var code = new Barcode(genericArray[i].gs1DataCarrier, genericArray[i].recognized);
-		code.symbology = genericArray[i].symbology;
-		code.data = genericArray[i].data;
-		code.rawData = genericArray[i].rawData;
-		code.compositeFlag = genericArray[i].compositeFlag;
+		var src = genericArray[i];
+		var code = new Barcode(src, src);
+		code.symbology = src.symbology;
+		code.data = src.data;
+		code.rawData = src.rawData;
+		code.compositeFlag = src.compositeFlag;
+		code.uniqueId = src.uniqueId || 0;
 		codeArray.push(code);
 	}
 	return codeArray;

@@ -115,7 +115,7 @@
 		</config-file>      
 		<!-- add ScanditSDK Activity to the "application" section of AndroidManifest.xml file -->
 		<config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <activity android:name="com.mirasense.scanditsdk.plugin.ScanditSDKActivity"/>
+            <activity android:name="com.mirasense.scanditsdk.plugin.FullScreenPickerActivity" android:configChanges="orientation|screenSize"/>
 		</config-file>
 		<!-- copy Scandit SDK libs -->
 		 <framework src="src/android/build.gradle" custom="true" type="gradleReference" />

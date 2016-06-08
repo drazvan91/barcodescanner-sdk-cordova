@@ -879,6 +879,21 @@ public class Scandit {
 		 * @param value The property's value.
 		 */
     	public void setProperty(String key, Object value);
+
+
+        /**
+         * @brief Whether code rejection is enabled
+         *
+         * Property indicating whether code rejection is enabled. This feature 
+         * allows you to implement custom integrity checks for recognized barcodes by 
+         * rejecting codes that don't satisfy additional criteria. By default, code 
+         * rejection is disabled.
+         *
+         * @see {@link ScanSession.rejectCode(Barcode)}
+         *
+         * @since 4.15.0
+         */
+    	public boolean codeRejectionEnabled;
     }
     
     
@@ -1461,5 +1476,28 @@ public class Scandit {
 		 * @since 4.11.0
 		 */
 		public void stopScanning();
-	}
+
+        /**
+         * @brief Prevent beeping/vibrate and highlighting for a particular code.
+         *
+         * Use this method to reject a certain code if you have additional methods for verifying
+         * the integrity of the code, e.g. with a custom checksum. Rejected
+         * codes won't be highlighted in the scan UI. Additionally beep and vibration
+         * will be surpressed.
+         *
+         * For code rejection to work, you must enabled it by setting
+         * {@link ScanSettings.codeRejectionEnabled code rejection} to true.
+         *
+         * Rejected codes will be added to {@link allRecognizedCodes} like all other codes.
+         *
+         * Note that you should only pass codes returned by {@link newlyRecognizedCodes}
+         * as passing any other code will have no effect. Additionally, you should only
+         * calls this method from the scan callback.
+         *
+         * @param code The code to reject
+         *
+         * @since 4.15.0
+         */
+        public void rejectCode(Barcode code);
+    }
 }

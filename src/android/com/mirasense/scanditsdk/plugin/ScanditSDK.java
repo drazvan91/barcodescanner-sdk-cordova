@@ -12,6 +12,7 @@
 
 package com.mirasense.scanditsdk.plugin;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -54,18 +55,49 @@ public class ScanditSDK extends CordovaPlugin {
     public static final String UPDATE_OVERLAY_COMMAND = "updateOverlay";
     public static final String ENABLE_TORCH_COMMAND = "torch";
     public static final String FINISH_DID_SCAN_COMMAND = "finishDidScanCallback";
+    private static final int REQUEST_CAMERA_PERMISSION = 505;
 
     private CallbackContext mCallbackContext;
 
     private ScanditWorker mWorker = null;
-
+    private boolean mMustRequestCameraPermission = false;
     IPickerController mPickerController;
-    
+
+    static class Command {
+        Command(String action, JSONArray args, CallbackContext callbackContext) {
+            this.action = action;
+            this.args = args;
+            this.callbackContext = callbackContext;
+        }
+        JSONArray args;
+        String action;
+        CallbackContext callbackContext;
+    }
+
+    ArrayList<Command> mQueuedCommands = new ArrayList<Command>();
+
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
         if (mWorker == null) {
+            mMustRequestCameraPermission =
+                    !PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
             mWorker = new ScanditWorker();
             mWorker.start();
+        }
+
+        if (mMustRequestCameraPermission && action.equals(SHOW_COMMAND)) {
+            // request permission
+            PermissionHelper.requestPermission(this, REQUEST_CAMERA_PERMISSION,
+                                               Manifest.permission.CAMERA);
+        }
+
+        if (mMustRequestCameraPermission) {
+            // queue all the commands until we have finished asking for permission. We will then either 
+            // have the permission, or display a message in the picker that says that there is not 
+            // camera permission.
+            mQueuedCommands.add(new Command(action, args, callbackContext));
+            return true;
         }
 
         if (action.equals(INIT_LICENSE_COMMAND)) {
@@ -119,6 +151,21 @@ public class ScanditSDK extends CordovaPlugin {
             e.printStackTrace();
         }
     }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                          int[] grantResults) throws JSONException
+    {
+        if (requestCode != REQUEST_CAMERA_PERMISSION) {
+            return;
+        }
+        mMustRequestCameraPermission = false;
+        // execute all the queued commands and clear.
+        for (Command queuedCommand : mQueuedCommands) {
+            this.execute(queuedCommand.action, queuedCommand.args, queuedCommand.callbackContext);
+        }
+        mQueuedCommands.clear();
+    }
+
 
     private void show(JSONArray data) {
         if (data.length() > 2) {
@@ -374,6 +421,5 @@ public class ScanditSDK extends CordovaPlugin {
         if (mPickerController == null) return;
         mPickerController.onActivityResume();
     }
-
 
 }

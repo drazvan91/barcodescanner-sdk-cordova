@@ -60,7 +60,7 @@ public class ScanditSDK extends CordovaPlugin {
     private CallbackContext mCallbackContext;
 
     private ScanditWorker mWorker = null;
-    private boolean mMustRequestCameraPermission = false;
+    private boolean mRequestingCameraPermission = false;
     IPickerController mPickerController;
 
     static class Command {
@@ -79,23 +79,32 @@ public class ScanditSDK extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
+        return this.executeCommand(action, args, callbackContext, false);
+    }
+
+    private boolean executeCommand(String action, JSONArray args, CallbackContext callbackContext,
+                                   boolean isQueuedCommand) {
         if (mWorker == null) {
-            mMustRequestCameraPermission =
-                    !PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
             mWorker = new ScanditWorker();
             mWorker.start();
         }
 
-        if (mMustRequestCameraPermission && action.equals(SHOW_COMMAND)) {
-            // request permission
-            PermissionHelper.requestPermission(this, REQUEST_CAMERA_PERMISSION,
-                                               Manifest.permission.CAMERA);
+        // must check both scan and show commands, for legacy mode.
+        if (!mRequestingCameraPermission && !isQueuedCommand &&
+            (action.equals(SHOW_COMMAND) || action.equals(SCAN_COMMAND))) {
+            mRequestingCameraPermission =
+                    !PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
+            if (mRequestingCameraPermission) {
+                // request permission
+                PermissionHelper.requestPermission(this, REQUEST_CAMERA_PERMISSION,
+                        Manifest.permission.CAMERA);
+            }
         }
 
-        if (mMustRequestCameraPermission) {
-            // queue all the commands until we have finished asking for permission. We will then either 
-            // have the permission, or display a message in the picker that says that there is not 
-            // camera permission.
+        if (mRequestingCameraPermission) {
+            // queue all the commands until we have finished asking for permission. We will then
+            // either have the permission, or display a message in the picker that says that we
+            // don't have permission to access the camera.
             mQueuedCommands.add(new Command(action, args, callbackContext));
             return true;
         }
@@ -158,10 +167,11 @@ public class ScanditSDK extends CordovaPlugin {
         if (requestCode != REQUEST_CAMERA_PERMISSION) {
             return;
         }
-        mMustRequestCameraPermission = false;
+        mRequestingCameraPermission = false;
         // execute all the queued commands and clear.
         for (Command queuedCommand : mQueuedCommands) {
-            this.execute(queuedCommand.action, queuedCommand.args, queuedCommand.callbackContext);
+            this.executeCommand(queuedCommand.action, queuedCommand.args,
+                                queuedCommand.callbackContext, true);
         }
         mQueuedCommands.clear();
     }
@@ -421,5 +431,6 @@ public class ScanditSDK extends CordovaPlugin {
         if (mPickerController == null) return;
         mPickerController.onActivityResume();
     }
+
 
 }

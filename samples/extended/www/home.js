@@ -24,10 +24,16 @@
                 });
             }
         });
+        var setActiveScanningArea = function(settings) {
+            settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.25, 1.0, 0.5);
+            settings.activeScanningAreaLandscape = new Scandit.Rect(0.0, 0.25, 1.0, 0.5);
+        };
         if ($scope.ready) {
-           $scope.startPicker();
+           $scope.startPicker(setActiveScanningArea);
        } else {
-            document.addEventListener('deviceready', $scope.startPicker);
+            document.addEventListener('deviceready', function() {
+                $scope.startPicker(setActiveScanningArea);
+            });
        }
     }
 })(this);

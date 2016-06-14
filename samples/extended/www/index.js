@@ -16,13 +16,17 @@ angular.module('app').controller('AppController', function ($scope) {
    $scope.scannedCode = '';
    $scope.paused = false;
    $scope.startWhenClosed = false;
-   $scope.startPicker = function () {
+   $scope.startPicker = function (customSettings) {
        if (picker !== null) {
            $scope.startWhenClosed = true;
            return;
        }
        $scope.paused = false;
-       picker = initPicker(getScanSettings(), margins, landscapeMargins);
+       var settings = getScanSettings();
+       if (customSettings) {
+           customSettings(settings);
+       }
+       picker = initPicker(settings, margins, landscapeMargins);
        applyUISettings(picker);
        picker.show({
            didScan: function (session) { callback(session, false) },

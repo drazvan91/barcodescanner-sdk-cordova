@@ -351,9 +351,8 @@ public class ScanditSDK extends CordovaPlugin {
         mWorker.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                boolean enabled = false;
                 try {
-                    enabled = data.getBoolean(0);
+                    boolean enabled = data.getBoolean(0);
                     mPickerController.setTorchEnabled(enabled);
                 } catch (JSONException e) {
                     // FIXME: error handling?

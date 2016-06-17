@@ -16,8 +16,10 @@ angular.module('app').controller('AppController', function ($scope) {
    $scope.scannedCode = '';
    $scope.paused = false;
    $scope.startWhenClosed = false;
+   $scope.isPickerActive = false;
+
    $scope.startPicker = function (customSettings) {
-       if (picker !== null) {
+       if ($scope.isPickerActive) {
            $scope.startWhenClosed = true;
            return;
        }
@@ -32,9 +34,14 @@ angular.module('app').controller('AppController', function ($scope) {
            didScan: function (session) { callback(session, false) },
            didManualSearch: function (enteredData) { callback(enteredData, true) },
            didChangeState: function (newState) {
-               if (newState !== Scandit.BarcodePicker.State.STOPPED) return;
-               picker = null;
+               $scope.isPickerActive = newState !== Scandit.BarcodePicker.State.STOPPED;
+               if ($scope.isPickerActive) return;
+               $scope.$apply(function() {
+                    $scope.paused = false;
+               });
+
                if ($scope.startWhenClosed) {
+                   $scope.startWhenClosed = false;
                    setTimeout(function () {
                        $scope.startPicker();
                    }, 1);

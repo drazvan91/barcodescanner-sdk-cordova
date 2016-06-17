@@ -37,7 +37,7 @@ abstract class PickerControllerBase implements IPickerController {
     protected AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
 
     protected int mNextState = 0;
-    private Object mSync = new Object();
+    private final Object mSync = new Object();
     PickerControllerBase(CordovaPlugin plugin, CallbackContext callbacks) {
         mPlugin = plugin;
         mCallbackContext = callbacks;

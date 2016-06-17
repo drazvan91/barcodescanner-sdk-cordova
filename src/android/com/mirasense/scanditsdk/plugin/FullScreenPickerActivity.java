@@ -284,10 +284,6 @@ public class FullScreenPickerActivity
     public void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState) {
         // don't produce events in legacy mode. They would be interpreted as scan events.
         if (mLegacyMode) return;
-
-        if (newState == PickerStateMachine.STOPPED) {
-
-        }
         Bundle resultBundle = new Bundle();
         JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
         resultBundle.putString("jsonString", didStopArgs.toString());

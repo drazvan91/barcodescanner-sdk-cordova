@@ -308,7 +308,7 @@ public class SubViewPickerController
     }
 
     private void internalRemoveSubviewPicker() {
-        if (Looper.myLooper().getThread() != Thread.currentThread()) {
+        if (Looper.myLooper() == null || Looper.myLooper().getThread() != Thread.currentThread()) {
             throw new RuntimeException("must be called on main thread");
         }
         if (mPickerStateMachine == null) {
@@ -396,7 +396,7 @@ public class SubViewPickerController
         // don't produce events in legacy mode. They would be interpreted as scan events.
         if (mLegacyMode) return;
 
-        JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
-        mCallbackContext.sendPluginResult(Marshal.createOkResult(didStopArgs));
+        JSONArray didChangeStateArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
+        mCallbackContext.sendPluginResult(Marshal.createOkResult(didChangeStateArgs));
     }
 }

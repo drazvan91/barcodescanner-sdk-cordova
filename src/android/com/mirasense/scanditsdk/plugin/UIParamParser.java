@@ -203,7 +203,7 @@ public class UIParamParser {
         if (bundleContainsBundleKey(bundle, paramProperties)) {
             Bundle properties = bundle.getBundle(paramProperties);
             for (String key : properties.keySet()) {
-                //picker.getOverlayView().setProperty(key, properties.get);
+                picker.getOverlayView().setProperty(key, properties.get(key));
             }
         }
     }
@@ -272,7 +272,7 @@ public class UIParamParser {
                         Log.e("ScanditSDK", "Percentage value is not valid: " + percent + ", using 0%");
                         return 0;
                     }
-                    return (int) Math.round(percent * max / 100f);
+                    return Math.round(percent * max / 100f);
                 } catch (NumberFormatException e) {
                     Log.e("ScanditSDK", "Can not parse size value of string " + str + " - returning 0");
                     return 0;

@@ -42,7 +42,7 @@ class PickerStateMachine {
          * @param newState the new state of the picker
          */
         void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState);
-    };
+    }
 
 
     private final BarcodePickerWithSearchBar mPicker;
@@ -93,6 +93,10 @@ class PickerStateMachine {
             return;
         }
         transitionToActiveState(true);
+        Callback cb = mCallback.get();
+        if (cb != null) {
+            cb.pickerEnteredState(mPicker, ACTIVE);
+        }
         mCurrentState = ACTIVE;
     }
 

@@ -1,4 +1,3 @@
-
 //
 //  Copyright 2010 Mirasense AG
 //
@@ -212,15 +211,10 @@ public class FullScreenPickerActivity
             return;
         }
         Bundle bundle = bundleForScanResult(session);
-        int nextState = ResultRelay.relayResult(bundle);
         if (!mContinuousMode) {
-            nextState = PickerStateMachine.PAUSED;
-        }
-        mPickerStateMachine.switchToNextScanState(nextState, session);
-        Marshal.rejectCodes(session, mRejectedCodeIds);
-        if (!mContinuousMode) {
+            mPickerStateMachine.switchToNextScanState(PickerStateMachine.PAUSED, session);
             final Intent intent = new Intent();
-            intent.putExtras(bundleForScanResult(session));
+            intent.putExtras(bundle);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -228,8 +222,12 @@ public class FullScreenPickerActivity
                     finish();
                 }
             });
-
+            return;
         }
+        int nextState = ResultRelay.relayResult(bundle);
+        mPickerStateMachine.switchToNextScanState(nextState, session);
+        Marshal.rejectCodes(session, mRejectedCodeIds);
+
     }
 
     private Bundle manualSearchResultsToBundle(String entry) {

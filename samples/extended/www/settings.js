@@ -23,6 +23,8 @@
            { ids: ['databar'], title: "GS1 DataBar", enabled: false },
            { ids: ['databar-limited'], title: "GS1 DataBar Limited", enabled: false },
            { ids: ['databar-expanded'], title: "GS1 DataBar Expanded", enabled: false },
+           { ids: ['kix'], title: "KIX", enabled: false },
+           { ids: ['rm4scc'], title: "RM4SCC", enabled: false },
     ];
     var ui = {
         beep: true,

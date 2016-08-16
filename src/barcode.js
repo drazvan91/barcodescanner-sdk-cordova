@@ -32,7 +32,9 @@ Barcode.Symbology = {
 	AZTEC: "aztec",
 	MAXICODE: "maxicode",
 	FIVE_DIGIT_ADD_ON: "five-digit-add-on",
-	TWO_DIGIT_ADD_ON: "two-digit-add-on"
+	TWO_DIGIT_ADD_ON: "two-digit-add-on",
+	KIX: "kix",
+	RM4SCC: "rm4scc"
 }
 
 module.exports = Barcode;

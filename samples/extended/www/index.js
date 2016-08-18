@@ -66,7 +66,6 @@ angular.module('app').controller('AppController', function ($scope) {
            $scope.startWhenClosed = false;
            picker.cancel();
        }
-       $scope.paused = true;
    };
 
    $scope.setMargin = function (marginLeft, marginTop, marginRight, marginBottom) {

@@ -55,6 +55,7 @@ public class FullScreenPickerActivity
 
     private static FullScreenPickerActivity sActiveActivity = null;
     private static AtomicBoolean sPendingClose = new AtomicBoolean(false);
+    private static boolean sBufferedTorchEnabled = false;
     private boolean mContinuousMode = false;
 
     private boolean mLegacyMode = false;
@@ -136,6 +137,12 @@ public class FullScreenPickerActivity
 
         // Set all the UI options.
         PhonegapParamParser.updatePicker(picker, options, this);
+
+        // Check buffered torch state and apply if needed.
+        if (sBufferedTorchEnabled) {
+            picker.switchTorchOn(true);
+            sBufferedTorchEnabled = false;
+        }
 
         if (mLegacyMode) {
             assert settings == null;
@@ -275,6 +282,8 @@ public class FullScreenPickerActivity
     public static void setTorchEnabled(boolean enabled) {
         if (sActiveActivity != null) {
             sActiveActivity.switchTorchOn(enabled);
+        } else {
+            sBufferedTorchEnabled = enabled;
         }
     }
 

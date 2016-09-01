@@ -18,10 +18,17 @@
                    $scope.scannedCode = 'Manual entry: ' + code;
                });
            } else {
-               var code = session.newlyRecognizedCodes[0];
+               var result = '';
+               for (var i = 0; i < session.newlyRecognizedCodes.length; ++i) {
+                    var code = session.newlyRecognizedCodes[i];
+                    if (i > 0) {
+                        result += ', ';
+                    }
+                    result += '(' + code.symbology.toUpperCase() + ') ' + code.data;
+               }
                $scope.$apply(function () {
-                   $scope.scannedCode = '(' + code.symbology.toUpperCase() + ') ' + code.data;
-                });
+                   $scope.scannedCode = result;
+               });
             }
         });
         var setActiveScanningArea = function(settings) {

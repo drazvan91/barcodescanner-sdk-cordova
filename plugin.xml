@@ -1,6 +1,10 @@
 <?xml version="1.0" ?> 
 <plugin id="com.mirasense.scanditsdk.plugin" version="4.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">    
 	<name>ScanditBarcodeScanner</name>
+    <engines>
+        <engine name="cordova-android" version="&gt;=4.0" />
+        <engine name="cordova-ios" version="&gt;=3.9.2" />
+    </engines>
 	<js-module src="src/barcode.js" name="Barcode">
 		<clobbers target="Scandit.Barcode" />
 	</js-module>

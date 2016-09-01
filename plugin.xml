@@ -1,134 +1,133 @@
-<?xml version="1.0" ?> 
-<plugin id="com.mirasense.scanditsdk.plugin" version="4.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">    
-	<name>ScanditBarcodeScanner</name>
+<?xml version="1.0" ?>
+<plugin id="com.mirasense.scanditsdk.plugin" version="4.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>ScanditBarcodeScanner</name>
     <engines>
         <engine name="cordova-android" version="&gt;=4.0" />
         <engine name="cordova-ios" version="&gt;=3.9.2" />
     </engines>
-	<js-module src="src/barcode.js" name="Barcode">
-		<clobbers target="Scandit.Barcode" />
-	</js-module>
-	<js-module src="src/barcodepicker.js" name="BarcodePicker">
-		<clobbers target="Scandit.BarcodePicker" />
-	</js-module>
-	<js-module src="src/license.js" name="License">
-		<clobbers target="Scandit.License" />
-	</js-module>
-	<js-module src="src/margins.js" name="Margins">
-		<clobbers target="Scandit.Margins" />
-	</js-module>
-	<js-module src="src/point.js" name="Point">
-		<clobbers target="Scandit.Point" />
-	</js-module>
-	<js-module src="src/quadrilateral.js" name="Quadrilateral">
-		<clobbers target="Scandit.Quadrilateral" />
-	</js-module>
-	<js-module src="src/rect.js" name="Rect">
-		<clobbers target="Scandit.Rect" />
-	</js-module>
-	<js-module src="src/overlay.js" name="ScanOverlay">
-		<clobbers target="Scandit.ScanOverlay" />
-	</js-module>
-	<js-module src="src/session.js" name="ScanSession">
-		<clobbers target="Scandit.ScanSession" />
-	</js-module>
-	<js-module src="src/settings.js" name="ScanSettings">
-		<clobbers target="Scandit.ScanSettings" />
-	</js-module>
-	<js-module src="src/symbologysettings.js" name="SymbologySettings">
-		<clobbers target="Scandit.SymbologySettings" />
-	</js-module>
-	<js-module src="src/scancase.js" name="ScanCase">
-		<clobbers target="Scandit.ScanCase" />
+    <js-module src="src/barcode.js" name="Barcode">
+        <clobbers target="Scandit.Barcode" />
+    </js-module>
+    <js-module src="src/barcodepicker.js" name="BarcodePicker">
+        <clobbers target="Scandit.BarcodePicker" />
+    </js-module>
+    <js-module src="src/license.js" name="License">
+        <clobbers target="Scandit.License" />
+    </js-module>
+    <js-module src="src/margins.js" name="Margins">
+        <clobbers target="Scandit.Margins" />
+    </js-module>
+    <js-module src="src/point.js" name="Point">
+        <clobbers target="Scandit.Point" />
+    </js-module>
+    <js-module src="src/quadrilateral.js" name="Quadrilateral">
+        <clobbers target="Scandit.Quadrilateral" />
+    </js-module>
+    <js-module src="src/rect.js" name="Rect">
+        <clobbers target="Scandit.Rect" />
+    </js-module>
+    <js-module src="src/overlay.js" name="ScanOverlay">
+        <clobbers target="Scandit.ScanOverlay" />
+    </js-module>
+    <js-module src="src/session.js" name="ScanSession">
+        <clobbers target="Scandit.ScanSession" />
+    </js-module>
+    <js-module src="src/settings.js" name="ScanSettings">
+        <clobbers target="Scandit.ScanSettings" />
+    </js-module>
+    <js-module src="src/symbologysettings.js" name="SymbologySettings">
+        <clobbers target="Scandit.SymbologySettings" />
+    </js-module>
+    <js-module src="src/scancase.js" name="ScanCase">
+        <clobbers target="Scandit.ScanCase" />
     </js-module>
     <js-module name="Constraints" src="src/constraints.js">
         <clobbers target="Scandit.Constraints"/>
     </js-module>
-	<platform name="ios">
-		  <plugins-plist key="ScanditSDK" string="ScanditSDK"/>      
-		  <!-- feature tag in config.xml -->      
-		  <config-file parent="/widget" target="config.xml">        
-				<feature name="ScanditSDK">          
-					<param name="ios-package" value="ScanditSDK"/>          
-				</feature>       
-	                       <feature name="SBSScanCasePlugin">          
-					<param name="ios-package" value="SBSScanCasePlugin"/>          
-				</feature>      
-		  </config-file>
-		  
-		  <!-- Declare Camera Usage for iOS10+ -->
-		  <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-      			<string>For Barcode Scanning</string>
- 		  </config-file>
+    <platform name="ios">
+            <plugins-plist key="ScanditSDK" string="ScanditSDK"/>
+            <!-- feature tag in config.xml -->
+            <config-file parent="/widget" target="config.xml">
+                <feature name="ScanditSDK">
+                    <param name="ios-package" value="ScanditSDK"/>
+                </feature>
+                            <feature name="SBSScanCasePlugin">
+                    <param name="ios-package" value="SBSScanCasePlugin"/>
+                </feature>
+            </config-file>
 
-		  <!-- Resource Bundle for Scandit SDK -->
-		  <resource-file src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.bundle"/>	  
-		  <!-- Scandit SDK Cordova Plugin Source for iOS -->
-		  <header-file src="src/ios/ScanditSDK.h"/>
-		  <source-file src="src/ios/ScanditSDK.mm"/>
-		  <header-file src="src/ios/ScanditSDKRotatingBarcodePicker.h"/>
-		  <source-file src="src/ios/ScanditSDKRotatingBarcodePicker.m"/>
-		  <header-file src="src/ios/ScanditSDKSearchBar.h"/>
-		  <source-file src="src/ios/ScanditSDKSearchBar.m"/>
-		  <header-file src="src/ios/SBSLegacySettingsParamParser.h"/>
-		  <source-file src="src/ios/SBSLegacySettingsParamParser.m"/>
-		  <header-file src="src/ios/SBSLegacyUIParamParser.h"/>
-		  <source-file src="src/ios/SBSLegacyUIParamParser.m"/>
-		  <header-file src="src/ios/SBSPhonegapParamParser.h"/>
-		  <source-file src="src/ios/SBSPhonegapParamParser.m"/>
-		  <header-file src="src/ios/SBSUIParamParser.h"/>
-		  <header-file src="src/ios/SBSTypeConversion.h"/>
-		  <source-file src="src/ios/SBSTypeConversion.m"/>
-		  <header-file src="src/ios/SBSScanCasePlugin.h"/>
-		  <source-file src="src/ios/SBSScanCasePlugin.m"/>
-          <source-file src="src/ios/SBSUIParamParser.m"/>
-          <header-file src="src/ios/SBSConstraints.h"/>
-          <source-file src="src/ios/SBSConstraints.m"/>
-          <header-file src="src/ios/SBSPickerStateMachine.h"/>
-          <source-file src="src/ios/SBSPickerStateMachine.m"/>
+            <!-- Declare Camera Usage for iOS10+ -->
+            <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+                <string>For Barcode Scanning</string>
+            </config-file>
 
-		  
-		  <!-- Frameworks needed by Scandit SDK for iOS -->
-		  <framework src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.framework" custom="true"/>
-		  <framework src="OpenGLES.framework"/>
-		  <framework src="AudioToolbox.framework"/>
-		  <framework src="AVFoundation.framework"/>      
-		  <framework src="CoreGraphics.framework"/>      
-		  <framework src="CoreText.framework"/>      
-		  <framework src="CoreLocation.framework"/>      
-		  <framework src="CoreMedia.framework"/>      
-		  <framework src="CoreVideo.framework"/>      
-		  <framework src="QuartzCore.framework"/>      
-		  <framework src="Accelerate.framework"/>      
-		  <framework src="OpenGLES.framework"/>      
-		  <framework src="SystemConfiguration.framework"/>      
-		  <framework src="MediaPlayer.framework"/>      
-		  <framework src="libiconv.dylib"/>      
-		  <framework src="libz.dylib"/>      
-		  <framework src="libc++.dylib"/>      
-	</platform>     
+            <!-- Resource Bundle for Scandit SDK -->
+            <resource-file src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.bundle"/>
+            <!-- Scandit SDK Cordova Plugin Source for iOS -->
+            <header-file src="src/ios/ScanditSDK.h"/>
+            <source-file src="src/ios/ScanditSDK.mm"/>
+            <header-file src="src/ios/ScanditSDKRotatingBarcodePicker.h"/>
+            <source-file src="src/ios/ScanditSDKRotatingBarcodePicker.m"/>
+            <header-file src="src/ios/ScanditSDKSearchBar.h"/>
+            <source-file src="src/ios/ScanditSDKSearchBar.m"/>
+            <header-file src="src/ios/SBSLegacySettingsParamParser.h"/>
+            <source-file src="src/ios/SBSLegacySettingsParamParser.m"/>
+            <header-file src="src/ios/SBSLegacyUIParamParser.h"/>
+            <source-file src="src/ios/SBSLegacyUIParamParser.m"/>
+            <header-file src="src/ios/SBSPhonegapParamParser.h"/>
+            <source-file src="src/ios/SBSPhonegapParamParser.m"/>
+            <header-file src="src/ios/SBSUIParamParser.h"/>
+            <header-file src="src/ios/SBSTypeConversion.h"/>
+            <source-file src="src/ios/SBSTypeConversion.m"/>
+            <header-file src="src/ios/SBSScanCasePlugin.h"/>
+            <source-file src="src/ios/SBSScanCasePlugin.m"/>
+            <source-file src="src/ios/SBSUIParamParser.m"/>
+            <header-file src="src/ios/SBSConstraints.h"/>
+            <source-file src="src/ios/SBSConstraints.m"/>
+            <header-file src="src/ios/SBSPickerStateMachine.h"/>
+            <source-file src="src/ios/SBSPickerStateMachine.m"/>
+
+
+            <!-- Frameworks needed by Scandit SDK for iOS -->
+            <framework src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.framework" custom="true"/>
+            <framework src="OpenGLES.framework"/>
+            <framework src="AudioToolbox.framework"/>
+            <framework src="AVFoundation.framework"/>
+            <framework src="CoreGraphics.framework"/>
+            <framework src="CoreText.framework"/>
+            <framework src="CoreLocation.framework"/>
+            <framework src="CoreMedia.framework"/>
+            <framework src="CoreVideo.framework"/>
+            <framework src="QuartzCore.framework"/>
+            <framework src="Accelerate.framework"/>
+            <framework src="OpenGLES.framework"/>
+            <framework src="SystemConfiguration.framework"/>
+            <framework src="MediaPlayer.framework"/>
+            <framework src="libiconv.dylib"/>
+            <framework src="libz.dylib"/>
+            <framework src="libc++.dylib"/>
+    </platform>
     <platform name="android">
-		<!-- register plugin -->
-		<config-file parent="/widget" target="res/xml/config.xml">
-			<feature name="ScanditSDK">          
-				<param name="android-package" value="com.mirasense.scanditsdk.plugin.ScanditSDK"/>
-			</feature>        
-		</config-file>      
-		<!-- add permissions in AndroidManifest.xml file--> 
-		<config-file parent="/manifest" target="AndroidManifest.xml"> 
-			<uses-permission android:name="android.permission.CAMERA"/>
-			<uses-permission android:name="android.permission.VIBRATE"/>
-			<uses-permission android:name="android.permission.INTERNET"/>
-		</config-file>      
-		<!-- add ScanditSDK Activity to the "application" section of AndroidManifest.xml file -->
-		<config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <!-- register plugin -->
+        <config-file parent="/widget" target="res/xml/config.xml">
+            <feature name="ScanditSDK">
+                <param name="android-package" value="com.mirasense.scanditsdk.plugin.ScanditSDK"/>
+            </feature>
+        </config-file>
+        <!-- add permissions in AndroidManifest.xml file-->
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.CAMERA"/>
+            <uses-permission android:name="android.permission.VIBRATE"/>
+            <uses-permission android:name="android.permission.INTERNET"/>
+        </config-file>
+        <!-- add ScanditSDK Activity to the "application" section of AndroidManifest.xml file -->
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <activity android:name="com.mirasense.scanditsdk.plugin.FullScreenPickerActivity" android:configChanges="orientation|screenSize"/>
-		</config-file>
-		<!-- copy Scandit SDK libs -->
-		 <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
-		<!-- copy Scandit SDK resources (images, beep) -->      
+        </config-file>
+        <!-- The .so/.jar and resources are all contained in the ScanditBarcodeScanner.aar file, which we reference from build.gradle -->
+            <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
         <resource-file src="src/android/scanditsdk-community-android_4.0.0/ScanditBarcodeScanner.aar" target="libs/ScanditBarcodeScanner.aar" />
-        <!-- add plugin source code -->
+        <!-- These source files contain the Android-specific implementation of the Cordova/Phonegap plugin -->
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/BarcodePickerWithSearchBar.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullScreenPickerActivity.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullscreenPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
@@ -147,5 +146,5 @@
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/SubViewPickerOrientationHandler.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/UIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/PermissionHelper.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
-	</platform>
+    </platform>
 </plugin>

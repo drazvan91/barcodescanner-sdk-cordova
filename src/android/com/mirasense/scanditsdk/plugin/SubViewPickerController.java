@@ -92,7 +92,7 @@ public class SubViewPickerController
         mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin,
                                                                   null);
         mCloseWhenDidScanCallbackFinishes = false;
-        mOrientationHandler.start();
+        mOrientationHandler.start(true);
         final Activity pluginActivity = mPlugin.cordova.getActivity();
         DisplayMetrics display =  pluginActivity.getApplicationContext().getResources().getDisplayMetrics();
         int width = (int) (display.widthPixels * 160.f / display.densityDpi);
@@ -294,7 +294,7 @@ public class SubViewPickerController
     @Override
     public void onActivityResume() {
         if (mOrientationHandler != null) {
-            mOrientationHandler.start();
+            mOrientationHandler.start(false);
         }
         if (mPickerStateMachine != null) {
             mPickerStateMachine.setState(PickerStateMachine.ACTIVE);

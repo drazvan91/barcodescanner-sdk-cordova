@@ -31,7 +31,7 @@ final class SubViewPickerOrientationHandler extends Handler {
 
     final static int CHECK_ORIENTATION = 1;
     final static int SET_PICKER = 2;
-    private int mLastRotation = 0;
+    private int mLastRotation = -1;
     private boolean mRunning = false;
 
     CordovaPlugin mPlugin;
@@ -68,10 +68,13 @@ final class SubViewPickerOrientationHandler extends Handler {
         this.sendMessage(this.obtainMessage(SET_PICKER, picker));
     }
 
-    public void start() {
+    public void start(boolean initializeLastRotation) {
         if (!mRunning) {
             mRunning = true;
-            mLastRotation = SbSystemUtils.getDisplayRotation(mPlugin.cordova.getActivity());
+            if (initializeLastRotation || mLastRotation == -1) {
+                mLastRotation = SbSystemUtils.getDisplayRotation(mPlugin.cordova.getActivity());
+            }
+
             this.sendEmptyMessageDelayed(SubViewPickerOrientationHandler.CHECK_ORIENTATION, 20);
         }
     }

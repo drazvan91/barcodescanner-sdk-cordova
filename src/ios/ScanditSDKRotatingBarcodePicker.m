@@ -65,8 +65,9 @@
         
         [UIView animateWithDuration:animationDuration animations:^{
             SBSConstraints *constraints = self.portraitConstraints;
+            UIInterfaceOrientation current = [[UIApplication sharedApplication] statusBarOrientation];
             if ((newOrientation == UIInterfaceOrientationUnknown
-                && UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
+                && UIInterfaceOrientationIsLandscape(current))
                 || UIInterfaceOrientationIsLandscape(newOrientation)) {
                 constraints = self.landscapeConstraints;
             }

@@ -1,5 +1,5 @@
-BarcodeScannerPlugin
-====================
+Scandit Barcode Scanner SDK Plugin for Cordova/Phonegap
+===================================
 
 Cross platform Phonegap/Cordova Plugin of the Scandit Barcode Scanner SDK for iOS, Android, Windows 8.1, Windows Phone 8.1 and Windows 10 Universal Applications.
 

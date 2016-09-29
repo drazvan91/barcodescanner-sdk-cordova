@@ -863,7 +863,7 @@ public class Scandit {
     
     	/**
     	 * Maximum number of codes to be decoded every frame. 
-    	 * The values are clamped to the range 1 to 6.
+    	 * The value is set to 1 if a negative value is supplied.
     	 */
 		public int maxNumberOfCodesPerFrame;
 

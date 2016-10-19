@@ -13,6 +13,7 @@ Barcode.Symbology = {
 	EAN13: "ean13",
 	EAN8: "ean8",
 	UPC12: "upca",
+	UPCA: "upca",
 	UPCE: "upce",
 	CODE11: "code11",
 	CODE128: "code128",

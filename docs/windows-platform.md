@@ -23,11 +23,11 @@ In the meantime, to install the plugin as is, you will either need to use the pr
 Install pre-release version of cordova-windows (recommended)
 ------------------------------------------------------------------------------------
 
-Instead of installing the windows platform with `cordova platform add windows`, you need to clone the cordova-windows repository from Github and add the platform from the local working copy of the platform. 
+Instead of installing the windows platform with `cordova platform add windows`, you need to clone release 4.4.2 of the cordova-windows repository from Github and add the platform from the local working copy of the platform. 
 
 
 ~~~~~~~~~~~~~~~~{.java}
-git clone https://github.com/apache/cordova-windows
+git clone https://github.com/apache/cordova-windows --branch rel/4.4.2
 cordova create myapp
 cd myapp
 cordova platform add ..\cordova-windows

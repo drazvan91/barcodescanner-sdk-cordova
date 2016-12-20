@@ -339,8 +339,7 @@ public class Scandit {
 		public boolean isRecognized();
 
 		/**
-		 *  @brief The data contained in the barcode/2D code, e.g. the 13 digit number
-		 *     of a EAN13 code.
+		 * @brief The data contained in the barcode/2D code, for example the 13 digit number of an EAN13 code.
 		 *
 		 * For some types of barcodes/2D codes (for example DATAMATRIX, AZTEC, PDF417), the
 		 * data string may contain non-printable characters and nul-bytes in the middle of
@@ -353,8 +352,7 @@ public class Scandit {
 
 
         /**
-         * @brief The data contained in the barcode/2D code, e.g. the 13 digit number of an 
-         *     EAN13 code.
+         * @brief The data contained in the barcode/2D code, for example the 13 digit number of an EAN13 code.
          *
          * The data is stored as an array of integers, where each item in the array corresponds 
          * to the char code. Use this property instead of {@link data} if your application 

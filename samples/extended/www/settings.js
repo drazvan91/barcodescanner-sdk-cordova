@@ -9,7 +9,7 @@
            { ids: ['code39'], title: "Code 39", enabled: true },
            { ids: ['code93'], title: "Code 93", enabled: false },
            { ids: ['code128'], title: "Code 128", enabled: true },
-           { ids: ['itf'], title: "Interleaved 2 of 5", enabled: true },
+           { ids: ['itf'], title: "Interleaved-Two-of-Five (ITF)", enabled: true },
            { ids: ['code25'], title: "Code 25", enabled: false },
            { ids: ['msi-plessey'], title: "MSI Plessey", enabled: false },
            { ids: ['code11'], title: "Code 11", enabled: false },

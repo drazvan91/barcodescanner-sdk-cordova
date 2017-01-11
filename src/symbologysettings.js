@@ -4,9 +4,9 @@ SymbologySettings.Checksum = {
     MOD_11: "mod11",
     MOD_47: "mod47",
     MOD_43: "mod43",
-    MOD_103: "mod1010",
-    MOD_1010: "mod1110",
-    MOD_1110: "mod103"
+    MOD_103: "mod103",
+    MOD_1010: "mod1010",
+    MOD_1110: "mod1110"
 }
 
 SymbologySettings.Extension = {

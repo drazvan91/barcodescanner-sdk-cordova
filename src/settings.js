@@ -89,6 +89,9 @@ function ScanSettings() {
     this.relativeZoom = 0.0;
     
     this.maxNumberOfCodesPerFrame = 1;
+    this.properties = {
+        enable_camera2_api : 0
+    }
 }
 
 ScanSettings.CameraFacing = {

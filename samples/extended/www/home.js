@@ -32,8 +32,14 @@
             }
         });
         var setActiveScanningArea = function(settings) {
-            settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.25, 1.0, 0.5);
-            settings.activeScanningAreaLandscape = new Scandit.Rect(0.0, 0.25, 1.0, 0.5);
+            // If the active scanning area is bigger than the camera preview we set it to the
+            // camera preview's size.
+            if (settings.activeScanningAreaPortrait.y < 0.25
+                    || settings.activeScanningAreaPortrait.y
+                        + settings.activeScanningAreaPortrait.height > 0.75) {
+                settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.25, 1.0, 0.5);
+                settings.activeScanningAreaLandscape = new Scandit.Rect(0.0, 0.25, 1.0, 0.5);
+            }
         };
         if ($scope.ready) {
            $scope.startPicker(setActiveScanningArea);

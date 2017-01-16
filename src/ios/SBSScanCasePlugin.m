@@ -51,13 +51,8 @@ const static NSString* kSBSScanCaseDidScanEvent = @"didScan";
 
 - (void)acquire:(CDVInvokedUrlCommand *)command {
     self.callbackId = command.callbackId;
-    SBSScanCaseSettings* settings = [[SBSScanCaseSettings alloc] init];
     NSDictionary* settingsDict = [command.arguments objectAtIndex:0];
-    SBSScanSettings *scanSettings = [SBSScanSettings settingsWithDictionary:settingsDict error:nil];
-    for (NSNumber* sym in scanSettings.enabledSymbologies) {
-        SBSSymbology theSym = (SBSSymbology)[sym intValue];
-        [settings setSymbology:theSym enabled:YES];
-    }
+    SBSScanCaseSettings* settings = [[SBSScanCaseSettings alloc] initWithDictionary:settingsDict];
     [SBSScanCase acquireWithSettings:settings delegate:self];
 }
 

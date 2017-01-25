@@ -15,6 +15,7 @@ function ScanSettings() {
     
     this.symbologies[Barcode.Symbology.UPC12] = new SymbologySettings();
     this.symbologies[Barcode.Symbology.UPC12].activeSymbolCounts = [12];
+    this.symbologies[Barcode.Symbology.UPC12].extensions = ["remove_leading_zero"];
     
     this.symbologies[Barcode.Symbology.UPCE] = new SymbologySettings();
     this.symbologies[Barcode.Symbology.UPCE].activeSymbolCounts = [6];

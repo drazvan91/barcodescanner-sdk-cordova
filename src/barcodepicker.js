@@ -38,8 +38,9 @@ BarcodePicker.Orientation = {
 }
 
 BarcodePicker.State = {
-    STOPPED : 2,
+    NONE : 1,
     PAUSED : 1,
+    STOPPED : 2,
     ACTIVE : 3
 };
 
@@ -50,6 +51,7 @@ BarcodePicker.prototype.show = function () {
         callbacks.didScan = arguments[0];
         callbacks.didManualSearch = arguments.length > 1 && arguments[1] || null;
         callbacks.didCancel = arguments.length > 2 && arguments[2] || null;
+        callbacks.didRecognizeText = arguments.length > 3 && arguments[3] || null;
     } else {
         // new method signature: BarcodePicker.show({ didScan : function() });
         callbacks = arguments[0];
@@ -97,7 +99,6 @@ BarcodePicker.prototype.show = function () {
                 } catch(e) {
                     exceptionRaisedDuringDidScan = e;
                 }
-
             }
 
             // inform plugin that callback has finished executing. Required for synchronization on 
@@ -112,9 +113,32 @@ BarcodePicker.prototype.show = function () {
                          [nextStep, properSession.rejectedCodes]);
             picker.executingCallback = false;
             if (exceptionRaisedDuringDidScan) {
-                 throw exceptionRaisedDuringDidScan;
+                throw exceptionRaisedDuringDidScan;
             }
             return;
+        }
+        if (event === 'didRecognizeText') {
+            picker.executingCallback = true;
+            var text = args[1];
+            if (callbacks.didRecognizeText) {
+                var desiredState = null;
+                try {
+                   desiredState = callbacks.didRecognizeText(text) || BarcodePicker.State.ACTIVE;
+                } catch(e) {
+                   console.log('event ' + eventName + ' failed:' + e);
+                }
+            }
+
+            // inform plugin that callback has finished executing. Required for synchronization on
+            // Android/iOS. Windows doesn't require it.
+            var nextStep = desiredState || BarcodePicker.State.ACTIVE;
+            if (picker.stoppedDuringCallback) {
+                nextStep = BarcodePicker.State.STOPPED;
+            } else if (picker.pausedDuringCallback) {
+                nextStep = BarcodePicker.State.PAUSED;
+            }
+            cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep]);
+            picker.executingCallback = false;
         }
         if (event === 'didChangeState') {
             if (callbacks.didChangeState) {

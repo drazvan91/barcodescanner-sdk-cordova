@@ -84,7 +84,8 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == FullScreenPickerActivity.SCAN ||
-            resultCode == FullScreenPickerActivity.MANUAL) {
+                resultCode == FullScreenPickerActivity.MANUAL ||
+                resultCode == FullScreenPickerActivity.TEXT) {
             PluginResult result = resultForBundle(data.getExtras());
             if (data.getExtras().getBoolean("waitForResult", true)) {
                 sendPluginResultBlocking(result);

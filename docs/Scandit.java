@@ -462,8 +462,12 @@ public class Scandit {
          *    use the search bar, you may pass null. 
          * @param didCancel callback to be invoked upon failure, or when cancel is called on the 
          *    picker. The callback is passed a reason for failure as the only argument.
+         * @param didRecognizeText callback to be invoked whenever text has been successfully
+         *    recognized. The callback receives the {@link RecognizedText} as the first and only
+         *    argument.
          */
-        public void show(function didScan, function didManualSearch=null, function didCancel=null);
+        public void show(function didScan, function didManualSearch=null, function didCancel=null,
+                         function didRecognizeText=null);
 
         /**
          * Visibly shows the picker to the user. This should be called after the picker has been
@@ -649,6 +653,22 @@ public class Scandit {
 	public class ScanSettings {
     	
 		/**
+		 * The possible recognition modes.
+		 *
+		 * \since 5.2.0
+		 */
+		public enum RecognitionMode {
+			/**
+			 * Text recognition
+			 */
+			TEXT,
+			/**
+			 * Barcode/2d code recognition
+			 */
+			CODE
+		}
+
+		/**
 		 * The possible working ranges for the barcode picker
 		 *
 		 * \since 4.11.0
@@ -738,6 +758,14 @@ public class Scandit {
     	/**
     	 * @}
     	 */
+
+ 	    /**
+      	 * The recognition mode to use for the barcode picker.
+         * <p>
+         * Use this function to programmatically switch between text and barcode recognition.
+         * By default, barcode recognition is on (\ref RecognitionMode.CODE).
+     	 */
+     	public RecognitionMode recognitionMode;
 
     	/**
     	 * High density mode enables phones to work at higher camera resolution,
@@ -892,9 +920,84 @@ public class Scandit {
          * @since 4.15.0
          */
     	public boolean codeRejectionEnabled;
+
+        /**
+         * @brief Settings to configure the text recognition
+         */
+        public TextRecognitionSettings textRecognition;
     }
-    
-    
+
+
+	/**
+     * @brief Settings to configure the text recognition
+	 *
+	 * @since 5.2.0
+	 */
+    public class TextRecognitionSettings {
+        /**
+         * The area (in relative coordinates) in which text is to be recognized.
+         *
+         * While it's possible to set this area to the whole image, it is not recommended to do so for
+         * speed reasons. For best performance, set this to the smallest possible area. By default,
+         * the recognition area is set to 1/4 of the image height.
+         *
+         * This value is only used when scanning in portrait orientation. \ref recognitionAreaLandscape is
+         * used when scanning in landscape orientation.
+         *
+         * \since 5.2
+         */
+        public Rect areaPortrait;
+
+        /**
+         * The area (in relative coordinates) in which text is to be recognized.
+         *
+         * While it's possible to set this area to the whole image, it is not recommended to do so for
+         * speed reasons. For best performance, set this to the smallest possible area. By default,
+         * the recognition area is set to 1/4 of the image height.
+         *
+         * This value is only used when scanning in landscape orientation. \ref recognitionAreaPortrait is
+         * used when scanning in portrait orientation.
+         *
+         * \since 5.2
+         */
+        public Rect areaLandscape;
+
+        /**
+         * Regular expression for filtering the recognized characters. Text that does not match the
+         * regular expression is ignored.
+         *
+         * By default, the regex is set to null. You must explicitly initialize the regex in order for
+         * text recognition to work.
+         *
+         * \since 5.2
+         */
+        public Pattern regex;
+
+        /**
+         * White list of recognizable characters. If the white list is non-null, a recognition result
+         * will never contain characters that are not contained in it.
+         *
+         * By default the white list is null and all characters will be recognized.
+         *
+         * /since 5.2
+         */
+        public String characterWhitelist;
+    }
+
+
+    /**
+     * @brief Holds the text recognition result as identified in a frame.
+     *
+     * @since 5.2
+     */
+    public class RecognizedText {
+        /**
+         * The recognized text.
+         */
+        public String text;
+    }
+
+
 	/**
 	 * @brief Abstract scan UI class
 	 *

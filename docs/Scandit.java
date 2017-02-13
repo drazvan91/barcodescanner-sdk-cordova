@@ -923,8 +923,6 @@ public class Scandit {
 
         /**
          * @brief Settings to configure the text recognition
-         *
-         * Note that text recognition is not available in the default builds.
          */
         public TextRecognitionSettings textRecognition;
     }

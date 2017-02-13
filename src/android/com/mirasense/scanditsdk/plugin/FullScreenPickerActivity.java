@@ -28,8 +28,6 @@ import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.internal.Code;
-import com.scandit.barcodepicker.ocr.RecognizedText;
-import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
 import com.scandit.recognition.Barcode;
 
@@ -49,12 +47,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FullScreenPickerActivity
         extends Activity
         implements OnScanListener, BarcodePickerWithSearchBar.SearchBarListener,
-                   TextRecognitionListener, PickerStateMachine.Callback {
+                   PickerStateMachine.Callback {
     
     public static final int CANCEL = 0;
     public static final int SCAN = 1;
     public static final int MANUAL = 2;
-    public static final int TEXT = 1;
 
     private static FullScreenPickerActivity sActiveActivity = null;
     private static AtomicBoolean sPendingClose = new AtomicBoolean(false);
@@ -134,7 +131,6 @@ public class FullScreenPickerActivity
         }
         BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(this, scanSettings);
         picker.setOnScanListener(this);
-        picker.setTextRecognitionListener(this);
 
         this.setContentView(picker);
         mPickerStateMachine = new PickerStateMachine(picker, this);
@@ -199,6 +195,7 @@ public class FullScreenPickerActivity
     }
 
     private Bundle bundleForScanResult(ScanSession session) {
+
         Bundle bundle = new Bundle();
         if (mLegacyMode) {
             Barcode code = session.getNewlyRecognizedCodes().get(0);
@@ -265,47 +262,6 @@ public class FullScreenPickerActivity
 
         Bundle bundle = manualSearchResultsToBundle(entry.trim());
         ResultRelay.relayResult(bundle);
-    }
-
-    private Bundle bundleForTextRecognitionResult(RecognizedText recognizedText) {
-        Bundle bundle = new Bundle();
-        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_TEXT_EVENT,
-                ResultRelay.jsonForRecognizedText(recognizedText));
-        bundle.putString("jsonString", eventArgs.toString());
-        return bundle;
-    }
-
-    @Override
-    public int didRecognizeText(RecognizedText recognizedText) {
-        if (sPendingClose.get()) {
-            // return if there is a pending close. Otherwise we might deadlock
-            return TextRecognitionListener.PICKER_STATE_STOPPED;
-        }
-        Bundle bundle = bundleForTextRecognitionResult(recognizedText);
-        if (!mContinuousMode) {
-            final Intent intent = new Intent();
-            bundle.putBoolean("waitForResult", false);
-            intent.putExtras(bundle);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setResult(TEXT, intent);
-                    finish();
-                }
-            });
-            mPickerStateMachine.setState(PickerStateMachine.PAUSED);
-            return TextRecognitionListener.PICKER_STATE_PAUSED;
-        }
-        int nextState = ResultRelay.relayResult(bundle);
-
-        mPickerStateMachine.setState(nextState);
-        if (nextState == PickerStateMachine.STOPPED) {
-            return TextRecognitionListener.PICKER_STATE_STOPPED;
-        } else if (nextState == PickerStateMachine.PAUSED) {
-            return TextRecognitionListener.PICKER_STATE_PAUSED;
-        } else {
-            return TextRecognitionListener.PICKER_STATE_ACTIVE;
-        }
     }
     
     @Override

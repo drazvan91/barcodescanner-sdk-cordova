@@ -29,8 +29,6 @@ import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.internal.Code;
-import com.scandit.barcodepicker.ocr.RecognizedText;
-import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
 import com.scandit.recognition.Barcode;
 
@@ -52,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SubViewPickerController
         extends PickerControllerBase
         implements BarcodePickerWithSearchBar.SearchBarListener, OnScanListener,
-                   PickerStateMachine.Callback, TextRecognitionListener {
+                   PickerStateMachine.Callback {
 
     private RelativeLayout mLayout;
 
@@ -123,7 +121,6 @@ public class SubViewPickerController
                 BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(pluginActivity,
                                                                                    scanSettings);
                 picker.setOnScanListener(SubViewPickerController.this);
-                picker.setTextRecognitionListener(SubViewPickerController.this);
                 mPickerStateMachine = new PickerStateMachine(picker, SubViewPickerController.this);
                 mOrientationHandler.setScreenDimensions(mScreenDimensions);
                 mOrientationHandler.setPicker(mPickerStateMachine.getPicker());
@@ -391,35 +388,6 @@ public class SubViewPickerController
         Marshal.rejectCodes(session, mRejectedCodeIds);
         if (!mContinuousMode) {
             removeSubviewPicker();
-        }
-    }
-
-    @Override
-    public int didRecognizeText(RecognizedText recognizedText) {
-        if (mPendingClose.get()) {
-            // return if there is a pending close. Otherwise we might deadlock
-            return TextRecognitionListener.PICKER_STATE_STOPPED;
-        }
-        PluginResult result;
-        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_TEXT_EVENT,
-                ResultRelay.jsonForRecognizedText(recognizedText));
-        result = Marshal.createOkResult(eventArgs);
-
-        int nextState = sendPluginResultBlocking(result);
-        if (!mContinuousMode) {
-            nextState = PickerStateMachine.PAUSED;
-        }
-        if (!mContinuousMode) {
-            removeSubviewPicker();
-        }
-
-        mPickerStateMachine.setState(nextState);
-        if (nextState == PickerStateMachine.STOPPED) {
-            return TextRecognitionListener.PICKER_STATE_STOPPED;
-        } else if (nextState == PickerStateMachine.PAUSED) {
-            return TextRecognitionListener.PICKER_STATE_PAUSED;
-        } else {
-            return TextRecognitionListener.PICKER_STATE_ACTIVE;
         }
     }
 

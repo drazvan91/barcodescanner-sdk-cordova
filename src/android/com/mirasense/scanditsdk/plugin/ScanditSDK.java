@@ -39,7 +39,6 @@ public class ScanditSDK extends CordovaPlugin {
 
     public static final String DID_SCAN_EVENT = "didScan";
     public static final String DID_MANUAL_SEARCH_EVENT = "didManualSearch";
-    public static final String DID_RECOGNIZE_TEXT_EVENT = "didRecognizeText";
     public static final String DID_CHANGE_STATE_EVENT = "didChangeState";
 
 

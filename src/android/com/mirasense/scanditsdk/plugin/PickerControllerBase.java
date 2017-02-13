@@ -13,6 +13,8 @@
 package com.mirasense.scanditsdk.plugin;
 
 
+import android.util.Log;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -50,18 +52,16 @@ abstract class PickerControllerBase implements IPickerController {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (data.length() > 1) {
-                ArrayList<Long> rejectedCodeIds = new ArrayList<Long>();
-                try {
-                    JSONArray jsonData = data.getJSONArray(1);
-                    for (int i = 0; i < jsonData.length(); ++i) {
-                        rejectedCodeIds.add(jsonData.getLong(i));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            ArrayList<Long> rejectedCodeIds = new ArrayList<Long>();
+            try {
+                JSONArray jsonData = data.getJSONArray(1);
+                for (int i = 0; i < jsonData.length(); ++i) {
+                    rejectedCodeIds.add(jsonData.getLong(i));
                 }
-                setRejectedCodeIds(rejectedCodeIds);
+            } catch(JSONException e) {
+                e.printStackTrace();
             }
+            setRejectedCodeIds(rejectedCodeIds);
         }
         synchronized (mSync) {
             mInFlightDidScanCallbackId.set(0); // zero means no in-flight didScan callback

@@ -93,6 +93,13 @@ function ScanSettings() {
     this.properties = {
         enable_camera2_api : 0
     }
+
+    this.recognitionMode = ScanSettings.RecognitionMode.CODE;
+}
+
+ScanSettings.RecognitionMode = {
+	TEXT: "text",
+	CODE: "code"
 }
 
 ScanSettings.CameraFacing = {

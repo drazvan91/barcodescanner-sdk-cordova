@@ -15,6 +15,7 @@ package com.mirasense.scanditsdk.plugin;
 import android.os.Bundle;
 
 import com.scandit.barcodepicker.ScanSession;
+import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.recognition.Barcode;
 
 import org.json.JSONArray;
@@ -76,6 +77,16 @@ public class ResultRelay {
             }
         }
         return array;
+    }
+
+    public static JSONObject jsonForRecognizedText(RecognizedText recognizedText) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("text", recognizedText.getText());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
     
     public interface Callback {

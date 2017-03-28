@@ -655,7 +655,7 @@ public class Scandit {
 		/**
 		 * The possible recognition modes.
 		 *
-		 * \since 5.2.0
+		 * \since 5.3.0
 		 */
 		public enum RecognitionMode {
 			/**
@@ -933,7 +933,7 @@ public class Scandit {
 	/**
      * @brief Settings to configure the text recognition
 	 *
-	 * @since 5.2.0
+	 * @since 5.3.0
 	 */
     public class TextRecognitionSettings {
         /**
@@ -946,7 +946,7 @@ public class Scandit {
          * This value is only used when scanning in portrait orientation. \ref recognitionAreaLandscape is
          * used when scanning in landscape orientation.
          *
-         * \since 5.2
+         * \since 5.3.0
          */
         public Rect areaPortrait;
 
@@ -960,7 +960,7 @@ public class Scandit {
          * This value is only used when scanning in landscape orientation. \ref recognitionAreaPortrait is
          * used when scanning in portrait orientation.
          *
-         * \since 5.2
+         * \since 5.3.0
          */
         public Rect areaLandscape;
 
@@ -971,7 +971,7 @@ public class Scandit {
          * By default, the regex is set to null. You must explicitly initialize the regex in order for
          * text recognition to work.
          *
-         * \since 5.2
+         * \since 5.3.0
          */
         public Pattern regex;
 
@@ -981,7 +981,7 @@ public class Scandit {
          *
          * By default the white list is null and all characters will be recognized.
          *
-         * /since 5.2
+         * /since 5.3.0
          */
         public String characterWhitelist;
     }
@@ -990,7 +990,7 @@ public class Scandit {
     /**
      * @brief Holds the text recognition result as identified in a frame.
      *
-     * @since 5.2
+     * @since 5.3.0
      */
     public class RecognizedText {
         /**

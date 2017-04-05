@@ -71,6 +71,7 @@ public class SubViewPickerController
 
     @Override
     public void setState(final int state) {
+        super.setState(state);
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {

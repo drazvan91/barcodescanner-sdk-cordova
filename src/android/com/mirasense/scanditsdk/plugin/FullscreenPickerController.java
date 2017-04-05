@@ -48,6 +48,7 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
 
     @Override
     public void setState(int state) {
+        super.setState(state);
         FullScreenPickerActivity.setState(state);
     }
 

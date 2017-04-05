@@ -20,20 +20,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Base class for the picker controllers.
  */
 abstract class PickerControllerBase implements IPickerController {
-    protected final CordovaPlugin mPlugin;
-    protected final CallbackContext mCallbackContext;
+    final CordovaPlugin mPlugin;
+    final CallbackContext mCallbackContext;
 
-    protected boolean mLegacyMode = false;
-    protected boolean mContinuousMode = false;
-    protected AtomicInteger mInFlightDidScanCallbackId = new AtomicInteger(0);
-    protected AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
-
+    boolean mLegacyMode = false;
+    boolean mContinuousMode = false;
+    AtomicInteger mInFlightDidScanCallbackId = new AtomicInteger(0);
+    private AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
+    private AtomicBoolean mShouldBlockForDidScan = new AtomicBoolean(false);
     protected int mNextState = 0;
     private final Object mSync = new Object();
     PickerControllerBase(CordovaPlugin plugin, CallbackContext callbacks) {
@@ -41,6 +42,15 @@ abstract class PickerControllerBase implements IPickerController {
         mCallbackContext = callbacks;
     }
 
+    @Override
+    public void setState(int state) {
+        mShouldBlockForDidScan.set(state == PickerStateMachine.ACTIVE);
+        // stop any in-flight callback when there is a state change.
+        synchronized (mSync) {
+            mInFlightDidScanCallbackId.set(0); // zero means no in-flight didScan callback
+            mSync.notifyAll();
+        }
+    }
     @Override
     public void finishDidScanCallback(JSONArray data) {
         mNextState = 0;
@@ -84,7 +94,8 @@ abstract class PickerControllerBase implements IPickerController {
         try {
             mCallbackContext.sendPluginResult(result);
             synchronized (mSync) {
-                while (mInFlightDidScanCallbackId.get() == currentId) {
+                while (mInFlightDidScanCallbackId.get() == currentId &&
+                       mShouldBlockForDidScan.get()) {
                     mSync.wait();
                 }
             }

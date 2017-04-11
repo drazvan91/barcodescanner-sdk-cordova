@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 class FullscreenPickerController extends PickerControllerBase implements ResultRelay.Callback {
+
     FullscreenPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
     }

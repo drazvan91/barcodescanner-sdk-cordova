@@ -13,6 +13,8 @@
 package com.mirasense.scanditsdk.plugin;
 
 
+import android.os.Bundle;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -53,6 +55,12 @@ abstract class PickerControllerBase implements IPickerController {
             mSync.notifyAll();
         }
     }
+
+    @Override
+    public void updateLayout(Bundle layoutOptions) {
+        // Do nothing by default.
+    }
+
     @Override
     public void finishDidScanCallback(JSONArray data) {
         mNextState = 0;

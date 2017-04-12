@@ -211,6 +211,18 @@ public class SubViewPickerController
         });
     }
 
+    @Override
+    public void updateLayout(final Bundle layoutOptions) {
+        final Activity pluginActivity = mPlugin.cordova.getActivity();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                PhonegapParamParser.updateLayout(pluginActivity, mPickerStateMachine.getPicker(),
+                        layoutOptions, mScreenDimensions);
+            }
+        });
+    }
+
     private void runOnUiThread(Runnable r) {
         mPlugin.cordova.getActivity().runOnUiThread(r);
     }

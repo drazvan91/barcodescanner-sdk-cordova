@@ -183,9 +183,6 @@
         [picker adjustSize:animationDuration];
         
     } else if (portraitConstraints || landscapeConstraints) {
-        picker.portraitConstraints = [[SBSConstraints alloc] init];
-        picker.landscapeConstraints = [[SBSConstraints alloc] init];
-        
         picker.portraitConstraints = [SBSPhonegapParamParser
                                       extractConstraintsFromObject:portraitConstraints
                                       withWidth:screenWidth height:screenHeight];

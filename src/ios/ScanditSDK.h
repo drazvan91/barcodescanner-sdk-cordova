@@ -25,11 +25,6 @@ dispatch_sync(dispatch_get_main_queue(), block);\
 
 - (void)show:(CDVInvokedUrlCommand *)command;
 
-/**
- * @deprecated Replaced by initLicense: and show:
- */
-- (void)scan:(CDVInvokedUrlCommand *)command;
-
 - (void)applySettings:(CDVInvokedUrlCommand *)command;
 
 - (void)updateOverlay:(CDVInvokedUrlCommand *)command;

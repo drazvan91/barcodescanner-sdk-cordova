@@ -73,10 +73,6 @@
             <source-file src="src/ios/ScanditSDKRotatingBarcodePicker.m"/>
             <header-file src="src/ios/ScanditSDKSearchBar.h"/>
             <source-file src="src/ios/ScanditSDKSearchBar.m"/>
-            <header-file src="src/ios/SBSLegacySettingsParamParser.h"/>
-            <source-file src="src/ios/SBSLegacySettingsParamParser.m"/>
-            <header-file src="src/ios/SBSLegacyUIParamParser.h"/>
-            <source-file src="src/ios/SBSLegacyUIParamParser.m"/>
             <header-file src="src/ios/SBSPhonegapParamParser.h"/>
             <source-file src="src/ios/SBSPhonegapParamParser.m"/>
             <header-file src="src/ios/SBSUIParamParser.h"/>

@@ -38,4 +38,6 @@
 
 + (BOOL)isPausedSpecifiedInOptions:(NSDictionary *)options;
 
++ (CGRect)rectFromParameter:(NSObject *)parameter;
+
 @end

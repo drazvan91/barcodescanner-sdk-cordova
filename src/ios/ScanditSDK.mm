@@ -13,8 +13,6 @@
 #import "ScanditSDK.h"
 #import "ScanditSDKRotatingBarcodePicker.h"
 #import "ScanditSDKSearchBar.h"
-#import "SBSLegacySettingsParamParser.h"
-#import "SBSLegacyUIParamParser.h"
 #import "SBSUIParamParser.h"
 #import "SBSPhonegapParamParser.h"
 #import "SBSTypeConversion.h"
@@ -35,7 +33,6 @@
 @property (nonatomic, assign) BOOL modallyPresented;
 @property (nonatomic, strong) SBSPickerStateMachine *pickerStateMachine;
 @property (nonatomic, readonly) dispatch_queue_t queue;
-@property (nonatomic, assign) BOOL legacyMode;
 @property (nonatomic, strong) NSArray *rejectedCodeIds;
 
 @property (nonatomic, strong) NSCondition* didScanCondition;
@@ -48,6 +45,7 @@
 
 
 @implementation ScanditSDK
+
 @synthesize hasPendingOperation;
 
 - (dispatch_queue_t)queue {
@@ -93,37 +91,10 @@
     NSDictionary *settings = [command.arguments objectAtIndex:0];
     NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];
     NSDictionary *overlayOptions = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:2]];
-    
-    self.legacyMode = NO;
     [self showPickerWithSettings:settings options:options overlayOptions:overlayOptions];
 }
 
-- (void)scan:(CDVInvokedUrlCommand *)command {
-    if (self.hasPendingOperation) {
-        return;
-    }
-    self.hasPendingOperation = YES;
-    
-    NSUInteger argc = [command.arguments count];
-    if (argc < 2) {
-        NSLog(@"The scan call received too few arguments and has to return without starting.");
-        return;
-    }
-    self.callbackId = command.callbackId;
-    
-    NSString *appKey = [command.arguments objectAtIndex:0];
-    [SBSLicense setFrameworkIdentifier:@"phonegap"];
-    [SBSLicense setAppKey:appKey];
-    
-    NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];
-    
-    self.legacyMode = YES;
-    [self showPickerWithSettings:nil options:options overlayOptions:nil];
-}
-
 - (void)picker:(ScanditSDKRotatingBarcodePicker *)picker didChangeState:(SBSPickerState)newState {
-    if (self.legacyMode) return;
-    
     CDVPluginResult * result = [self createResultForEvent:@"didChangeState" value:@(newState)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
 }
@@ -141,15 +112,10 @@
         
         dispatch_main_sync_safe(^{
             // Create the picker.
-            SBSScanSettings *scanSettings;
-            if (!settings) {
-                scanSettings = [SBSLegacySettingsParamParser settingsForOptions:options];
-            } else {
-                NSError *error;
-                scanSettings = [SBSScanSettings settingsWithDictionary:settings error:&error];
-                if (error) {
-                    NSLog(@"Error when creating settings: %@", [error localizedDescription]);
-                }
+            NSError *error;
+            auto scanSettings = [SBSScanSettings settingsWithDictionary:settings error:&error];
+            if (error) {
+                NSLog(@"Error when creating settings: %@", [error localizedDescription]);
             }
             ScanditSDKRotatingBarcodePicker* picker = [[ScanditSDKRotatingBarcodePicker alloc]
                                          initWithSettings:scanSettings];
@@ -168,15 +134,10 @@
             [SBSPhonegapParamParser updatePicker:picker
                                      fromOptions:options
                               withSearchDelegate:self];
-            
-            if (self.legacyMode) {
-                [SBSLegacyUIParamParser updatePickerUI:picker fromOptions:options];
-            } else {
-                [SBSUIParamParser updatePickerUI:picker fromOptions:overlayOptions];
-                [SBSPhonegapParamParser updatePicker:self.picker
-                                         fromOptions:overlayOptions
-                                  withSearchDelegate:self];
-            }
+            [SBSUIParamParser updatePickerUI:picker fromOptions:overlayOptions];
+            [SBSPhonegapParamParser updatePicker:self.picker
+                                     fromOptions:overlayOptions
+                              withSearchDelegate:self];
             
             // Set this class as the delegate for the overlay controller. It will now receive events when
             // a barcode was successfully scanned, manually entered or the cancel button was pressed.
@@ -204,13 +165,6 @@
                 
                 // Present the barcode picker modally and start scanning.
                 [self.viewController presentViewController:self.picker animated:YES completion:nil];
-            }
-            
-            // Only already start in legacy mode.
-            if (self.legacyMode) {
-                [self performSelector:@selector(startScanning:)
-                           withObject:@([SBSPhonegapParamParser isPausedSpecifiedInOptions:options])
-                           afterDelay:0.1];
             }
         });
     });
@@ -299,10 +253,6 @@
         dispatch_async(self.queue, ^{
             dispatch_main_sync_safe(^{
                 NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
-                if (self.legacyMode) {
-                    [SBSLegacyUIParamParser updatePickerUI:self.picker fromOptions:options];
-                }
-                
                 [SBSPhonegapParamParser updateLayoutOfPicker:self.picker withOptions:options];
             });
         });
@@ -398,14 +348,6 @@
 }
 
 - (CDVPluginResult *)resultForSession:(SBSScanSession *)session {
-    if (self.legacyMode) {
-        SBSCode *newCode = [session.newlyRecognizedCodes objectAtIndex:0];
-        NSArray *args = [[NSArray alloc] initWithObjects:[newCode data], [newCode symbologyString], nil];
-        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                     messageAsArray:args];
-        [result setKeepCallback:@YES];
-        return result;
-    }
     NSDictionary *result = @{
         @"newlyRecognizedCodes": SBSJSObjectsFromCodeArray(session.newlyRecognizedCodes),
         @"newlyLocalizedCodes" : SBSJSObjectsFromCodeArray(session.newlyLocalizedCodes),
@@ -415,11 +357,6 @@
 }
 
 - (int)sendPluginResultBlocking:(CDVPluginResult *)result {
-    if (self.legacyMode) {
-        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-        return 0;
-    }
-
     if (![NSThread isMainThread]) {
         [self.didScanCondition lock];
         self.didScanCallbackFinish = NO;
@@ -527,15 +464,7 @@
 #pragma mark - ScanditSDKSearchBarDelegate
 
 - (void)searchExecutedWithContent:(NSString *)content {
-    CDVPluginResult *pluginResult;
-    if (self.legacyMode) {
-        NSArray *result = [[NSArray alloc] initWithObjects:content, "UNKNOWN", nil];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                          messageAsArray:result];
-        [pluginResult setKeepCallback:@YES];
-    } else {
-        pluginResult = [self createResultForEvent:@"didManualSearch" value:content];
-    }
+    CDVPluginResult *pluginResult = [self createResultForEvent:@"didManualSearch" value:content];
 
     if (!self.continuousMode) {
         [self.pickerStateMachine setDesiredState:SBSPickerStateStopped];

@@ -11,7 +11,6 @@
 //  limitations under the License.
 #import "SBSPhonegapParamParser.h"
 
-#import "SBSLegacyUIParamParser.h"
 #import "SBSUIParamParser.h"
 #import "SBSConstraints.h"
 
@@ -199,7 +198,7 @@
     if (!margins) return CGRectZero;
     
     if ([margins isKindOfClass:[NSString class]]) {
-        return [SBSLegacyUIParamParser rectFromParameter:margins];
+        return [SBSPhonegapParamParser rectFromParameter:margins];
     } else if ([margins isKindOfClass:[NSArray class]]) {
         NSArray *marginsArray = (NSArray *) margins;
         if ([marginsArray count] == 4 && ([SBSUIParamParser array:marginsArray onlyContainObjectsOfClass:[NSNumber class]]
@@ -257,6 +256,19 @@
         }
     }
     return NO;
+}
+
++ (CGRect)rectFromParameter:(NSObject *)parameter {
+    if (parameter && [parameter isKindOfClass:[NSString class]]) {
+        NSArray *split = [((NSString *) parameter) componentsSeparatedByString:@"/"];
+        if ([split count] == 4) {
+            return CGRectMake([[split objectAtIndex:0] floatValue],
+                              [[split objectAtIndex:1] floatValue],
+                              [[split objectAtIndex:2] floatValue],
+                              [[split objectAtIndex:3] floatValue]);
+        }
+    }
+    return CGRectZero;
 }
 
 @end

@@ -42,7 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -108,18 +107,14 @@ public class SubViewPickerController
             @Override
             public void run() {
                 ScanSettings scanSettings;
-                if (settings == null) {
-                    scanSettings = LegacySettingsParamParser.getSettings(options);
-                } else {
-                    try {
-                        scanSettings = ScanSettings.createWithJson(settings);
-                    } catch (JSONParseException e) {
-                        Log.e("ScanditSDK", "Exception while creating settings");
-                        e.printStackTrace();
-                        sendRuntimeError("Exception while creating settings: " + e.getMessage() +
-                                         ". Falling back to default scan settings.");
-                        scanSettings = ScanSettings.create();
-                    }
+                try {
+                    scanSettings = ScanSettings.createWithJson(settings);
+                } catch (JSONParseException e) {
+                    Log.e("ScanditSDK", "Exception while creating settings");
+                    e.printStackTrace();
+                    sendRuntimeError("Exception while creating settings: " + e.getMessage() +
+                            ". Falling back to default scan settings.");
+                    scanSettings = ScanSettings.create();
                 }
                 BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(pluginActivity,
                                                                                    scanSettings);
@@ -229,13 +224,8 @@ public class SubViewPickerController
 
     private void internalUpdateUI(Bundle overlayOptions, Bundle options) {
         BarcodePickerWithSearchBar picker = mPickerStateMachine.getPicker();
-        if (mLegacyMode) {
-            if (options == null) return;
-            LegacyUIParamParser.updatePickerUI(mPlugin.cordova.getActivity(), picker, options);
-        } else {
-            UIParamParser.updatePickerUI(picker, overlayOptions);
-            PhonegapParamParser.updatePicker(picker, overlayOptions, this);
-        }
+        UIParamParser.updatePickerUI(picker, overlayOptions);
+        PhonegapParamParser.updatePicker(picker, overlayOptions, this);
     }
 
     @Override

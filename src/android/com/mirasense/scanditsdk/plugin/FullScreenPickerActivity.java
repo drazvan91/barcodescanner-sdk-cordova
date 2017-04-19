@@ -27,11 +27,9 @@ import android.view.WindowManager;
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
-import com.scandit.barcodepicker.internal.Code;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
-import com.scandit.recognition.Barcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,8 +59,6 @@ public class FullScreenPickerActivity
     private static AtomicBoolean sBufferedTorchEnabled = new AtomicBoolean(false);
     private boolean mContinuousMode = false;
 
-    private boolean mLegacyMode = false;
-    
     private PickerStateMachine mPickerStateMachine = null;
     private int mStateBeforeSuspend = PickerStateMachine.STOPPED;
     private static ArrayList<Long> rejectedCodeIds;
@@ -88,15 +84,10 @@ public class FullScreenPickerActivity
         Bundle options = null;
         Bundle overlayOptions = null;
 
-        if (getIntent().getExtras().containsKey("settings")) {
-            try {
-                settings = new JSONObject(getIntent().getExtras().getString("settings"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            mLegacyMode = false;
-        } else {
-            mLegacyMode = true;
+        try {
+            settings = new JSONObject(getIntent().getExtras().getString("settings"));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         if (getIntent().getExtras().containsKey("options")) {
             options = getIntent().getExtras().getBundle("options");
@@ -121,16 +112,12 @@ public class FullScreenPickerActivity
         }
 
         ScanSettings scanSettings;
-        if (mLegacyMode) {
-            scanSettings = LegacySettingsParamParser.getSettings(options);
-        } else {
-            try {
-                scanSettings = ScanSettings.createWithJson(settings);
-            } catch (JSONParseException e) {
-                Log.e("ScanditSDK", "Exception when creating settings");
-                e.printStackTrace();
-                scanSettings = ScanSettings.create();
-            }
+        try {
+            scanSettings = ScanSettings.createWithJson(settings);
+        } catch (JSONParseException e) {
+            Log.e("ScanditSDK", "Exception when creating settings");
+            e.printStackTrace();
+            scanSettings = ScanSettings.create();
         }
         BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(this, scanSettings);
         picker.setOnScanListener(this);
@@ -147,13 +134,8 @@ public class FullScreenPickerActivity
             picker.switchTorchOn(true);
         }
 
-        if (mLegacyMode) {
-            assert settings == null;
-            LegacyUIParamParser.updatePickerUI(this, picker, options);
-        } else {
-            UIParamParser.updatePickerUI(picker, overlayOptions);
-            PhonegapParamParser.updatePicker(picker, overlayOptions, this);
-        }
+        UIParamParser.updatePickerUI(picker, overlayOptions);
+        PhonegapParamParser.updatePicker(picker, overlayOptions, this);
 
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
 
@@ -200,13 +182,6 @@ public class FullScreenPickerActivity
 
     private Bundle bundleForScanResult(ScanSession session) {
         Bundle bundle = new Bundle();
-        if (mLegacyMode) {
-            Barcode code = session.getNewlyRecognizedCodes().get(0);
-            bundle.putString("barcode", code.getData());
-            bundle.putString("symbology", Code.symbologyToString(code.getSymbology(),
-                    code.isGs1DataCarrier()));
-            return bundle;
-        }
         JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
                 ResultRelay.jsonForSession(session));
         bundle.putString("jsonString", eventArgs.toString());
@@ -241,13 +216,9 @@ public class FullScreenPickerActivity
 
     private Bundle manualSearchResultsToBundle(String entry) {
         Bundle bundle = new Bundle();
-        if (mLegacyMode) {
-            bundle.putString("barcode", entry.trim());
-            bundle.putString("symbology", "UNKNOWN");
-        } else {
-            JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_MANUAL_SEARCH_EVENT, entry);
-            bundle.putString("jsonString", args.toString());
-        }
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_MANUAL_SEARCH_EVENT, entry);
+        bundle.putString("jsonString", args.toString());
+
         // no need to wait for result
         bundle.putBoolean("waitForResult", false);
         return bundle;
@@ -333,9 +304,6 @@ public class FullScreenPickerActivity
 
     @Override
     public void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState) {
-        // don't produce events in legacy mode. They would be interpreted as scan events.
-        if (mLegacyMode) return;
-        
         Bundle resultBundle = new Bundle();
         JSONArray didStopArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
         resultBundle.putString("jsonString", didStopArgs.toString());

@@ -131,8 +131,6 @@
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullScreenPickerActivity.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullscreenPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/IPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
-        <source-file src="src/android/com/mirasense/scanditsdk/plugin/LegacySettingsParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
-        <source-file src="src/android/com/mirasense/scanditsdk/plugin/LegacyUIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/Marshal.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/PhonegapParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/PickerControllerBase.java" target-dir="src/com/mirasense/scanditsdk/plugin" />

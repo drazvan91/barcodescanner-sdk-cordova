@@ -45,7 +45,6 @@ public class ScanditSDK extends CordovaPlugin {
 
     public static final String INIT_LICENSE_COMMAND = "initLicense";
     public static final String SHOW_COMMAND = "show";
-    public static final String SCAN_COMMAND = "scan";
     public static final String APPLY_SETTINGS_COMMAND = "applySettings";
     public static final String CANCEL_COMMAND = "cancel";
     public static final String PAUSE_COMMAND = "pause";
@@ -90,9 +89,8 @@ public class ScanditSDK extends CordovaPlugin {
             mWorker.start();
         }
 
-        // must check both scan and show commands, for legacy mode.
-        if (!mRequestingCameraPermission && !isQueuedCommand &&
-            (action.equals(SHOW_COMMAND) || action.equals(SCAN_COMMAND))) {
+        // check if we have to request camera permission before executing commands.
+        if (!mRequestingCameraPermission && !isQueuedCommand && action.equals(SHOW_COMMAND)) {
             mRequestingCameraPermission =
                     !PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
             if (mRequestingCameraPermission) {
@@ -115,9 +113,6 @@ public class ScanditSDK extends CordovaPlugin {
         } else if (action.equals(SHOW_COMMAND)) {
             mCallbackContext = callbackContext;
             show(args);
-        } else if (action.equals(SCAN_COMMAND)) {
-            mCallbackContext = callbackContext;
-            scan(args);
         } else if (action.equals(APPLY_SETTINGS_COMMAND)) {
             applySettings(args);
         } else if (action.equals(CANCEL_COMMAND)) {
@@ -191,29 +186,6 @@ public class ScanditSDK extends CordovaPlugin {
 
             } catch (JSONException e) {
                 Log.e("ScanditSDK", "The show call received too few arguments and has to return without starting.");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void scan(JSONArray data) {
-
-        final Bundle options = new Bundle();
-        try {
-            ScanditSDKGlobals.usedFramework = "phonegap";
-            ScanditLicense.setAppKey(data.getString(0));
-        } catch (JSONException e) {
-            Log.e("ScanditSDK", "Function called through Java Script contained illegal objects.");
-            e.printStackTrace();
-            return;
-        }
-
-        if (data.length() > 1) {
-            // We extract all options and add them to the intent extra bundle.
-            try {
-                setOptionsOnBundle(data.getJSONObject(1), options);
-                showPicker(null, options, null, true);
-            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }

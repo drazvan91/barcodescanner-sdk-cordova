@@ -122,7 +122,7 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
     }
 
     private PluginResult resultForBundle(Bundle bundle) {
-        PluginResult result;
+        PluginResult result = null;
         if (bundle.containsKey("jsonString")) {
             String jsonString = bundle.getString("jsonString");
             try {
@@ -132,15 +132,6 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
                 e.printStackTrace();
                 result = new PluginResult(PluginResult.Status.OK, "error");
             }
-        } else {
-            assert mLegacyMode;
-            // Legacy
-            String barcode = bundle.getString("barcode");
-            String symbology = bundle.getString("symbology");
-            JSONArray args = new JSONArray();
-            args.put(barcode);
-            args.put(symbology);
-            return createOkResult(args);
         }
         return result;
     }

@@ -32,7 +32,6 @@ abstract class PickerControllerBase implements IPickerController {
     final CordovaPlugin mPlugin;
     final CallbackContext mCallbackContext;
 
-    boolean mLegacyMode = false;
     boolean mContinuousMode = false;
     AtomicInteger mInFlightDidScanCallbackId = new AtomicInteger(0);
     private AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
@@ -93,10 +92,6 @@ abstract class PickerControllerBase implements IPickerController {
 
 
     protected int sendPluginResultBlocking(PluginResult result) {
-        if (mLegacyMode) {
-            mCallbackContext.sendPluginResult(result);
-            return 0;
-        }
         int currentId = mLastDidScanCallbackId.incrementAndGet();
         mInFlightDidScanCallbackId.set(currentId);
         mNextState = 0;

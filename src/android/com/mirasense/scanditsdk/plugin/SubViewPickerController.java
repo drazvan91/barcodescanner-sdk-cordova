@@ -28,11 +28,9 @@ import android.widget.RelativeLayout;
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
-import com.scandit.barcodepicker.internal.Code;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
-import com.scandit.recognition.Barcode;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -89,7 +87,6 @@ public class SubViewPickerController
     public void show(final JSONObject settings, final Bundle options, final Bundle overlayOptions,
                      boolean legacyMode) {
         mPendingClose.set(false);
-        mLegacyMode = legacyMode;
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
         mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin,
                                                                   null);
@@ -144,13 +141,6 @@ public class SubViewPickerController
                     // picker was closed(canceled) in the meantime. close it now.
                     SubViewPickerController.this.close();
                 }
-                if (!mLegacyMode) return;
-
-                // In legacy mode, start scanning when show is called.
-                int state = PhonegapParamParser.shouldStartInPausedState(options)
-                                ? PickerStateMachine.PAUSED
-                                : PickerStateMachine.ACTIVE;
-                mPickerStateMachine.setState(state);
 
             }
         });
@@ -242,16 +232,8 @@ public class SubViewPickerController
 
     @Override
     public void didEnter(String entry) {
-        PluginResult result;
-        if (mLegacyMode) {
-            JSONArray args = new JSONArray();
-            args.put(entry);
-            args.put("UNKNOWN");
-            result = Marshal.createOkResult(args);
-        } else {
-            JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_MANUAL_SEARCH_EVENT, entry);
-            result = Marshal.createOkResult(args);
-        }
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_MANUAL_SEARCH_EVENT, entry);
+        PluginResult result = Marshal.createOkResult(args);
         mCallbackContext.sendPluginResult(result);
         if (!mContinuousMode) {
             this.close();
@@ -373,18 +355,9 @@ public class SubViewPickerController
             return;
         }
         PluginResult result;
-        if (mLegacyMode) {
-            JSONArray args = new JSONArray();
-            Barcode code = session.getNewlyRecognizedCodes().get(0);
-            args.put(code.getData());
-            args.put(Code.symbologyToString(code.getSymbology(), code.isGs1DataCarrier()));
-            args.put(code.getSymbologyName());
-            result = Marshal.createOkResult(args);
-        } else {
-            JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
-                    ResultRelay.jsonForSession(session));
-            result = Marshal.createOkResult(eventArgs);
-        }
+        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
+                ResultRelay.jsonForSession(session));
+        result = Marshal.createOkResult(eventArgs);
 
         int nextState = sendPluginResultBlocking(result);
         if (!mContinuousMode) {
@@ -429,9 +402,6 @@ public class SubViewPickerController
 
     @Override
     public void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState) {
-        // don't produce events in legacy mode. They would be interpreted as scan events.
-        if (mLegacyMode) return;
-
         JSONArray didChangeStateArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
         mCallbackContext.sendPluginResult(Marshal.createOkResult(didChangeStateArgs));
     }

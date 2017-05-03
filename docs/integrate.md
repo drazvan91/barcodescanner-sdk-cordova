@@ -76,10 +76,9 @@ You now need to define the functions that are referenced in the show() call. All
 		alert("Scanned " + session.newlyRecognizedCodes[0].symbology + " code: " + session.newlyRecognizedCodes[0].data);
 		
 		// If you are using continuous scanning you might want to stop here. Please note that 
-		// stopScanning is an asynchronous call because of the nature of how phonegap plugin works. 
-		// This means that more codes might still be scanned after you call it. You should make use 
-		// of {@link Scandit.ScanSettings.codeDuplicateFilter ScanSettings.codeDuplicateFilter} to 
-		// minimize/eliminate such problems.
+		// you will have to use session.stopScanning()/session.pauseScanning() instead of the 
+		// corresponding method on the picker. This will avoid a race condition and immediately stop 
+		// the scanning process after the success callback has finished executing.
 		session.stopScanning();
 	}
 	

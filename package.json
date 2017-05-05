@@ -6,7 +6,8 @@
     "id": "com.mirasense.scanditsdk.plugin",
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "windows"
     ]
   },
   "repository": {
@@ -16,7 +17,8 @@
   "keywords": [
     "ecosystem:cordova",
     "cordova-ios",
-    "cordova-android"
+    "cordova-android",
+    "cordova-windows"
   ],
   "engines": [
     {

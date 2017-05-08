@@ -1,6 +1,6 @@
 {
   "name": "com.mirasense.scanditsdk.plugin",
-  "version": "5.3.0",
+  "version": "5.4.0SNAPSHOT",
   "description": "Scandit Barcode Scanner Plugin",
   "cordova": {
     "id": "com.mirasense.scanditsdk.plugin",

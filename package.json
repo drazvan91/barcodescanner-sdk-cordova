@@ -28,10 +28,14 @@
     {
       "name": "cordova-ios",
       "version": ">=3.9.2"
+    },
+    {
+      "name": "cordova-windows",
+      "version": ">=5.0.0"
     }
   ],
   "author": "Scandit AG",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/Scandit/BarcodeScannerPlugin/issues"
   },

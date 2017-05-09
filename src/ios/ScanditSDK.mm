@@ -142,7 +142,9 @@
             // Set this class as the delegate for the overlay controller. It will now receive events when
             // a barcode was successfully scanned, manually entered or the cancel button was pressed.
             self.picker.scanDelegate = self;
-            self.picker.textRecognitionDelegate = self;
+            if ([self.picker respondsToSelector:@selector(setTextRecognitionDelegate:)]) {
+                self.picker.textRecognitionDelegate = self;
+            }
             self.picker.overlayController.cancelDelegate = self;
         
             BOOL showAsSubView =

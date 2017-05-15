@@ -27,9 +27,13 @@
                 Scandit.License.setAppKey("--- ENTER YOUR SCANDIT APP KEY HERE ---");
                 var settings = new Scandit.ScanSettings();
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN13, true);
-                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPC12, true);
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN8, true);
+                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPCA, true);
+                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPCE, true);
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.CODE39, true);
+                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.ITF, true);
+                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.QR, true);
+                settings.setSymbologyEnabled(Scandit.Barcode.Symbology.DATA_MATRIX, true);
 
                 // Some 1d barcode symbologies allow you to encode variable-length data. By default, the
                 // Scandit BarcodeScanner SDK only scans barcodes in a certain length range. If your

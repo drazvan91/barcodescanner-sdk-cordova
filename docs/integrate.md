@@ -1,7 +1,7 @@
 Integrate the Scandit Barcode Scanner plugin into your app     {#cordova-integrate}
 ===================================
 
-To integrate the Scandit Barcode Scanner into your Phonegap app, follow the simple steps below.
+To integrate the Scandit Barcode Scanner into your Cordova app, follow the simple steps below.
  
 ## Get the Scandit Barcode Scanner SDK
 
@@ -13,23 +13,23 @@ Choose a plan (e.g., free “Enterprise” or "Community" plan) at http://www.sc
 
 ## Create a new project
 
-If you do not have a Phonegap project yet, you should create a new one. You can either use the cordova or phonegap command-line interfaces. In this guide, we use the phonegap command. You can just exchange it with cordova if you prefer to use it.
+If you do not have a Cordova project yet, you should create a new one.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
-    phonegap create helloworld --id "com.scandit.helloworld"
+    cordova create helloworld --id "com.scandit.helloworld"
     cd helloworld
-    phonegap platform add ios
-    phonegap platform add android
+    cordova platform add ios
+    cordova platform add android
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ## Add the plugin to your project
 
-Use the phonegap CLI to add the plugin to your already existing project.
+Use the cordova CLI to add the plugin to your already existing project.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
     cd <directory of your project>
-	phonegap plugin add <path to downloaded and unzipped plugin>
+	cordova plugin add <path to downloaded and unzipped plugin>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -110,10 +110,10 @@ picker.startScanning();
 Compile your project. Attach a device and run the app on your desired plattform.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
-    phonegap build
-    phonegap run android
-    phonegap run ios
-    phonegap run windows
+    cordova build
+    cordova run android
+    cordova run ios
+    cordova run windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## Next steps
@@ -121,4 +121,3 @@ Compile your project. Attach a device and run the app on your desired plattform.
 * \ref cordova-examples
 * \ref cordova-cropped-or-scaled-picker
 * \ref cordova-restrict-scanning-area
-

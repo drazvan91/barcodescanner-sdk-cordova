@@ -13,7 +13,8 @@ ScanOverlay.CameraSwitchVisibility = {
 ScanOverlay.GuiStyle = {
 	DEFAULT: 0,
 	LASER: 1,
-	NONE: 2
+	NONE: 2,
+    LOCATIONS_ONLY: 4
 }
 
 ScanOverlay.prototype.setGuiStyle = function(guiStyle) {

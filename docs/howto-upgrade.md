@@ -13,7 +13,7 @@ If you upgrade from the test edition you need to download the plugin from your n
 	phonegap plugin add <path to downloaded and unzipped plugin>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally check that the app key of your enterprise account matches the one in your app. If it doesn't match, replace it with the one in your account.
+Finally check that the license key of your enterprise account matches the one in your app. If it doesn't match, replace it with the one in your account.
 
 ## How to upgrade to a new version of the Scandit Barcode Scanner
 

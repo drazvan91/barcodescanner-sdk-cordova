@@ -11,7 +11,7 @@ Troubleshooting Cordova/PhoneGap     {#cordova-troubleshooting}
 
 An app crash when the barcode picker is shown can occur if there is a problem with our Scandit SDK and/or the way it is used in your app. Contact us at info@scandit.com with the details of your setup (Android version, Android device name, info whether our demo app works correctly, and a description of the problem).
 
-Note that for versions prior to 4.12, app crashes could also be the result of invalid license keys or use of the test version without internet access. This behavior has been removed in 4.12. Instead license validation or connectivity issues are now displayed in the barcode picker view.
+Note that for versions prior to 4.12, app crashes could also be the result of invalid app keys or use of the test version without internet access. This behavior has been removed in 4.12. Instead license validation or connectivity issues are now displayed in the barcode picker view.
 
 <br/>
 # Installing under Windows fails {#windowsinstall}

@@ -5,7 +5,7 @@ To integrate the Scandit Barcode Scanner into your Cordova app, follow the simpl
  
 ## Get the Scandit Barcode Scanner SDK
 
-Choose a plan (e.g., free “Enterprise” or "Community" plan) at http://www.scandit.com/pricing and download the Scandit Barcode Scanner SDK for Android from your account.
+Choose a plan (e.g., “Consumer Apps”, "Professional Apps", or “Enterprise/OEM” plan) at http://www.scandit.com/pricing and download the Scandit Barcode Scanner SDK for Android from your account.
 <br/>
 ![Download page](img/cordova/DownloadPage.png)
 <br/>
@@ -35,12 +35,12 @@ Use the cordova CLI to add the plugin to your already existing project.
 
 ## Instantiate and configure the barcode picker
 
-The scanning process is managed by the {@link Scandit.BarcodePicker BarcodePicker}. Before instantiating the picker, you will have to set your Scandit Barcode Scanner application key. The key is available from your Scandit Barcode Scanner SDK account at http://account.scandit.com in the downloads section. The barcode scanning is configured through an instance of scan settings that you pass to the BarcodePicker constructor. 
+The scanning process is managed by the {@link Scandit.BarcodePicker BarcodePicker}. Before instantiating the picker, you will have to set your Scandit Barcode Scanner license key. The key is available from your Scandit Barcode Scanner SDK account at http://account.scandit.com in the License Keys section. The barcode scanning is configured through an instance of scan settings that you pass to the BarcodePicker constructor. 
 
 ~~~~~~~~~~~~~~~~{.java}
 
-// Set your app key.
-Scandit.License.setAppKey("--- ENTER YOUR SCANDIT APP KEY HERE ---");
+// Set your license key.
+Scandit.License.setAppKey("--- ENTER YOUR SCANDIT LICENSE KEY HERE ---");
 
 var settings = new Scandit.ScanSettings();
 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN13, true);

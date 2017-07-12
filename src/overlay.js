@@ -130,6 +130,11 @@ ScanOverlay.prototype.setProperty = function(key, value) {
 	this.updateOverlayIfExists();
 }
 
+ScanOverlay.prototype.setMissingCameraPermissionInfoText = function(missingCameraPermissionInfoText) {
+	this.missingCameraPermissionInfoText = missingCameraPermissionInfoText;
+	this.updateOverlayIfExists();
+}
+
 ScanOverlay.prototype.updateOverlayIfExists = function() {
 	if (this.pickerIsShown) {
 		cordova.exec(null, null, "ScanditSDK", "updateOverlay", [this]);

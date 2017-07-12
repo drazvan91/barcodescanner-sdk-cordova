@@ -54,16 +54,15 @@
 + (NSString *)paramViewfinderDecodedColor { return [@"viewfinderDecodedColor" lowercaseString]; }
 + (NSString *)paramLogoOffsets { return [@"logoOffsets" lowercaseString]; }
 + (NSString *)paramZoom { return [@"zoom" lowercaseString]; }
-
 + (NSString *)paramGuiStyle { return [@"guiStyle" lowercaseString]; }
-
 + (NSString *)paramProperties { return [@"properties" lowercaseString]; }
++ (NSString *)paramMissingCameraPermissionInfoText { return [@"missingCameraPermissionInfoText" lowercaseString]; }
 
 
 #pragma mark - Picker Updates
 
 + (void)updatePickerUI:(SBSBarcodePicker *)picker fromOptions:(NSDictionary *)options {
-    
+
     NSObject *beep = [options objectForKey:[self paramBeep]];
     if (beep) {
         if ([beep isKindOfClass:[NSNumber class]]) {
@@ -72,7 +71,7 @@
             NSLog(@"SBS Plugin: failed to parse beep - wrong type");
         }
     }
-    
+
     NSObject *vibrate = [options objectForKey:[self paramVibrate]];
     if (vibrate) {
         if ([vibrate isKindOfClass:[NSNumber class]]) {
@@ -81,7 +80,7 @@
             NSLog(@"SBS Plugin: failed to parse vibrate - wrong type");
         }
     }
-    
+
     NSObject *torch = [options objectForKey:[self paramTorch]];
     if (torch) {
         if ([torch isKindOfClass:[NSNumber class]]) {
@@ -90,26 +89,24 @@
             NSLog(@"SBS Plugin: failed to parse torch - wrong type");
         }
     }
-    
+
     NSObject *torchButtonMarginsAndSize = [options objectForKey:[self paramTorchButtonMarginsAndSize]];
     if (torchButtonMarginsAndSize) {
         if ([torchButtonMarginsAndSize isKindOfClass:[NSArray class]]) {
             NSArray *marginsAndSizeArray = (NSArray *)torchButtonMarginsAndSize;
-            if ([marginsAndSizeArray count] == 4 
-                            && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
-                                ||[self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]] )) {
-                [picker.overlayController
-                        setTorchButtonLeftMargin:[self getSize: marginsAndSizeArray[0] relativeTo:0]
-                                       topMargin:[self getSize: marginsAndSizeArray[1] relativeTo:0]
-                                           width:[self getSize: marginsAndSizeArray[2] relativeTo:0]
-                                          height:[self getSize: marginsAndSizeArray[3] relativeTo:0]
-                                          ];
-            }
+            if ([marginsAndSizeArray count] == 4
+                && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
+                    || [self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]])) {
+                    [picker.overlayController setTorchButtonLeftMargin:[self getSize:marginsAndSizeArray[0] relativeTo:0]
+                                                             topMargin:[self getSize:marginsAndSizeArray[1] relativeTo:0]
+                                                                 width:[self getSize:marginsAndSizeArray[2] relativeTo:0]
+                                                                height:[self getSize:marginsAndSizeArray[3] relativeTo:0]];
+                }
         } else {
             NSLog(@"SBS Plugin: failed to parse torch button margins and size - wrong type");
         }
     }
-    
+
     NSObject *torchOffAccLabel = [options objectForKey:[self paramTorchButtonOffAccessibilityLabel]];
     NSObject *torchOffAccHint = [options objectForKey:[self paramTorchButtonOffAccessibilityHint]];
     if (torchOffAccLabel || torchOffAccHint) {
@@ -123,7 +120,7 @@
         }
         [picker.overlayController setTorchOffButtonAccessibilityLabel:label hint:hint];
     }
-    
+
     NSObject *torchOnAccLabel = [options objectForKey:[self paramTorchButtonOnAccessibilityLabel]];
     NSObject *torchOnAccHint = [options objectForKey:[self paramTorchButtonOnAccessibilityHint]];
     if (torchOnAccLabel || torchOnAccHint) {
@@ -137,7 +134,7 @@
         }
         [picker.overlayController setTorchOnButtonAccessibilityLabel:label hint:hint];
     }
-    
+
     NSObject *cameraSwitchVisibility = [options objectForKey:[self paramCameraSwitchVisibility]];
     if (cameraSwitchVisibility) {
         if ([cameraSwitchVisibility isKindOfClass:[NSNumber class]]) {
@@ -145,11 +142,11 @@
                 case 0:
                     [picker.overlayController setCameraSwitchVisibility:SBSCameraSwitchVisibilityNever];
                     break;
-                    
+
                 case 1:
                     [picker.overlayController setCameraSwitchVisibility:SBSCameraSwitchVisibilityOnTablet];
                     break;
-                    
+
                 case 2:
                     [picker.overlayController setCameraSwitchVisibility:SBSCameraSwitchVisibilityAlways];
                     break;
@@ -158,27 +155,25 @@
             NSLog(@"SBS Plugin: failed to parse camera switch visibility - wrong type");
         }
     }
-    
+
     NSObject *cameraSwitchButtonMarginsAndSize = [options objectForKey:
                                                   [self paramCameraSwitchButtonMarginsAndSize]];
     if (cameraSwitchButtonMarginsAndSize) {
         if ([cameraSwitchButtonMarginsAndSize isKindOfClass:[NSArray class]]) {
             NSArray *marginsAndSizeArray = (NSArray *)cameraSwitchButtonMarginsAndSize;
-            if ([marginsAndSizeArray count] == 4 
-                            && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
-                                ||[self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]] )) {
-                [picker.overlayController
-                        setCameraSwitchButtonRightMargin:[self getSize: marginsAndSizeArray[0] relativeTo:0]
-                                               topMargin:[self getSize: marginsAndSizeArray[1] relativeTo:0]
-                                                   width:[self getSize: marginsAndSizeArray[2] relativeTo:0]
-                                                  height:[self getSize: marginsAndSizeArray[3] relativeTo:0]
-                                                ];
-            }
+            if ([marginsAndSizeArray count] == 4
+                && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
+                    || [self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]])) {
+                    [picker.overlayController setCameraSwitchButtonRightMargin:[self getSize:marginsAndSizeArray[0] relativeTo:0]
+                                                                     topMargin:[self getSize:marginsAndSizeArray[1] relativeTo:0]
+                                                                         width:[self getSize:marginsAndSizeArray[2] relativeTo:0]
+                                                                        height:[self getSize:marginsAndSizeArray[3] relativeTo:0]];
+                }
         } else {
             NSLog(@"SBS Plugin: failed to parse camera switch button margins and size - wrong type");
         }
     }
-    
+
     NSObject *cameraBackAccLabel = [options objectForKey:[self paramCameraSwitchButtonBackAccessibilityLabel]];
     NSObject *cameraBackAccHint = [options objectForKey:[self paramCameraSwitchButtonBackAccessibilityHint]];
     if (cameraBackAccLabel || cameraBackAccHint) {
@@ -192,7 +187,7 @@
         }
         [picker.overlayController setCameraSwitchButtonBackAccessibilityLabel:label hint:hint];
     }
-    
+
     NSObject *cameraFrontAccLabel = [options objectForKey:[self paramCameraSwitchButtonFrontAccessibilityLabel]];
     NSObject *cameraFrontAccHint = [options objectForKey:[self paramCameraSwitchButtonFrontAccessibilityHint]];
     if (cameraFrontAccLabel || cameraFrontAccHint) {
@@ -206,7 +201,7 @@
         }
         [picker.overlayController setCameraSwitchButtonFrontAccessibilityLabel:label hint:hint];
     }
-    
+
     NSObject *guiStyle = [options objectForKey:[self paramGuiStyle]];
     if (guiStyle) {
         if ([guiStyle isKindOfClass:[NSNumber class]]) {
@@ -214,11 +209,11 @@
                 case 0:
                     picker.overlayController.guiStyle = SBSGuiStyleDefault;
                     break;
-                    
+
                 case 1:
                     picker.overlayController.guiStyle = SBSGuiStyleLaser;
                     break;
-                    
+
                 case 2:
                     picker.overlayController.guiStyle = SBSGuiStyleNone;
                     break;
@@ -227,7 +222,7 @@
             NSLog(@"SBS Plugin: failed to parse gui style - wrong type");
         }
     }
-    
+
     NSObject *viewfinderSize = [options objectForKey:[self paramViewfinderDimension]];
     if (viewfinderSize) {
         if ([viewfinderSize isKindOfClass:[NSArray class]]) {
@@ -243,7 +238,7 @@
             NSLog(@"SBS Plugin: failed to parse viewfinder size - wrong type");
         }
     }
-    
+
     NSObject *viewfinderColor = [options objectForKey:[self paramViewfinderColor]];
     if (viewfinderColor) {
         if ([viewfinderColor isKindOfClass:[NSString class]]) {
@@ -254,26 +249,26 @@
                                          [viewfinderColorString substringToIndex:2]];
                 [redScanner scanHexInt:&redInt];
                 float red = ((float) redInt) / 256.0;
-                
+
                 unsigned int greenInt;
                 NSScanner *greenScanner = [NSScanner scannerWithString:
                                            [[viewfinderColorString substringFromIndex:2] substringToIndex:2]];
                 [greenScanner scanHexInt:&greenInt];
                 float green = ((float) greenInt) / 256.0;
-                
+
                 unsigned int blueInt;
                 NSScanner *blueScanner = [NSScanner scannerWithString:
                                           [viewfinderColorString substringFromIndex:4]];
                 [blueScanner scanHexInt:&blueInt];
                 float blue = ((float) blueInt) / 256.0;
-                
+
                 [picker.overlayController setViewfinderColor:red green:green blue:blue];
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse viewfinder color - wrong type");
         }
     }
-    
+
     NSObject *decodedColor = [options objectForKey:[self paramViewfinderDecodedColor]];
     if (decodedColor) {
         if ([decodedColor isKindOfClass:[NSString class]]) {
@@ -284,40 +279,49 @@
                                          [decodedColorString substringToIndex:2]];
                 [redScanner scanHexInt:&redInt];
                 float red = ((float) redInt) / 256.0;
-                
+
                 unsigned int greenInt;
                 NSScanner *greenScanner = [NSScanner scannerWithString:
                                            [[decodedColorString substringFromIndex:2] substringToIndex:2]];
                 [greenScanner scanHexInt:&greenInt];
                 float green = ((float) greenInt) / 256.0;
-                
+
                 unsigned int blueInt;
                 NSScanner *blueScanner = [NSScanner scannerWithString:
                                           [decodedColorString substringFromIndex:4]];
                 [blueScanner scanHexInt:&blueInt];
                 float blue = ((float) blueInt) / 256.0;
-                
+
                 [picker.overlayController setViewfinderDecodedColor:red green:green blue:blue];
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse viewfinder decoded color - wrong type");
         }
     }
-    
+
     NSObject *properties = [options objectForKey:[self paramProperties]];
     if ([properties isKindOfClass:[NSDictionary class]]) {
         NSDictionary *propDict = (NSDictionary *)properties;
         for (NSObject *key in [propDict allKeys]) {
             if ([key isKindOfClass:[NSString class]]) {
-                
+
             }
         }
     }
-    
+
     NSObject *toolbarCaption = [options objectForKey:[self paramToolBarButtonCaption]];
     if (toolbarCaption) {
         if([toolbarCaption isKindOfClass:[NSString class]]) {
             [picker.overlayController setToolBarButtonCaption:((NSString *) toolbarCaption)];
+        } else {
+            NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
+        }
+    }
+
+    NSObject *missingCameraPermissionInfoText = options[[self paramMissingCameraPermissionInfoText]];
+    if (missingCameraPermissionInfoText) {
+        if ([missingCameraPermissionInfoText isKindOfClass:[NSString class]]) {
+            [picker.overlayController setMissingCameraPermissionInfoText:((NSString *)missingCameraPermissionInfoText)];
         } else {
             NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
         }

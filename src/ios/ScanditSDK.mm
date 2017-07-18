@@ -312,6 +312,12 @@
     } else {
         scanSettings.recognitionMode = SBSRecognitionModeCode;
     }
+
+    NSNumber *matrixScanEnabled = settings[@"matrixScanEnabled"];
+    if (matrixScanEnabled != nil && [matrixScanEnabled isKindOfClass:[NSNumber class]]) {
+        scanSettings.matrixScanEnabled = [matrixScanEnabled boolValue];
+    }
+
     return scanSettings;
 }
 

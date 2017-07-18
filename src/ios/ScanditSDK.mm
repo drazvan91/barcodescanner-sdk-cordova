@@ -396,14 +396,14 @@
 
 - (SBSBarcodePickerState)barcodePicker:(SBSBarcodePicker *)picker
                       didRecognizeText:(SBSRecognizedText *)text {
-    NSDictionary *dict = @{ @"jsonString": text.text };
+    NSDictionary *dict = @{ @"text": text.text };
     CDVPluginResult *pluginResult = [self createResultForEvent:@"didRecognizeText" value:dict];
     int nextState = [self sendPluginResultBlocking:pluginResult];
     if (!self.continuousMode) {
         nextState = SBSPickerStateStopped;
     }
     [self switchRecognitionTextToNextState:nextState];
-    if (self.rejectedCodeIds.count > 0) {
+    if (![self.rejectedCodeIds isEqual:[NSNull null]] && self.rejectedCodeIds.count >
         text.rejected = YES;
     }
 

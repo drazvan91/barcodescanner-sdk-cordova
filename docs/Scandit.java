@@ -1373,6 +1373,26 @@ public class Scandit {
 		 * @param value the value for the property.
 		 */
 		public void setProperty(String key, Object value);
+
+        /**
+         * Sets whether the button to switch between different recognition modes should be visible.
+         * If The scanner only supports one recognition mode the button is never shown.
+         *
+         * @since 5.4
+         *
+         * @param visible Whether the switch should be visible.
+         */
+        public void setTextRecognitionSwitchVisible(boolean visible);
+
+        /**
+         * Sets the text shown if the camera can not be aquired because the app does not have
+         * permission to access the camera.
+         *
+         * @since 5.4
+         *
+         * @param text The text that is displayed.
+         */
+        public void setMissingCameraPermissionInfoText(String text);
 		///@}
     }
 

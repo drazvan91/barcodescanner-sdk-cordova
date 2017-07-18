@@ -58,6 +58,8 @@ public class UIParamParser {
 
     public static final String paramProperties = "properties".toLowerCase();
 
+    public static final String paramTextRecognitionSwitchVisible = "textRecognitionSwitchVisible".toLowerCase();
+
 
     public static void updatePickerUI(BarcodePicker picker, Bundle bundle) {
         if (picker == null || bundle == null) {
@@ -208,6 +210,10 @@ public class UIParamParser {
             for (String key : properties.keySet()) {
                 picker.getOverlayView().setProperty(key, properties.get(key));
             }
+        }
+
+        if (bundle.containsKey(paramTextRecognitionSwitchVisible)) {
+            picker.getOverlayView().setTextRecognitionSwitchVisible(bundle.getBoolean(paramTextRecognitionSwitchVisible));
         }
     }
 

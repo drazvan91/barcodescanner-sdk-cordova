@@ -411,7 +411,7 @@
     if (!self.continuousMode) {
         nextState = SBSPickerStateStopped;
     }
-    [self switchRecognitionTextToNextState:nextState];
+    SBSBarcodePickerState barcodePickerState = [self switchRecognitionTextToNextState:nextState];
     if (![self.rejectedCodeIds isEqual:[NSNull null]] && self.rejectedCodeIds.count > 0) {
         text.rejected = YES;
     }
@@ -430,7 +430,7 @@
         });
     }
 
-    return SBSBarcodePickerStateStopped;
+    return barcodePickerState;
 }
 
 - (SBSBarcodePickerState)switchRecognitionTextToNextState:(int)nextState {

@@ -403,7 +403,7 @@
         nextState = SBSPickerStateStopped;
     }
     [self switchRecognitionTextToNextState:nextState];
-    if (![self.rejectedCodeIds isEqual:[NSNull null]] && self.rejectedCodeIds.count >
+    if (![self.rejectedCodeIds isEqual:[NSNull null]] && self.rejectedCodeIds.count > 0) {
         text.rejected = YES;
     }
 

@@ -54,10 +54,9 @@
 + (NSString *)paramViewfinderDecodedColor { return [@"viewfinderDecodedColor" lowercaseString]; }
 + (NSString *)paramLogoOffsets { return [@"logoOffsets" lowercaseString]; }
 + (NSString *)paramZoom { return [@"zoom" lowercaseString]; }
-
 + (NSString *)paramGuiStyle { return [@"guiStyle" lowercaseString]; }
-
 + (NSString *)paramProperties { return [@"properties" lowercaseString]; }
++ (NSString *)paramMissingCameraPermissionInfoText { return [@"missingCameraPermissionInfoText" lowercaseString]; }
 
 
 #pragma mark - Picker Updates
@@ -96,15 +95,13 @@
         if ([torchButtonMarginsAndSize isKindOfClass:[NSArray class]]) {
             NSArray *marginsAndSizeArray = (NSArray *)torchButtonMarginsAndSize;
             if ([marginsAndSizeArray count] == 4
-                            && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
-                                ||[self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]] )) {
-                [picker.overlayController
-                        setTorchButtonLeftMargin:[self getSize: marginsAndSizeArray[0] relativeTo:0]
-                                       topMargin:[self getSize: marginsAndSizeArray[1] relativeTo:0]
-                                           width:[self getSize: marginsAndSizeArray[2] relativeTo:0]
-                                          height:[self getSize: marginsAndSizeArray[3] relativeTo:0]
-                                          ];
-            }
+                && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
+                    || [self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]])) {
+                    [picker.overlayController setTorchButtonLeftMargin:[self getSize:marginsAndSizeArray[0] relativeTo:0]
+                                                             topMargin:[self getSize:marginsAndSizeArray[1] relativeTo:0]
+                                                                 width:[self getSize:marginsAndSizeArray[2] relativeTo:0]
+                                                                height:[self getSize:marginsAndSizeArray[3] relativeTo:0]];
+                }
         } else {
             NSLog(@"SBS Plugin: failed to parse torch button margins and size - wrong type");
         }
@@ -165,15 +162,13 @@
         if ([cameraSwitchButtonMarginsAndSize isKindOfClass:[NSArray class]]) {
             NSArray *marginsAndSizeArray = (NSArray *)cameraSwitchButtonMarginsAndSize;
             if ([marginsAndSizeArray count] == 4
-                            && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
-                                ||[self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]] )) {
-                [picker.overlayController
-                        setCameraSwitchButtonRightMargin:[self getSize: marginsAndSizeArray[0] relativeTo:0]
-                                               topMargin:[self getSize: marginsAndSizeArray[1] relativeTo:0]
-                                                   width:[self getSize: marginsAndSizeArray[2] relativeTo:0]
-                                                  height:[self getSize: marginsAndSizeArray[3] relativeTo:0]
-                                                ];
-            }
+                && ([self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSNumber class]]
+                    || [self array:marginsAndSizeArray onlyContainObjectsOfClass:[NSString class]])) {
+                    [picker.overlayController setCameraSwitchButtonRightMargin:[self getSize:marginsAndSizeArray[0] relativeTo:0]
+                                                                     topMargin:[self getSize:marginsAndSizeArray[1] relativeTo:0]
+                                                                         width:[self getSize:marginsAndSizeArray[2] relativeTo:0]
+                                                                        height:[self getSize:marginsAndSizeArray[3] relativeTo:0]];
+                }
         } else {
             NSLog(@"SBS Plugin: failed to parse camera switch button margins and size - wrong type");
         }
@@ -312,6 +307,15 @@
     if (toolbarCaption) {
         if([toolbarCaption isKindOfClass:[NSString class]]) {
             [picker.overlayController setToolBarButtonCaption:((NSString *) toolbarCaption)];
+        } else {
+            NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
+        }
+    }
+
+    NSObject *missingCameraPermissionInfoText = options[[self paramMissingCameraPermissionInfoText]];
+    if (missingCameraPermissionInfoText) {
+        if ([missingCameraPermissionInfoText isKindOfClass:[NSString class]]) {
+            [picker.overlayController setMissingCameraPermissionInfoText:((NSString *)missingCameraPermissionInfoText)];
         } else {
             NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
         }

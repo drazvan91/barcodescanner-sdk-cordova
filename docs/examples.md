@@ -7,7 +7,7 @@ For barcode scanner usage examples, you can either use one of the sample apps in
 
 In order to build the simple or extended sample apps you must import one of them upon creation of your project as follows.
 
-Note that you will still need to add the platform and plugin as described in {@link cordova-integrate here}. You will also need to replace the app key in the samples with your application key.
+Note that you will still need to add the platform and plugin as described in {@link cordova-integrate here}. You will also need to replace the license key in the samples with your license key.
 
 ### Simple sample
 
@@ -17,7 +17,7 @@ Note that you will still need to add the platform and plugin as described in {@l
 
 ### Extended sample
 
-For the extended sample, the application key is in `<path-to-repository>/samples/extended/src/providers/scanner.ts`, in the `setAppKey` method. After setting the application key, running `npm run build` is necessary for the build files in the `www` folder to be updated — the recommendation is to add the app key before running the commands below.
+For the extended sample, the license key is in `<path-to-repository>/samples/extended/src/providers/scanner.ts`, in the `setAppKey` method. After setting the license key, running `npm run build` is necessary for the build files in the `www` folder to be updated — the recommendation is to add the license key before running the commands below.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
 > cd <path-to-repository>/samples/extended
@@ -61,7 +61,7 @@ This shows the simplest way of using the plugin. The scanner is opened full scre
                 alert("Failed: " + error);
             }
             function scan() {
-                Scandit.License.setAppKey("-- ENTER YOUR APP KEY HERE --");
+                Scandit.License.setAppKey("-- ENTER YOUR LICENSE KEY HERE --");
                 var settings = new Scandit.ScanSettings();
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN13, true);
                 settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPC12, true);

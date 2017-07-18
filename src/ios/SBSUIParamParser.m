@@ -308,16 +308,6 @@
         }
     }
 
-    NSObject *properties = [options objectForKey:[self paramProperties]];
-    if ([properties isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *propDict = (NSDictionary *)properties;
-        for (NSObject *key in [propDict allKeys]) {
-            if ([key isKindOfClass:[NSString class]]) {
-
-            }
-        }
-    }
-
     NSObject *toolbarCaption = [options objectForKey:[self paramToolBarButtonCaption]];
     if (toolbarCaption) {
         if([toolbarCaption isKindOfClass:[NSString class]]) {

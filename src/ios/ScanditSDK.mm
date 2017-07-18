@@ -114,13 +114,12 @@
             // Create the picker.
             NSError *error;
             auto scanSettings = [SBSScanSettings settingsWithDictionary:settings error:&error];
+            scanSettings = [self updateScanSettings:scanSettings withSettings:settings];
             if (error) {
                 NSLog(@"Error when creating settings: %@", [error localizedDescription]);
             }
-            ScanditSDKRotatingBarcodePicker* picker = [[ScanditSDKRotatingBarcodePicker alloc]
-                                         initWithSettings:scanSettings];
-            self.pickerStateMachine =
-                [[SBSPickerStateMachine alloc] initWithPicker:picker delegate:self];
+            auto picker = [[ScanditSDKRotatingBarcodePicker alloc] initWithSettings:scanSettings];
+            self.pickerStateMachine = [[SBSPickerStateMachine alloc] initWithPicker:picker delegate:self];
             // Show the toolbar if we start modally. Need to do this here already such that other
             // toolbar options can be set afterwards.
             if (![options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
@@ -188,6 +187,7 @@
             NSDictionary *settings = [command.arguments objectAtIndex:0];
             NSError *error;
             SBSScanSettings *scanSettings = [SBSScanSettings settingsWithDictionary:settings error:&error];
+            scanSettings = [self updateScanSettings:scanSettings withSettings:settings];
             if (error) {
                 NSLog(@"Error when creating settings: %@", [error localizedDescription]);
             } else {
@@ -305,6 +305,15 @@
     return result;
 }
 
+- (SBSScanSettings *)updateScanSettings:(SBSScanSettings *)scanSettings withSettings:(NSDictionary *)settings {
+    NSString *recognitionMode = settings[@"recognitionMode"];
+    if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSString class]] && [recognitionMode isEqualToString:@"text"]) {
+        scanSettings.recognitionMode = SBSRecognitionModeText;
+    } else {
+        scanSettings.recognitionMode = SBSRecognitionModeCode;
+    }
+    return scanSettings;
+}
 
 #pragma mark - SBSScanDelegate methods
 

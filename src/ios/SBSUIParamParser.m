@@ -217,6 +217,10 @@
                 case 2:
                     picker.overlayController.guiStyle = SBSGuiStyleNone;
                     break;
+
+                case 4:
+                    picker.overlayController.guiStyle = SBSGuiStyleLocationsOnly;
+                    break;
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse gui style - wrong type");
@@ -296,16 +300,6 @@
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse viewfinder decoded color - wrong type");
-        }
-    }
-
-    NSObject *properties = [options objectForKey:[self paramProperties]];
-    if ([properties isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *propDict = (NSDictionary *)properties;
-        for (NSObject *key in [propDict allKeys]) {
-            if ([key isKindOfClass:[NSString class]]) {
-
-            }
         }
     }
 

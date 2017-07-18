@@ -194,6 +194,9 @@ public class UIParamParser {
                 case 2:
                     picker.getOverlayView().setGuiStyle(ScanOverlay.GUI_STYLE_NONE);
                     break;
+                case 4:
+                    picker.getOverlayView().setGuiStyle(ScanOverlay.GUI_STYLE_LOCATIONS_ONLY);
+                    break;
                 default:
                     Log.e("ScanditSDK", "Failed to parse gui style - wrong type");
                     break;

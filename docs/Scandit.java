@@ -1057,7 +1057,12 @@ public class Scandit {
 		     * No UI is shown to indicate where the barcode should be placed. Be aware that the Scandit
 		     * logo continues to be displayed as showing it is part of the license agreement.
 		     */
-			NONE
+			NONE,
+            /**
+             * Like {@link ScanOverlay.GuiStyle.NONE Scandit.ScanOverlay.GuiStyle.NONE}, but
+             * barcode locations are highlighted in the UI.
+             */
+            LOCATIONS_ONLY
 		}
 		/**
 		 * @brief The GUI style drawn to display the indicator where the code should be scanned and the

@@ -56,6 +56,7 @@
 + (NSString *)paramZoom { return [@"zoom" lowercaseString]; }
 + (NSString *)paramGuiStyle { return [@"guiStyle" lowercaseString]; }
 + (NSString *)paramProperties { return [@"properties" lowercaseString]; }
++ (NSString *)paramTextRecognitionSwitchVisible { return [@"textRecognitionSwitchVisible" lowercaseString]; }
 + (NSString *)paramMissingCameraPermissionInfoText { return [@"missingCameraPermissionInfoText" lowercaseString]; }
 
 
@@ -311,13 +312,22 @@
             NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
         }
     }
+    
+    NSObject *textRecognitionSwitchVisible = [options objectForKey:[self paramTextRecognitionSwitchVisible]];
+    if (textRecognitionSwitchVisible) {
+        if ([textRecognitionSwitchVisible isKindOfClass:[NSNumber class]]) {
+            [picker.overlayController setTextRecognitionSwitchVisible:[((NSNumber *)textRecognitionSwitchVisible) boolValue]];
+        } else {
+            NSLog(@"SBS Plugin: failed to parse text recognition switch visibility - wrong type");
+        }
+    }
 
     NSObject *missingCameraPermissionInfoText = options[[self paramMissingCameraPermissionInfoText]];
     if (missingCameraPermissionInfoText) {
         if ([missingCameraPermissionInfoText isKindOfClass:[NSString class]]) {
             [picker.overlayController setMissingCameraPermissionInfoText:((NSString *)missingCameraPermissionInfoText)];
         } else {
-            NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
+            NSLog(@"SBS Plugin: failed to parse missing camera permission info text - wrong type");
         }
     }
 }

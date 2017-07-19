@@ -131,6 +131,11 @@ ScanOverlay.prototype.setProperty = function(key, value) {
     this.updateOverlayIfExists();
 }
 
+ScanOverlay.prototype.setTextRecognitionSwitchVisible = function(visible) {
+    this.textRecognitionSwitchVisible = visible;
+	this.updateOverlayIfExists();
+}
+
 ScanOverlay.prototype.setMissingCameraPermissionInfoText = function(missingCameraPermissionInfoText) {
 	this.missingCameraPermissionInfoText = missingCameraPermissionInfoText;
 	this.updateOverlayIfExists();

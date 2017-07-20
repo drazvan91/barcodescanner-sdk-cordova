@@ -14,8 +14,8 @@
 
 @interface SBSCode (Handle)
 
-// private property to get the unterlying data handle. Used for generating unique Ids.
-@property (readonly, nonatomic) void* handle;
+// private property to get the underlying data handle. Used for generating unique Ids.
+@property (readonly, nonatomic) void *handle;
 
 @end
 
@@ -27,33 +27,53 @@
 
 @end
 
-NSArray *SBSJSObjectsFromCodeArray(NSArray *codes) {
-    NSMutableArray *finalArray = [[NSMutableArray alloc] init];
-    for (SBSCode *code in codes) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                     [code symbologyName], @"symbology",
-                                     [NSNumber numberWithLong:code.uniqueId], @"uniqueId",
-                                     [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
-                                     [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
-        [dict setObject:@(code.compositeFlag) forKey:@"compositeFlag"];
-        if ([code isRecognized]) {
-            [dict setObject:code.data forKey:@"data"];
-            // convert raw data to array of integers
-            NSData* rawData = code.rawData;
-            NSMutableArray* rawDataAsIntArray = [NSMutableArray arrayWithCapacity:rawData.length];
-            const uint8_t* bytes = (const uint8_t*)[rawData bytes];
-            for (NSUInteger i = 0; i < rawData.length; ++i) {
-                int byte = bytes[i];
-                [rawDataAsIntArray addObject:@(byte)];
-            }
-            [dict setObject:rawDataAsIntArray forKey:@"rawData"];
+static NSMutableDictionary *SBSJSObjectsFromCode(SBSCode *code) {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                 [code symbologyName], @"symbology",
+                                 [NSNumber numberWithLong:code.uniqueId], @"uniqueId",
+                                 [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
+                                 [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
+    [dict setObject:@(code.compositeFlag) forKey:@"compositeFlag"];
+    if ([code isRecognized]) {
+        [dict setObject:code.data forKey:@"data"];
+        // convert raw data to array of integers
+        NSData *rawData = code.rawData;
+        NSMutableArray *rawDataAsIntArray = [NSMutableArray arrayWithCapacity:rawData.length];
+        const uint8_t *bytes = (const uint8_t*)[rawData bytes];
+        for (NSUInteger i = 0; i < rawData.length; ++i) {
+            int byte = bytes[i];
+            [rawDataAsIntArray addObject:@(byte)];
         }
-        [finalArray addObject:dict];
+        [dict setObject:rawDataAsIntArray forKey:@"rawData"];
+    }
+    return dict;
+}
+
+//static NSDictionary *SBSJsonObjectFromPoint(CGPoint point) {
+//    return @{
+//             @"x": @(point.x),
+//             @"y": @(point.y),
+//             };
+//}
+//
+//static NSDictionary *SBSJsonObjectFromQuadrilateral(SBSQuadrilateral quadrilateral) {
+//    return @{
+//             @"topLeft": SBSJsonObjectFromPoint(quadrilateral.topLeft),
+//             @"topRight": SBSJsonObjectFromPoint(quadrilateral.topRight),
+//             @"bottomLeft": SBSJsonObjectFromPoint(quadrilateral.bottomLeft),
+//             @"bottomRight": SBSJsonObjectFromPoint(quadrilateral.bottomRight)
+//             };
+//}
+
+NSArray *SBSJSObjectsFromCodeArray(NSArray *codes) {
+    NSMutableArray *finalArray = [[NSMutableArray alloc] initWithCapacity:codes.count];
+    for (SBSCode *code in codes) {
+        [finalArray addObject:SBSJSObjectsFromCode(code)];
     }
     return finalArray;
 }
 
-NSString* SBSScanStateToString(SBSScanCaseState state) {
+NSString *SBSScanStateToString(SBSScanCaseState state) {
     switch (state) {
         case SBSScanCaseStateActive:
             return @"active";
@@ -72,12 +92,10 @@ SBSScanCaseState SBSScanStateFromString(NSString *state) {
         return SBSScanCaseStateStandby;
     if ([state isEqualToString:@"off"])
         return SBSScanCaseStateOff;
-    
-    // FIXME: raise NSException?
     return SBSScanCaseStateOff;
 }
 
-NSString * SBSScanStateChangeReasonToString(SBSScanCaseStateChangeReason reason) {
+NSString *SBSScanStateChangeReasonToString(SBSScanCaseStateChangeReason reason) {
     switch (reason) {
         case SBSScanCaseStateChangeReasonManual:
             return @"manual";

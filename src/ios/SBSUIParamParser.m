@@ -210,17 +210,20 @@
                 case 0:
                     picker.overlayController.guiStyle = SBSGuiStyleDefault;
                     break;
-
                 case 1:
                     picker.overlayController.guiStyle = SBSGuiStyleLaser;
                     break;
-
                 case 2:
                     picker.overlayController.guiStyle = SBSGuiStyleNone;
                     break;
-
+                case 3:
+                    picker.overlayController.guiStyle = SBSGuiStyleMatrixScan;
+                    break;
                 case 4:
                     picker.overlayController.guiStyle = SBSGuiStyleLocationsOnly;
+                    break;
+                default:
+                    picker.overlayController.guiStyle = SBSGuiStyleDefault;
                     break;
             }
         } else {

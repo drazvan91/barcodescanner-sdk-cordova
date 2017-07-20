@@ -93,6 +93,8 @@ function ScanSettings() {
     }
 
     this.recognitionMode = ScanSettings.RecognitionMode.CODE;
+
+    this.matrixScanEnabled = false;
 }
 
 ScanSettings.RecognitionMode = {

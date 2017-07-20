@@ -23,9 +23,10 @@ extern "C" {
 @end
     
 NSArray *SBSJSObjectsFromCodeArray(NSArray *codes);
-NSString* SBSScanStateToString(SBSScanCaseState state);
+NSDictionary *SBSJSObjectsFromTrackedCodes(NSDictionary<NSNumber *, SBSTrackedCode *> *trackedCodes);
+NSString *SBSScanStateToString(SBSScanCaseState state);
 SBSScanCaseState SBSScanStateFromString(NSString *state);
-NSString * SBSScanStateChangeReasonToString(SBSScanCaseStateChangeReason reason);
+NSString *SBSScanStateChangeReasonToString(SBSScanCaseStateChangeReason reason);
 
 #ifdef __cplusplus
 }

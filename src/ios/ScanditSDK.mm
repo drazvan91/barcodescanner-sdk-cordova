@@ -25,7 +25,7 @@
 @end
 
 @interface ScanditSDK () <SBSScanDelegate, SBSOverlayControllerDidCancelDelegate, ScanditSDKSearchBarDelegate,
-                          SBSPickerStateDelegate, SBSTextRecognitionDelegate>
+SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
 
 @property (nonatomic, copy) NSString *callbackId;
 @property (readwrite, assign) BOOL hasPendingOperation;
@@ -34,13 +34,20 @@
 @property (nonatomic, strong) SBSPickerStateMachine *pickerStateMachine;
 @property (nonatomic, readonly) dispatch_queue_t queue;
 @property (nonatomic, strong) NSArray *rejectedCodeIds;
+@property (nonatomic, strong) NSArray *visuallyRejectedCodeIds;
+@property (nonatomic, strong) NSMutableSet<NSNumber *> *recognizedCodeIdentifiers;
 
-@property (nonatomic, strong) NSCondition* didScanCondition;
+@property (nonatomic, strong) NSCondition *didScanCondition;
+@property (nonatomic, strong) NSCondition *didRecognizeNewCodesCondition;
 @property (nonatomic, assign) int nextState;
 @property (nonatomic, assign) BOOL immediatelySwitchToNextState;
 @property (nonatomic, assign) BOOL didScanCallbackFinish;
+@property (nonatomic, assign) BOOL didRecognizeNewCodesCallbackFinish;
+
+@property (nonatomic, assign) BOOL matrixScanEnabled;
 
 @property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker* picker;
+
 @end
 
 
@@ -74,20 +81,19 @@
     [SBSLicense setAppKey:appKey];
 }
 
-
 - (void)show:(CDVInvokedUrlCommand *)command {
     if (self.hasPendingOperation) {
         return;
     }
     self.hasPendingOperation = YES;
-    
+
     NSUInteger argc = [command.arguments count];
     if (argc < 2) {
         NSLog(@"The show call received too few arguments and has to return without starting.");
         return;
     }
     self.callbackId = command.callbackId;
-    
+
     NSDictionary *settings = [command.arguments objectAtIndex:0];
     NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];
     NSDictionary *overlayOptions = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:2]];
@@ -109,7 +115,7 @@
         if (continuousMode && [continuousMode isKindOfClass:[NSNumber class]]) {
             self.continuousMode = [((NSNumber *)continuousMode) boolValue];
         }
-        
+
         dispatch_main_sync_safe(^{
             // Create the picker.
             NSError *error;
@@ -123,12 +129,12 @@
             // Show the toolbar if we start modally. Need to do this here already such that other
             // toolbar options can be set afterwards.
             if (![options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]]
-                    && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]
-                    && ![options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]]
-                    && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]) {
+                && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]]
+                && ![options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]]
+                && ![options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]) {
                 [picker.overlayController showToolBar:YES];
             }
-            
+
             // Set all the UI options.
             [SBSPhonegapParamParser updatePicker:picker
                                      fromOptions:options
@@ -137,33 +143,34 @@
             [SBSPhonegapParamParser updatePicker:self.picker
                                      fromOptions:overlayOptions
                               withSearchDelegate:self];
-            
+
             // Set this class as the delegate for the overlay controller. It will now receive events when
             // a barcode was successfully scanned, manually entered or the cancel button was pressed.
             self.picker.scanDelegate = self;
+            self.picker.processFrameDelegate = self;
             if ([self.picker respondsToSelector:@selector(setTextRecognitionDelegate:)]) {
                 self.picker.textRecognitionDelegate = self;
             }
             self.picker.overlayController.cancelDelegate = self;
-        
+
             BOOL showAsSubView =
-                [options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]] ||
-                [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]] ||
-                [options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]] ||
-                [options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]
+            [options objectForKey:[SBSPhonegapParamParser paramPortraitMargins]] ||
+            [options objectForKey:[SBSPhonegapParamParser paramLandscapeMargins]] ||
+            [options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]] ||
+            [options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]]
             ;
             if (showAsSubView) {
                 self.modallyPresented = NO;
                 [self.viewController addChildViewController:picker];
                 [self.viewController.view addSubview:self.picker.view];
                 [picker didMoveToParentViewController:self.viewController];
-                
+
                 [SBSPhonegapParamParser updateLayoutOfPicker:self.picker
                                                  withOptions:options];
-                
+
             } else {
                 self.modallyPresented = YES;
-                
+
                 // Present the barcode picker modally and start scanning.
                 [self.viewController presentViewController:self.picker animated:YES completion:nil];
             }
@@ -181,7 +188,7 @@
         NSLog(@"The applySettings call received too few arguments and has to return without starting.");
         return;
     }
-    
+
     dispatch_async(self.queue, ^{
         if (self.picker) {
             NSDictionary *settings = [command.arguments objectAtIndex:0];
@@ -235,6 +242,7 @@
         if (argc >= 1) {
             options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
         }
+        [self.recognizedCodeIdentifiers removeAllObjects];
         [self.pickerStateMachine startScanningInPausedState:[SBSPhonegapParamParser isPausedSpecifiedInOptions:options]];
     });
 }
@@ -290,6 +298,14 @@
     [self.didScanCondition signal];
 }
 
+- (void)finishDidRecognizeNewCodesCallback:(CDVInvokedUrlCommand *)command {
+    NSArray *args = command.arguments;
+    if ([args count] == 1 && [args[0] isKindOfClass:[NSArray class]]) {
+        self.visuallyRejectedCodeIds = args[0];
+    }
+    self.didRecognizeNewCodesCallbackFinish = YES;
+    [self.didRecognizeNewCodesCondition signal];
+}
 
 #pragma mark - Utilities
 
@@ -312,7 +328,65 @@
     } else {
         scanSettings.recognitionMode = SBSRecognitionModeCode;
     }
+
+    NSNumber *matrixScanEnabled = settings[@"matrixScanEnabled"];
+    if (matrixScanEnabled != nil && [matrixScanEnabled isKindOfClass:[NSNumber class]]) {
+        if ([matrixScanEnabled boolValue]) {
+            self.recognizedCodeIdentifiers = [[NSMutableSet alloc] init];
+            scanSettings.matrixScanEnabled = YES;
+            self.matrixScanEnabled = YES;
+        } else {
+            self.recognizedCodeIdentifiers = nil;
+            scanSettings.matrixScanEnabled = NO;
+            self.matrixScanEnabled = NO;
+        }
+    }
+
     return scanSettings;
+}
+
+#pragma mark - SBSProcessFrameDelegate methods
+
+- (void)barcodePicker:(SBSBarcodePicker *)barcodePicker
+      didProcessFrame:(CMSampleBufferRef)frame
+              session:(SBSScanSession *)session {
+    if (self.matrixScanEnabled && session.trackedCodes == nil) {
+        return;
+    }
+    NSDictionary<NSNumber *, SBSTrackedCode *> *trackedCodes = session.trackedCodes;
+    NSSet<NSNumber *> *trackedCodeIdentifiers = [NSSet setWithArray:[trackedCodes allKeys]];
+    NSMutableArray<SBSTrackedCode *> *newlyTrackedCodes = [[NSMutableArray alloc] init];
+    BOOL atLeastOneNewCode = NO;
+    for (NSNumber *identifier in trackedCodeIdentifiers) {
+        // Check if it's a new identifier.
+        if (trackedCodes[identifier].isRecognized && ![self.recognizedCodeIdentifiers containsObject:identifier]) {
+            atLeastOneNewCode = YES;
+            // Add the new identifier.
+            [self.recognizedCodeIdentifiers addObject:identifier];
+            [newlyTrackedCodes addObject:trackedCodes[identifier]];
+        }
+    }
+    // Remove all identifiers that disappeared.
+    [self.recognizedCodeIdentifiers intersectSet:trackedCodeIdentifiers];
+
+    // We want to block the thread and wait for the JS callback only if at least one new code was found.
+    if (atLeastOneNewCode) {
+        CDVPluginResult *pluginResult = [self trackingResultWithTrackedCodes:newlyTrackedCodes];
+
+        // Call JS callback blocking the thread
+        [self sendNewlyTrackedCodesBlocking:pluginResult];
+
+        // Visually reject codes
+        for (NSNumber *codeId in self.visuallyRejectedCodeIds) {
+            long value = [codeId longValue];
+            for (SBSTrackedCode *code in [trackedCodes allValues]) {
+                if (code.uniqueId == value) {
+                    [session rejectTrackedCode:code];
+                    break;
+                }
+            }
+        }
+    }
 }
 
 #pragma mark - SBSScanDelegate methods
@@ -360,11 +434,16 @@
 
 - (CDVPluginResult *)resultForSession:(SBSScanSession *)session {
     NSDictionary *result = @{
-        @"newlyRecognizedCodes": SBSJSObjectsFromCodeArray(session.newlyRecognizedCodes),
-        @"newlyLocalizedCodes" : SBSJSObjectsFromCodeArray(session.newlyLocalizedCodes),
-        @"allRecognizedCodes" : SBSJSObjectsFromCodeArray(session.allRecognizedCodes)
-    };
+                             @"newlyRecognizedCodes": SBSJSObjectsFromCodeArray(session.newlyRecognizedCodes),
+                             @"newlyLocalizedCodes" : SBSJSObjectsFromCodeArray(session.newlyLocalizedCodes),
+                             @"allRecognizedCodes" : SBSJSObjectsFromCodeArray(session.allRecognizedCodes)
+                             };
     return [self createResultForEvent:@"didScan" value:result];
+}
+
+- (CDVPluginResult *)trackingResultWithTrackedCodes:(NSArray<SBSTrackedCode *> *)newlyTrackedCodes {
+    NSDictionary *result = @{@"newlyTrackedCodes": SBSJSObjectsFromCodeArray(newlyTrackedCodes)};
+    return [self createResultForEvent:@"didRecognizeNewCodes" value:result];
 }
 
 - (int)sendPluginResultBlocking:(CDVPluginResult *)result {
@@ -380,8 +459,7 @@
     // We are on the main thread where the callback will be invoked on as well, we
     // have to manually assemble the command to be executed.
     NSString* command = @"cordova.callbacks['%@'].success(%@);";
-    NSString* commandSubst =
-        [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
+    NSString* commandSubst = [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
     [self.commandDelegate evalJs:commandSubst scheduledOnRunLoop:NO];
     return self.nextState;
 }
@@ -399,6 +477,23 @@
         }
         [self.pickerStateMachine setDesiredState:SBSPickerStatePaused];
     }
+}
+
+- (void)sendNewlyTrackedCodesBlocking:(CDVPluginResult *)result {
+    if (![NSThread isMainThread]) {
+        [self.didRecognizeNewCodesCondition lock];
+        self.didRecognizeNewCodesCallbackFinish = NO;
+        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        while (!self.didRecognizeNewCodesCallbackFinish) {
+            [self.didRecognizeNewCodesCondition wait];
+        }
+        return;
+    }
+    // We are on the main thread where the callback will be invoked on as well, we
+    // have to manually assemble the command to be executed.
+    NSString *command = @"cordova.callbacks['%@'].success(%@);";
+    NSString *commandSubst = [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
+    [self.commandDelegate evalJs:commandSubst scheduledOnRunLoop:NO];
 }
 
 #pragma mark - SBSTextRecognitionDelegate

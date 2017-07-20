@@ -2,6 +2,7 @@
 var ScanOverlay = cordova.require("com.mirasense.scanditsdk.plugin.ScanOverlay");
 var ScanSettings = cordova.require("com.mirasense.scanditsdk.plugin.ScanSettings");
 var ScanSession = cordova.require("com.mirasense.scanditsdk.plugin.ScanSession");
+var MatrixScanSession = cordova.require("com.mirasense.scanditsdk.plugin.MatrixScanSession");
 var Barcode = cordova.require("com.mirasense.scanditsdk.plugin.Barcode");
 var RecognizedText = cordova.require("com.mirasense.scanditsdk.plugin.RecognizedText");
 var Constraints = cordova.require("com.mirasense.scanditsdk.plugin.Constraints");
@@ -52,6 +53,7 @@ BarcodePicker.prototype.show = function () {
         callbacks.didManualSearch = arguments.length > 1 && arguments[1] || null;
         callbacks.didCancel = arguments.length > 2 && arguments[2] || null;
         callbacks.didRecognizeText = arguments.length > 3 && arguments[3] || null;
+        callbacks.didRecognizeNewCodes = arguments.length > 4 && arguments[4] || null;
     } else {
         // new method signature: BarcodePicker.show({ didScan : function() });
         callbacks = arguments[0];
@@ -80,8 +82,7 @@ BarcodePicker.prototype.show = function () {
               callbacks.didManualSearch(args[1]);
             }
             return;
-        }
-        if (event === 'didScan') {
+        } else if (event === 'didScan') {
             picker.executingCallback = true;
             picker.pausedDuringCallback = false;
             picker.stoppedDuringCallback = false;
@@ -116,8 +117,7 @@ BarcodePicker.prototype.show = function () {
                 throw exceptionRaisedDuringDidScan;
             }
             return;
-        }
-        if (event === 'didRecognizeText') {
+        } else if (event === 'didRecognizeText') {
             picker.executingCallback = true;
             var originalRecognizedText = args[1];
             var recognizedText = new RecognizedText(originalRecognizedText.text);
@@ -144,11 +144,38 @@ BarcodePicker.prototype.show = function () {
             }
             cordova.exec(null, null, "ScanditSDK", "finishDidScanCallback", [nextStep, rejectedCodes]);
             picker.executingCallback = false;
-        }
-        if (event === 'didChangeState') {
+        } else if (event === 'didChangeState') {
             if (callbacks.didChangeState) {
                 callbacks.didChangeState(args[1]);
             }
+        } else if (event === 'didRecognizeNewCodes') {
+            picker.executingCallback = true;
+            picker.pausedDuringCallback = false;
+            picker.stoppedDuringCallback = false;
+            var session = args[1];
+            var newlyTrackedCodes = BarcodePicker.codeArrayFromGenericArray(session.newlyTrackedCodes);
+
+            var exceptionRaisedDuringDidRecognizeNewCodes = null;
+            var matrixScanSession = new MatrixScanSession(newlyTrackedCodes);
+            if (callbacks.didRecognizeNewCodes) {
+                // Catch exception thrown in the callback, so we can release the lock held for 
+                // synchronizing didRecognizeNewCodes in the picker. Otherwise we would keep the lock forever. 
+                try {
+                    callbacks.didRecognizeNewCodes(matrixScanSession);
+                } catch(e) {
+                    exceptionRaisedDuringDidRecognizeNewCodes = e;
+                }
+            }
+
+            // Inform plugin that callback has finished executing. Required for synchronization on 
+            // Android/iOS. Windows doesn't require it.
+            cordova.exec(null, null, "ScanditSDK", "finishDidRecognizeNewCodesCallback",
+                         [matrixScanSession.rejectedTrackedCodes]);
+            picker.executingCallback = false;
+            if (exceptionRaisedDuringDidRecognizeNewCodes) {
+                throw exceptionRaisedDuringDidRecognizeNewCodes;
+            }
+            return;
         }
     }, callbacks.didCancel, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);
 

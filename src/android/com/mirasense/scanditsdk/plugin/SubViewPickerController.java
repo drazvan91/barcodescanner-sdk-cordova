@@ -170,8 +170,13 @@ public class SubViewPickerController
                     return;
                 }
                 mPickerStateMachine.startScanning();
+                setStateOnParent(PickerStateMachine.ACTIVE);
             }
         });
+    }
+
+    private void setStateOnParent(int state) {
+        super.setState(state);
     }
 
     @Override

@@ -102,6 +102,7 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
     @Override
     public void startScanning() {
         FullScreenPickerActivity.startScanning();
+        super.setState(PickerStateMachine.ACTIVE);
     }
 
     @Override

@@ -44,6 +44,8 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
 @property (nonatomic, assign) BOOL didScanCallbackFinish;
 @property (nonatomic, assign) BOOL didRecognizeNewCodesCallbackFinish;
 
+@property (nonatomic, assign) BOOL matrixScanEnabled;
+
 @property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker* picker;
 
 @end
@@ -145,6 +147,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
             // Set this class as the delegate for the overlay controller. It will now receive events when
             // a barcode was successfully scanned, manually entered or the cancel button was pressed.
             self.picker.scanDelegate = self;
+            self.picker.processFrameDelegate = self;
             if ([self.picker respondsToSelector:@selector(setTextRecognitionDelegate:)]) {
                 self.picker.textRecognitionDelegate = self;
             }
@@ -295,7 +298,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
     [self.didScanCondition signal];
 }
 
-- (void)finishDidRecognizeNewCodesCallback:(CDVInvokedUrlCommand*)command {
+- (void)finishDidRecognizeNewCodesCallback:(CDVInvokedUrlCommand *)command {
     NSArray *args = command.arguments;
     if ([args count] == 1) {
         self.visuallyRejectedCodeIds = args[0];
@@ -331,12 +334,11 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
         if ([matrixScanEnabled boolValue]) {
             self.recognizedCodeIdentifiers = [[NSMutableSet alloc] init];
             scanSettings.matrixScanEnabled = YES;
-            self.picker.processFrameDelegate = self;
+            self.matrixScanEnabled = YES;
         } else {
             self.recognizedCodeIdentifiers = nil;
-            self.visuallyRejectedCodeIds = nil;
             scanSettings.matrixScanEnabled = NO;
-            self.picker.processFrameDelegate = nil;
+            self.matrixScanEnabled = NO;
         }
     }
 
@@ -348,7 +350,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
 - (void)barcodePicker:(SBSBarcodePicker *)barcodePicker
       didProcessFrame:(CMSampleBufferRef)frame
               session:(SBSScanSession *)session {
-    if (session.trackedCodes == nil) {
+    if (self.matrixScanEnabled && session.trackedCodes == nil) {
         return;
     }
     NSDictionary<NSNumber *, SBSTrackedCode *> *trackedCodes = session.trackedCodes;
@@ -444,7 +446,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
 }
 
 - (CDVPluginResult *)trackingResultWithTrackedCodes:(NSArray<SBSTrackedCode *> *)newlyTrackedCodes {
-    NSDictionary *result = @{@"trackedCodes": SBSJSObjectsFromCodeArray(newlyTrackedCodes)};
+    NSDictionary *result = @{@"newlyTrackedCodes": SBSJSObjectsFromCodeArray(newlyTrackedCodes)};
     return [self createResultForEvent:@"didRecognizeNewCodes" value:result];
 }
 

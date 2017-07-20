@@ -2,6 +2,7 @@
 var ScanOverlay = cordova.require("com.mirasense.scanditsdk.plugin.ScanOverlay");
 var ScanSettings = cordova.require("com.mirasense.scanditsdk.plugin.ScanSettings");
 var ScanSession = cordova.require("com.mirasense.scanditsdk.plugin.ScanSession");
+var MatrixScanSession = cordova.require("com.mirasense.scanditsdk.plugin.MatrixScanSession");
 var Barcode = cordova.require("com.mirasense.scanditsdk.plugin.Barcode");
 var RecognizedText = cordova.require("com.mirasense.scanditsdk.plugin.RecognizedText");
 var Constraints = cordova.require("com.mirasense.scanditsdk.plugin.Constraints");
@@ -151,7 +152,8 @@ BarcodePicker.prototype.show = function () {
             picker.executingCallback = true;
             picker.pausedDuringCallback = false;
             picker.stoppedDuringCallback = false;
-            var newlyTrackedCodes = args[1];
+            var session = args[1];
+            var newlyTrackedCodes = BarcodePicker.codeArrayFromGenericArray(session.newlyTrackedCodes);
 
             var exceptionRaisedDuringDidRecognizeNewCodes = null;
             var matrixScanSession = new MatrixScanSession(newlyTrackedCodes);
@@ -159,7 +161,7 @@ BarcodePicker.prototype.show = function () {
                 // Catch exception thrown in the callback, so we can release the lock held for 
                 // synchronizing didRecognizeNewCodes in the picker. Otherwise we would keep the lock forever. 
                 try {
-                    callbacks.didRecognizeNewCodes(newlyTrackedCodes);
+                    callbacks.didRecognizeNewCodes(matrixScanSession);
                 } catch(e) {
                     exceptionRaisedDuringDidRecognizeNewCodes = e;
                 }
@@ -168,7 +170,7 @@ BarcodePicker.prototype.show = function () {
             // Inform plugin that callback has finished executing. Required for synchronization on 
             // Android/iOS. Windows doesn't require it.
             cordova.exec(null, null, "ScanditSDK", "finishDidRecognizeNewCodesCallback",
-                         [nextStep, matrixScanSession.rejectedTrackedCode]); 
+                         [matrixScanSession.rejectedTrackedCodes]);
             picker.executingCallback = false;
             if (exceptionRaisedDuringDidRecognizeNewCodes) {
                 throw exceptionRaisedDuringDidRecognizeNewCodes;

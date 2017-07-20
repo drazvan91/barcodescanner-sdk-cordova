@@ -300,7 +300,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
 
 - (void)finishDidRecognizeNewCodesCallback:(CDVInvokedUrlCommand *)command {
     NSArray *args = command.arguments;
-    if ([args count] == 1) {
+    if ([args count] == 1 && [args[0] isKindOfClass:[NSArray class]]) {
         self.visuallyRejectedCodeIds = args[0];
     }
     self.didRecognizeNewCodesCallbackFinish = YES;
@@ -354,7 +354,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
         return;
     }
     NSDictionary<NSNumber *, SBSTrackedCode *> *trackedCodes = session.trackedCodes;
-    NSArray<NSNumber *> *trackedCodeIdentifiers = [trackedCodes allKeys];
+    NSSet<NSNumber *> *trackedCodeIdentifiers = [NSSet setWithArray:[trackedCodes allKeys]];
     NSMutableArray<SBSTrackedCode *> *newlyTrackedCodes = [[NSMutableArray alloc] init];
     BOOL atLeastOneNewCode = NO;
     for (NSNumber *identifier in trackedCodeIdentifiers) {
@@ -367,11 +367,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
         }
     }
     // Remove all identifiers that disappeared.
-    for (NSNumber *identifier in self.recognizedCodeIdentifiers) {
-        if (![trackedCodeIdentifiers containsObject:identifier]) {
-            [self.recognizedCodeIdentifiers removeObject:identifier];
-        }
-    }
+    [self.recognizedCodeIdentifiers intersectSet:trackedCodeIdentifiers];
 
     // We want to block the thread and wait for the JS callback only if at least one new code was found.
     if (atLeastOneNewCode) {

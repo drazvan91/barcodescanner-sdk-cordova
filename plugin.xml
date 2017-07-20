@@ -35,6 +35,9 @@
     <js-module src="src/session.js" name="ScanSession">
         <clobbers target="Scandit.ScanSession" />
     </js-module>
+    <js-module src="src/matrixScanSession.js" name="MatrixScanSession">
+       <clobbers target="Scandit.MatrixScanSession"/>
+    </js-module>
     <js-module src="src/settings.js" name="ScanSettings">
         <clobbers target="Scandit.ScanSettings" />
     </js-module>

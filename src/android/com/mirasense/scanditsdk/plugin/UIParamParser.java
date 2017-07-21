@@ -57,6 +57,7 @@ public class UIParamParser {
     public static final String paramGuiStyle = "guiStyle".toLowerCase();
 
     public static final String paramProperties = "properties".toLowerCase();
+    public static final String paramMissingCameraPermissionInfoText = "missingCameraPermissionInfoText".toLowerCase();
 
     public static final String paramTextRecognitionSwitchVisible = "textRecognitionSwitchVisible".toLowerCase();
 
@@ -210,6 +211,11 @@ public class UIParamParser {
             for (String key : properties.keySet()) {
                 picker.getOverlayView().setProperty(key, properties.get(key));
             }
+        }
+
+        if (bundleContainsStringKey(bundle, paramMissingCameraPermissionInfoText)) {
+            String missingCameraPermissionInfoText = bundle.getString(paramMissingCameraPermissionInfoText);
+            picker.getOverlayView().setMissingCameraPermissionInfoText(missingCameraPermissionInfoText);
         }
 
         if (bundle.containsKey(paramTextRecognitionSwitchVisible)) {

@@ -26,11 +26,13 @@ import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.scandit.barcodepicker.OnScanListener;
+import com.scandit.barcodepicker.ProcessFrameListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
+import com.scandit.recognition.TrackedBarcode;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -40,6 +42,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -49,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SubViewPickerController
         extends PickerControllerBase
         implements BarcodePickerWithSearchBar.SearchBarListener, OnScanListener,
-                   PickerStateMachine.Callback, TextRecognitionListener {
+        ProcessFrameListener, PickerStateMachine.Callback, TextRecognitionListener {
 
     private RelativeLayout mLayout;
 
@@ -61,7 +67,11 @@ public class SubViewPickerController
     // Can't use Size, because the class is not available in all the releases we support.
     // chosen such that dim.x <= dim.y
     private Point mScreenDimensions = null;
-    private ArrayList<Long> mRejectedCodeIds;
+    private List<Long> mRejectedCodeIds;
+
+    private Set<Long> mLastFrameTrackedCodeIds = new HashSet<Long>();
+    private List<Long> mRejectedTrackedCodeIds;
+
 
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
@@ -113,11 +123,13 @@ public class SubViewPickerController
                             ". Falling back to default scan settings.");
                     scanSettings = ScanSettings.create();
                 }
-                BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(pluginActivity,
-                                                                                   scanSettings);
+                BarcodePickerWithSearchBar picker =
+                        new BarcodePickerWithSearchBar(pluginActivity, scanSettings);
                 picker.setOnScanListener(SubViewPickerController.this);
+                picker.setProcessFrameListener(SubViewPickerController.this);
                 picker.setTextRecognitionListener(SubViewPickerController.this);
-                mPickerStateMachine = new PickerStateMachine(picker, SubViewPickerController.this);
+                mPickerStateMachine = new PickerStateMachine(
+                        picker, scanSettings, SubViewPickerController.this);
                 mOrientationHandler.setScreenDimensions(mScreenDimensions);
                 mOrientationHandler.setPicker(mPickerStateMachine.getPicker());
                 // Set all the UI options.
@@ -157,8 +169,13 @@ public class SubViewPickerController
     }
 
     @Override
-    protected void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds) {
+    protected void setRejectedCodeIds(List<Long> rejectedCodeIds) {
         mRejectedCodeIds = rejectedCodeIds;
+    }
+
+    @Override
+    protected void setRejectedTrackedCodeIds(List<Long> rejectedCodeIds) {
+        mRejectedTrackedCodeIds = rejectedCodeIds;
     }
 
     @Override
@@ -253,7 +270,7 @@ public class SubViewPickerController
             mPendingClose.set(true);
             return;
         }
-        if (mInFlightDidScanCallbackId.get() != 0) {
+        if (isResultCallbackInFlight()) {
             // we get here if the didScan callback is still in progress. We need to delay
             // processing the cancel call to avoid a dead-lock. The picker will be closed
             // (removed) when finishDidScanCallback is called.
@@ -301,7 +318,7 @@ public class SubViewPickerController
     }
 
     private void internalRemoveSubviewPicker() {
-        if (Looper.myLooper() == null || Looper.myLooper().getThread() != Thread.currentThread()) {
+        if (Looper.myLooper() == null || Looper.myLooper() != Looper.getMainLooper()) {
             throw new RuntimeException("must be called on main thread");
         }
         if (mPickerStateMachine == null) {
@@ -344,7 +361,7 @@ public class SubViewPickerController
                     }
                 }
             } catch (Exception e) {
-                String message = "Unable to fetch the ViewGroup through webView.getView().getParent().";
+                String message = "Unable to fetch the ViewGroup through webView.getView().getParent()";
                 Log.e("ScanditSDK", message);
                 e.printStackTrace();
                 sendRuntimeError(message);
@@ -359,10 +376,9 @@ public class SubViewPickerController
         if (mPendingClose.get()) {
             return;
         }
-        PluginResult result;
         JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
                 ResultRelay.jsonForSession(session));
-        result = Marshal.createOkResult(eventArgs);
+        PluginResult result = Marshal.createOkResult(eventArgs);
 
         int nextState = sendPluginResultBlocking(result);
         if (!mContinuousMode) {
@@ -376,15 +392,51 @@ public class SubViewPickerController
     }
 
     @Override
+    public void didProcess(byte[] bytes, int width, int height, ScanSession session) {
+        // don't do anything if there is a pending close operation. otherwise we will deadlock
+        if (mPendingClose.get()) {
+            return;
+        }
+        if (!mPickerStateMachine.isMatrixScanEnabled() || session.getTrackedCodes() == null) {
+            return;
+        }
+
+        Map<Long, TrackedBarcode> trackedCodes = session.getTrackedCodes();
+        List<TrackedBarcode> newlyTrackedCodes = new ArrayList<TrackedBarcode>();
+        Set<Long> recognizedCodeIds = new HashSet<Long>();
+
+        for (Map.Entry<Long, TrackedBarcode> entry : trackedCodes.entrySet()) {
+            // Check if it's a new identifier.
+            if (entry.getValue().isRecognized()) {
+                recognizedCodeIds.add(entry.getKey());
+                if (!mLastFrameTrackedCodeIds.contains(entry.getKey())) {
+                    // Add the new identifier.
+                    mLastFrameTrackedCodeIds.add(entry.getKey());
+                    newlyTrackedCodes.add(entry.getValue());
+                }
+            }
+        }
+        // Update the recognized code ids for next frame.
+        mLastFrameTrackedCodeIds = recognizedCodeIds;
+
+        if (newlyTrackedCodes.size() > 0) {
+            JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_NEW_CODES,
+                    ResultRelay.jsonForTrackedCodes(newlyTrackedCodes));
+            PluginResult result = Marshal.createOkResult(eventArgs);
+            sendPluginResultBlocking(result);
+            Marshal.rejectTrackedCodes(session, mRejectedTrackedCodeIds);
+        }
+    }
+
+    @Override
     public int didRecognizeText(RecognizedText recognizedText) {
         if (mPendingClose.get()) {
             // return if there is a pending close. Otherwise we might deadlock
             return TextRecognitionListener.PICKER_STATE_STOPPED;
         }
-        PluginResult result;
         JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_TEXT_EVENT,
                 ResultRelay.jsonForRecognizedText(recognizedText));
-        result = Marshal.createOkResult(eventArgs);
+        PluginResult result = Marshal.createOkResult(eventArgs);
 
         int nextState = sendPluginResultBlocking(result);
         if (!mContinuousMode) {
@@ -409,5 +461,10 @@ public class SubViewPickerController
     public void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState) {
         JSONArray didChangeStateArgs = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_STATE_EVENT, newState);
         mCallbackContext.sendPluginResult(Marshal.createOkResult(didChangeStateArgs));
+    }
+
+    @Override
+    public void pickerSwitchedMatrixScanState(BarcodePickerWithSearchBar picker, boolean matrixScan) {
+        mLastFrameTrackedCodeIds.clear();
     }
 }

@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class FullscreenPickerController extends PickerControllerBase implements ResultRelay.Callback {
 
@@ -23,8 +24,13 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
     }
 
     @Override
-    protected void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds) {
+    protected void setRejectedCodeIds(List<Long> rejectedCodeIds) {
         FullScreenPickerActivity.setRejectedCodeIds(rejectedCodeIds);
+    }
+
+    @Override
+    protected void setRejectedTrackedCodeIds(List<Long> rejectedCodeIds) {
+        FullScreenPickerActivity.setRejectedTrackedCodeIds(rejectedCodeIds);
     }
 
     @Override

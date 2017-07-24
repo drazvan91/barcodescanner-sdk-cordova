@@ -17,6 +17,7 @@ import android.os.Bundle;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.recognition.Barcode;
+import com.scandit.recognition.TrackedBarcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +52,17 @@ public class ResultRelay {
         return json;
     }
 
-    public static JSONArray jsonForCodes(List<Barcode> codes) {
+    public static JSONObject jsonForTrackedCodes(List<TrackedBarcode> trackedCodes) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("newlyTrackedCodes", jsonForCodes(trackedCodes));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    public static JSONArray jsonForCodes(List<? extends Barcode> codes) {
         JSONArray array = new JSONArray();
 
         for (Barcode code : codes) {

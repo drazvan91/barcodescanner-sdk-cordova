@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,14 +30,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Base class for the picker controllers.
  */
 abstract class PickerControllerBase implements IPickerController {
+
     final CordovaPlugin mPlugin;
     final CallbackContext mCallbackContext;
 
     boolean mContinuousMode = false;
-    AtomicInteger mInFlightDidScanCallbackId = new AtomicInteger(0);
-    private AtomicInteger mLastDidScanCallbackId = new AtomicInteger(0);
+    // Indicates whether a result callback (any of didScan, didRecognizeNewCodes, didRecognizeText)
+    // is in process.
+    private AtomicInteger mInFlightResultCallbackId = new AtomicInteger(0);
+    // The id of the last result callback (any of didScan, didRecognizeNewCodes, didRecognizeText)
+    private AtomicInteger mLastResultCallbackId = new AtomicInteger(0);
     private AtomicBoolean mShouldBlockForDidScan = new AtomicBoolean(false);
-    protected int mNextState = 0;
+    private int mNextState = 0;
     private final Object mSync = new Object();
 
 
@@ -45,14 +50,22 @@ abstract class PickerControllerBase implements IPickerController {
         mCallbackContext = callbacks;
     }
 
+    boolean isResultCallbackInFlight() {
+        return mInFlightResultCallbackId.get() != 0;
+    }
+
+    private void clearInFlightResultCallbackAndNotify() {
+        synchronized (mSync) {
+            mInFlightResultCallbackId.set(0);
+            mSync.notifyAll();
+        }
+    }
+
     @Override
     public void setState(int state) {
         mShouldBlockForDidScan.set(state == PickerStateMachine.ACTIVE);
         // stop any in-flight callback when there is a state change.
-        synchronized (mSync) {
-            mInFlightDidScanCallbackId.set(0); // zero means no in-flight didScan callback
-            mSync.notifyAll();
-        }
+        clearInFlightResultCallbackAndNotify();
     }
 
     @Override
@@ -69,42 +82,59 @@ abstract class PickerControllerBase implements IPickerController {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (data.length() > 1) {
-                ArrayList<Long> rejectedCodeIds = new ArrayList<Long>();
-                try {
-                    JSONArray jsonData = data.getJSONArray(1);
-                    for (int i = 0; i < jsonData.length(); ++i) {
-                        rejectedCodeIds.add(jsonData.getLong(i));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                setRejectedCodeIds(rejectedCodeIds);
-            }
         }
-        synchronized (mSync) {
-            mInFlightDidScanCallbackId.set(0); // zero means no in-flight didScan callback
-            mSync.notifyAll();
-        }
+        setRejectedCodeIds(determineRejectedCodes(data, 1));
+        clearInFlightResultCallbackAndNotify();
     }
 
-    protected abstract void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds);
+    @Override
+    public void finishDidRecognizeNewCodesCallback(JSONArray data) {
+        setRejectedTrackedCodeIds(determineRejectedCodes(data, 0));
+        clearInFlightResultCallbackAndNotify();
+    }
 
+    /**
+     * Reads the rejected code ids out of the specified position in the json array. Handles arrays
+     * that are null or too short.
+     *
+     * @param data The json array.
+     * @param dataIndex The position at which to read the array.
+     * @return The rejected code ids.
+     */
+    private List<Long> determineRejectedCodes(JSONArray data, int dataIndex) {
+        List<Long> rejectedCodeIds = new ArrayList<Long>();
+        if (data != null && data.length() > dataIndex) {
+            try {
+                JSONArray jsonData = data.getJSONArray(dataIndex);
+                for (int i = 0; i < jsonData.length(); ++i) {
+                    rejectedCodeIds.add(jsonData.getLong(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return rejectedCodeIds;
+    }
 
-    protected int sendPluginResultBlocking(PluginResult result) {
-        int currentId = mLastDidScanCallbackId.incrementAndGet();
-        mInFlightDidScanCallbackId.set(currentId);
+    protected abstract void setRejectedCodeIds(List<Long> rejectedCodeIds);
+
+    protected abstract void setRejectedTrackedCodeIds(List<Long> rejectedCodeIds);
+
+    int sendPluginResultBlocking(PluginResult result) {
+        int currentId = mLastResultCallbackId.incrementAndGet();
+        mInFlightResultCallbackId.set(currentId);
         mNextState = 0;
 
         try {
             mCallbackContext.sendPluginResult(result);
             synchronized (mSync) {
-                while (mInFlightDidScanCallbackId.get() == currentId &&
-                       mShouldBlockForDidScan.get()) {
+                while (mInFlightResultCallbackId.get() == currentId &&
+                        mShouldBlockForDidScan.get()) {
                     mSync.wait();
                 }
             }
         } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return mNextState;

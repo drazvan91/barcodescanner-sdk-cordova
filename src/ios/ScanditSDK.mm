@@ -350,7 +350,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
 - (void)barcodePicker:(SBSBarcodePicker *)barcodePicker
       didProcessFrame:(CMSampleBufferRef)frame
               session:(SBSScanSession *)session {
-    if (self.matrixScanEnabled && session.trackedCodes == nil) {
+    if (!self.matrixScanEnabled || session.trackedCodes == nil) {
         return;
     }
     NSDictionary<NSNumber *, SBSTrackedCode *> *trackedCodes = session.trackedCodes;

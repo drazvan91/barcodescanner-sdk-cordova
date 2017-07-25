@@ -44,6 +44,9 @@
 
                 var picker = new Scandit.BarcodePicker(settings);
 
+                // Set continuous mode to not return after the first scan.
+                picker.continuousMode = true;
+
                 // Set the GUI style to MATRIXSCAN in order to use the default code visualization.
                 picker.getOverlayView().setGuiStyle(Scandit.ScanOverlay.GuiStyle.MATRIXSCAN);
 

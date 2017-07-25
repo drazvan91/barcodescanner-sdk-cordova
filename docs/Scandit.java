@@ -821,7 +821,7 @@ public class Scandit {
     	 *
     	 * By default, the barcode recognition engine searches the whole image for barcodes.
     	 * Use this method to define the area in which barcodes are to be searched. Rectangle
-    	 * coordinates run from 0 to 1.
+    	 * coordinates run from 0 to 1. The coordinates are relative to the camera preview.
     	 *
     	 * @since 4.11.0
     	 *
@@ -835,7 +835,7 @@ public class Scandit {
     	 *
     	 * By default, the barcode recognition engine searches the whole image for barcodes.
     	 * Use this method to define the area in which barcodes are to be searched. Rectangle
-    	 * coordinates run from 0 to 1.
+    	 * coordinates run from 0 to 1. The coordinates are relative to the camera preview.
     	 *
     	 * @since 4.11.0
     	 *
@@ -1283,7 +1283,7 @@ public class Scandit {
 		///@{
 
 		/**
-		 * Sets the size of the viewfinder relative to the size of the screen size.
+		 * Sets the size of the viewfinder relative to the size of the BarcodePicker's size.
 		 *
 		 * Changing this value does not(!) affect the area in which barcodes are successfully
 		 * recognized. It only changes the size of the box drawn onto the scan screen. To restrict the

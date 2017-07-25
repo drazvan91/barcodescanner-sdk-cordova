@@ -11,7 +11,7 @@ By default the Scandit Barcode Scanner searches the entire camera feed for barco
 
 ## Restrict the scanning area
 
-Restricting the scanning area is done through {@link Scandit.ScanSettings.activeScanningAreaPortrait activeScanningAreaPortrait} and {@link Scandit.ScanSettings.activeScanningAreaLandscape activeScanningAreaLandscape} on the settings object. The two properties allow you to have different scanning areas dependent on the device orientation. The area itself is specified as a rectangle with coordinates relative to the device's screen size where the top-left corner is 0/0 and the bottom-right corner is 1/1. Setting Scandit.Rect(0.0, 0.0, 1.0, 1.0) would set the scanning area to the entire screen. Following an example of restricting the scanning area to 100% of the screen width and 10% of the screen height centered around the middle of the screen.
+Restricting the scanning area is done through {@link Scandit.ScanSettings.activeScanningAreaPortrait activeScanningAreaPortrait} and {@link Scandit.ScanSettings.activeScanningAreaLandscape activeScanningAreaLandscape} on the settings object. The two properties allow you to have different scanning areas dependent on the device orientation. The area itself is specified as a rectangle with coordinates relative to the camera preview's size where the top-left corner is 0/0 and the bottom-right corner is 1/1. Setting Scandit.Rect(0.0, 0.0, 1.0, 1.0) would set the scanning area to the entire camera preview. Following an example of restricting the scanning area to 100% of the camera preview width and 10% of the camera preview height centered around the middle of the camera preview.
 
 ~~~~~~~~~~~~~~~~{.java}
 
@@ -20,7 +20,7 @@ settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.45, 1.0, 0.1);
 
 ~~~~~~~~~~~~~~~~
 
-Restricting the scanning area to only the bottom half of the screen would look the following way:
+Restricting the scanning area to only the bottom half of the camera preview would look the following way:
 
 ~~~~~~~~~~~~~~~~{.java}
 
@@ -32,7 +32,7 @@ settings.activeScanningAreaPortrait = new Scandit.Rect(0.0, 0.5, 1.0, 0.5);
 
 ## Adjust the viewfinder to match the scanning area
 
-If you reduced the size of the scanning area you likely also want to adjust the size of the viewfinder that guides the user. You can do this by setting the viewfinder dimension on the {@link Scandit.ScanOverlay ScanOverlay}. The coordinate system here is the same as when setting the active scanning area, relative to the device's screen going from 0.0 to 1.0.
+If you reduced the size of the scanning area you likely also want to adjust the size of the viewfinder that guides the user. You can do this by setting the viewfinder dimension on the {@link Scandit.ScanOverlay ScanOverlay}. The coordinate system here is relative to the {@link Scandit.BarcodePicker BarcodePicker}'s size.
 
 ~~~~~~~~~~~~~~~~{.java}
 

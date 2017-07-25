@@ -29,14 +29,15 @@ import org.apache.cordova.CordovaPlugin;
  */
 final class SubViewPickerOrientationHandler extends Handler {
 
-    final static int CHECK_ORIENTATION = 1;
-    final static int SET_PICKER = 2;
+    private static final int CHECK_ORIENTATION = 1;
+    private static final int SET_PICKER = 2;
     private int mLastRotation = -1;
     private boolean mRunning = false;
 
-    CordovaPlugin mPlugin;
-    BarcodePickerWithSearchBar mPicker;
-    Point mScreenDimensions = new Point(0, 0);
+    private CordovaPlugin mPlugin;
+    private BarcodePickerWithSearchBar mPicker;
+    private Point mScreenDimensions = new Point(0, 0);
+
 
     public SubViewPickerOrientationHandler(Looper mainLooper, CordovaPlugin plugin,
                                            BarcodePickerWithSearchBar picker) {

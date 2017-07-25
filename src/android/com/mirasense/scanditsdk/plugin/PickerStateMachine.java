@@ -27,41 +27,45 @@ class PickerStateMachine {
     public final static int PAUSED =   1;
     public final static int ACTIVE =   3;
 
-    public void applyScanSettings(ScanSettings scanSettings) {
-        mPicker.applyScanSettings(scanSettings);
-    }
-
-    public int getState() {
-        return mCurrentState;
-    }
-
-    interface Callback {
-        /**
-         * Invoked whenever the state of the barcode picker changes to a new state.
-         * @param picker The picker
-         * @param newState the new state of the picker
-         */
-        void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState);
-    }
-
-
     private final BarcodePickerWithSearchBar mPicker;
     private int mCurrentState = STOPPED;
 
-
     private WeakReference<Callback> mCallback;
+    private boolean mMatrixScanEnabled = false;
 
 
     /**
      * Create a new picker state machine.
      * @param picker The picker for which to control the states. Must not be null.
+     * @param scanSettings The initial scan settings, used to set parts of the initial state.
      * @param callback The state change callback gets invoked whenever the state of the picker
      *                 changes. The callback is stored as a weak reference, so make sure to keep a
      *                 reference to the object around.
      */
-    PickerStateMachine(BarcodePickerWithSearchBar picker, Callback callback) {
+    PickerStateMachine(BarcodePickerWithSearchBar picker, ScanSettings scanSettings,
+                       Callback callback) {
         mPicker = picker;
         mCallback = new WeakReference<Callback>(callback);
+        updateSettingsState(scanSettings);
+    }
+
+    public void applyScanSettings(ScanSettings scanSettings) {
+        mPicker.applyScanSettings(scanSettings);
+        updateSettingsState(scanSettings);
+    }
+
+    private void updateSettingsState(ScanSettings scanSettings) {
+        if (mMatrixScanEnabled != scanSettings.isMatrixScanEnabled()) {
+            mMatrixScanEnabled = scanSettings.isMatrixScanEnabled();
+            Callback cb = mCallback.get();
+            if (cb != null) {
+                cb.pickerSwitchedMatrixScanState(mPicker, mMatrixScanEnabled);
+            }
+        }
+    }
+
+    public int getState() {
+        return mCurrentState;
     }
 
     public int setState(int state) {
@@ -86,6 +90,10 @@ class PickerStateMachine {
         }
         mCurrentState = state;
         return state;
+    }
+
+    public boolean isMatrixScanEnabled() {
+        return mMatrixScanEnabled;
     }
 
     public void startScanning() {
@@ -170,5 +178,24 @@ class PickerStateMachine {
                 cb.pickerEnteredState(mPicker, PAUSED);
             }
         }
+    }
+
+
+    interface Callback {
+        /**
+         * Invoked whenever the state of the barcode picker changes to a new state.
+         *
+         * @param picker The picker
+         * @param newState the new state of the picker
+         */
+        void pickerEnteredState(BarcodePickerWithSearchBar picker, int newState);
+
+        /**
+         * Invoked whenever the picker starts or stops using matrix scan.
+         *
+         * @param picker The picker
+         * @param matrixScan Whether matrix scan is enabled.
+         */
+        void pickerSwitchedMatrixScanState(BarcodePickerWithSearchBar picker, boolean matrixScan);
     }
 }

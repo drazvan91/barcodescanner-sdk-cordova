@@ -92,7 +92,19 @@ public interface IPickerController {
      */
     void onActivityResult(int requestCode, int resultCode, Intent data);
 
+    /**
+     * Called when the didScan callback finished on the JS side.
+     *
+     * @param data Data gathered during the callback.
+     */
     void finishDidScanCallback(JSONArray data);
+
+    /**
+     * Called when the didRecognizeNewCodes callback finished on the JS side.
+     *
+     * @param data Data gathered during the callback.
+     */
+    void finishDidRecognizeNewCodesCallback(final JSONArray data);
 
     void startScanning();
 }

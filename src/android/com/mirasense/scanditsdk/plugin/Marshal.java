@@ -11,17 +11,15 @@
 //  limitations under the License.
 package com.mirasense.scanditsdk.plugin;
 
-import android.os.Bundle;
-
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.recognition.Barcode;
+import com.scandit.recognition.TrackedBarcode;
 
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,8 +55,6 @@ public class Marshal {
         return result;
     }
 
-
-
     public static PluginResult createFailResult(String message) {
         PluginResult result = new PluginResult(PluginResult.Status.ERROR, message);
         result.setKeepCallback(true);
@@ -69,14 +65,12 @@ public class Marshal {
         return createFailResult("Canceled");
     }
 
-
-    public static void rejectCodes(ScanSession session, ArrayList<Long> rejectedCodeIds) {
+    public static void rejectCodes(ScanSession session, List<Long> rejectedCodeIds) {
         if (rejectedCodeIds == null) {
             return;
         }
-        List<Barcode> newlyRecognized = session.getNewlyRecognizedCodes();
         for (Long id : rejectedCodeIds) {
-            for (Barcode code : newlyRecognized) {
+            for (Barcode code : session.getNewlyRecognizedCodes()) {
                 if (code.getHandle() == id) {
                     session.rejectCode(code);
                 }
@@ -84,7 +78,20 @@ public class Marshal {
         }
     }
 
-    public static void rejectRecognizedTexts(RecognizedText recognizedText, ArrayList<Long> rejectedCodeIds) {
+    public static void rejectTrackedCodes(ScanSession session, List<Long> rejectedCodeIds) {
+        if (rejectedCodeIds == null) {
+            return;
+        }
+        for (Long id : rejectedCodeIds) {
+            for (TrackedBarcode code : session.getTrackedCodes().values()) {
+                if (code.getHandle() == id) {
+                    session.rejectTrackedCode(code);
+                }
+            }
+        }
+    }
+
+    public static void rejectRecognizedTexts(RecognizedText recognizedText, List<Long> rejectedCodeIds) {
         if (rejectedCodeIds != null && !rejectedCodeIds.isEmpty()) {
             recognizedText.setRejected(true);
         }

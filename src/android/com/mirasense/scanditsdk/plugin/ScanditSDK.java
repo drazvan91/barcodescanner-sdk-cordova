@@ -41,27 +41,29 @@ public class ScanditSDK extends CordovaPlugin {
     public static final String DID_MANUAL_SEARCH_EVENT = "didManualSearch";
     public static final String DID_RECOGNIZE_TEXT_EVENT = "didRecognizeText";
     public static final String DID_CHANGE_STATE_EVENT = "didChangeState";
+    public static final String DID_RECOGNIZE_NEW_CODES = "didRecognizeNewCodes";
 
 
-    public static final String INIT_LICENSE_COMMAND = "initLicense";
-    public static final String SHOW_COMMAND = "show";
-    public static final String APPLY_SETTINGS_COMMAND = "applySettings";
-    public static final String CANCEL_COMMAND = "cancel";
-    public static final String PAUSE_COMMAND = "pause";
-    public static final String RESUME_COMMAND = "resume";
-    public static final String START_COMMAND = "start";
-    public static final String STOP_COMMAND = "stop";
-    public static final String RESIZE_COMMAND = "resize";
-    public static final String UPDATE_OVERLAY_COMMAND = "updateOverlay";
-    public static final String ENABLE_TORCH_COMMAND = "torch";
-    public static final String FINISH_DID_SCAN_COMMAND = "finishDidScanCallback";
+    private static final String INIT_LICENSE_COMMAND = "initLicense";
+    private static final String SHOW_COMMAND = "show";
+    private static final String APPLY_SETTINGS_COMMAND = "applySettings";
+    private static final String CANCEL_COMMAND = "cancel";
+    private static final String PAUSE_COMMAND = "pause";
+    private static final String RESUME_COMMAND = "resume";
+    private static final String START_COMMAND = "start";
+    private static final String STOP_COMMAND = "stop";
+    private static final String RESIZE_COMMAND = "resize";
+    private static final String UPDATE_OVERLAY_COMMAND = "updateOverlay";
+    private static final String ENABLE_TORCH_COMMAND = "torch";
+    private static final String FINISH_DID_SCAN_COMMAND = "finishDidScanCallback";
+    private static final String FINISH_DID_RECOGNIZE_NEW_CODES_COMMAND = "finishDidRecognizeNewCodesCallback";
     private static final int REQUEST_CAMERA_PERMISSION = 505;
 
     private CallbackContext mCallbackContext;
 
     private ScanditWorker mWorker = null;
     private boolean mRequestingCameraPermission = false;
-    IPickerController mPickerController;
+    private IPickerController mPickerController;
 
     static class Command {
         Command(String action, JSONArray args, CallbackContext callbackContext) {
@@ -74,7 +76,7 @@ public class ScanditSDK extends CordovaPlugin {
         CallbackContext callbackContext;
     }
 
-    ArrayList<Command> mQueuedCommands = new ArrayList<Command>();
+    private ArrayList<Command> mQueuedCommands = new ArrayList<Command>();
 
 
     @Override
@@ -135,6 +137,8 @@ public class ScanditSDK extends CordovaPlugin {
             torch(args);
         } else if (action.equals(FINISH_DID_SCAN_COMMAND)) {
             finishDidScanCallback(args);
+        } else if (action.equals(FINISH_DID_RECOGNIZE_NEW_CODES_COMMAND)) {
+            finishDidRecognizeNewCodesCallback(args);
         } else {
             callbackContext.error("Invalid Action: " + action);
             return false;
@@ -339,6 +343,10 @@ public class ScanditSDK extends CordovaPlugin {
     
     private void finishDidScanCallback(final JSONArray data) {
         mPickerController.finishDidScanCallback(data);
+    }
+
+    private void finishDidRecognizeNewCodesCallback(final JSONArray data) {
+        mPickerController.finishDidRecognizeNewCodesCallback(data);
     }
 
     private void setOptionsOnBundle(JSONObject options, Bundle bundle) {

@@ -197,6 +197,9 @@ public class UIParamParser {
                 case 2:
                     picker.getOverlayView().setGuiStyle(ScanOverlay.GUI_STYLE_NONE);
                     break;
+                case 3:
+                    picker.getOverlayView().setGuiStyle(ScanOverlay.GUI_STYLE_MATRIX_SCAN);
+                    break;
                 case 4:
                     picker.getOverlayView().setGuiStyle(ScanOverlay.GUI_STYLE_LOCATIONS_ONLY);
                     break;

@@ -25,17 +25,23 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.scandit.barcodepicker.OnScanListener;
+import com.scandit.barcodepicker.ProcessFrameListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
+import com.scandit.recognition.TrackedBarcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -47,34 +53,73 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FullScreenPickerActivity
         extends Activity
         implements OnScanListener, BarcodePickerWithSearchBar.SearchBarListener,
-                   TextRecognitionListener, PickerStateMachine.Callback {
+        ProcessFrameListener, TextRecognitionListener, PickerStateMachine.Callback {
     
     public static final int CANCEL = 0;
     public static final int SCAN = 1;
     public static final int MANUAL = 2;
-    public static final int TEXT = 1;
+    public static final int TEXT = 3;
 
     private static FullScreenPickerActivity sActiveActivity = null;
     private static AtomicBoolean sPendingClose = new AtomicBoolean(false);
     private static AtomicBoolean sBufferedTorchEnabled = new AtomicBoolean(false);
-    private boolean mContinuousMode = false;
 
     private PickerStateMachine mPickerStateMachine = null;
+    private boolean mContinuousMode = false;
+
     private int mStateBeforeSuspend = PickerStateMachine.STOPPED;
-    private static ArrayList<Long> rejectedCodeIds;
-    private ArrayList<Long> mRejectedCodeIds;
+    private List<Long> mRejectedCodeIds;
+
+    private Set<Long> mLastFrameTrackedCodeIds = new HashSet<Long>();
+    private List<Long> mRejectedTrackedCodeIds;
+
 
     public static void setState(int state) {
-        if (sActiveActivity == null)
-            return;
+        if (sActiveActivity == null) return;
         sActiveActivity.mPickerStateMachine.setState(state);
     }
 
-    public static void setRejectedCodeIds(ArrayList<Long> rejectedCodeIds) {
-        if (sActiveActivity == null)
-            return;
+    public static void applyScanSettings(ScanSettings scanSettings) {
+        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
+
+        sActiveActivity.mPickerStateMachine.applyScanSettings(scanSettings);
+    }
+
+    public static void startScanning() {
+        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
+        sActiveActivity.mPickerStateMachine.startScanning();
+    }
+
+    public static void setRejectedCodeIds(List<Long> rejectedCodeIds) {
+        if (sActiveActivity == null) return;
         sActiveActivity.mRejectedCodeIds = rejectedCodeIds;
     }
+
+    public static void setRejectedTrackedCodeIds(List<Long> rejectedCodeIds) {
+        if (sActiveActivity == null) return;
+        sActiveActivity.mRejectedTrackedCodeIds = rejectedCodeIds;
+    }
+
+    public static void updateUI(Bundle overlayOptions) {
+        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
+        UIParamParser.updatePickerUI(sActiveActivity.mPickerStateMachine.getPicker(), overlayOptions);
+    }
+
+    public static void setTorchEnabled(boolean enabled) {
+        if (sActiveActivity != null) {
+            sActiveActivity.switchTorchOn(enabled);
+        } else {
+            sBufferedTorchEnabled.set(enabled);
+        }
+    }
+
+    public static void close() {
+        sPendingClose.set(true);
+        if (sActiveActivity != null) {
+            sActiveActivity.didCancel();
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +166,11 @@ public class FullScreenPickerActivity
         }
         BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(this, scanSettings);
         picker.setOnScanListener(this);
+        picker.setProcessFrameListener(this);
         picker.setTextRecognitionListener(this);
 
         this.setContentView(picker);
-        mPickerStateMachine = new PickerStateMachine(picker, this);
+        mPickerStateMachine = new PickerStateMachine(picker, scanSettings, this);
 
         // Set all the UI options.
         PhonegapParamParser.updatePicker(picker, options, this);
@@ -139,10 +185,8 @@ public class FullScreenPickerActivity
 
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
 
-
         mStateBeforeSuspend = PhonegapParamParser.shouldStartInPausedState(options)
-                ? PickerStateMachine.PAUSED
-                : PickerStateMachine.ACTIVE;
+                ? PickerStateMachine.PAUSED : PickerStateMachine.ACTIVE;
     }
     
     @Override
@@ -162,11 +206,10 @@ public class FullScreenPickerActivity
         sActiveActivity = this;
         if (sPendingClose.compareAndSet(true, false)) {
             // close has been issued before we had the chance to start the picker.
-            FullScreenPickerActivity.close();
+            didCancel();
         }
         // Once the activity is in the foreground again, restore previous picker state.
         mPickerStateMachine.setState(mStateBeforeSuspend);
-
     }
 
     public void switchTorchOn(boolean enabled) {
@@ -178,14 +221,6 @@ public class FullScreenPickerActivity
         setResult(CANCEL);
         finish();
         sPendingClose.set(false);
-    }
-
-    private Bundle bundleForScanResult(ScanSession session) {
-        Bundle bundle = new Bundle();
-        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
-                ResultRelay.jsonForSession(session));
-        bundle.putString("jsonString", eventArgs.toString());
-        return bundle;
     }
 
     @Override
@@ -214,13 +249,54 @@ public class FullScreenPickerActivity
         Marshal.rejectCodes(session, mRejectedCodeIds);
     }
 
-    private Bundle manualSearchResultsToBundle(String entry) {
+    private Bundle bundleForScanResult(ScanSession session) {
         Bundle bundle = new Bundle();
-        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_MANUAL_SEARCH_EVENT, entry);
-        bundle.putString("jsonString", args.toString());
+        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,
+                ResultRelay.jsonForSession(session));
+        bundle.putString("jsonString", eventArgs.toString());
+        return bundle;
+    }
 
-        // no need to wait for result
-        bundle.putBoolean("waitForResult", false);
+    @Override
+    public void didProcess(byte[] bytes, int width, int height, ScanSession session) {
+        if (sPendingClose.get()) {
+            // return if there is a pending close. Otherwise we might deadlock
+            return;
+        }
+        if (!mPickerStateMachine.isMatrixScanEnabled() || session.getTrackedCodes() == null) {
+            return;
+        }
+
+        Map<Long, TrackedBarcode> trackedCodes = session.getTrackedCodes();
+        List<TrackedBarcode> newlyTrackedCodes = new ArrayList<TrackedBarcode>();
+        Set<Long> recognizedCodeIds = new HashSet<Long>();
+
+        for (Map.Entry<Long, TrackedBarcode> entry : trackedCodes.entrySet()) {
+            // Check if it's a new identifier.
+            if (entry.getValue().isRecognized()) {
+                recognizedCodeIds.add(entry.getKey());
+                if (!mLastFrameTrackedCodeIds.contains(entry.getKey())) {
+                    // Add the new identifier.
+                    mLastFrameTrackedCodeIds.add(entry.getKey());
+                    newlyTrackedCodes.add(entry.getValue());
+                }
+            }
+        }
+        // Update the recognized code ids for next frame.
+        mLastFrameTrackedCodeIds = recognizedCodeIds;
+
+        if (newlyTrackedCodes.size() > 0) {
+            Bundle bundle = bundleForProcessResult(newlyTrackedCodes);
+            ResultRelay.relayResult(bundle);
+            Marshal.rejectTrackedCodes(session, mRejectedTrackedCodeIds);
+        }
+    }
+
+    private Bundle bundleForProcessResult(List<TrackedBarcode> newylTrackedCodes) {
+        Bundle bundle = new Bundle();
+        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_NEW_CODES,
+                ResultRelay.jsonForTrackedCodes(newylTrackedCodes));
+        bundle.putString("jsonString", eventArgs.toString());
         return bundle;
     }
     
@@ -238,11 +314,13 @@ public class FullScreenPickerActivity
         ResultRelay.relayResult(bundle);
     }
 
-    private Bundle bundleForTextRecognitionResult(RecognizedText recognizedText) {
+    private Bundle manualSearchResultsToBundle(String entry) {
         Bundle bundle = new Bundle();
-        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_TEXT_EVENT,
-                ResultRelay.jsonForRecognizedText(recognizedText));
-        bundle.putString("jsonString", eventArgs.toString());
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_MANUAL_SEARCH_EVENT, entry);
+        bundle.putString("jsonString", args.toString());
+
+        // no need to wait for result
+        bundle.putBoolean("waitForResult", false);
         return bundle;
     }
 
@@ -279,27 +357,19 @@ public class FullScreenPickerActivity
             return TextRecognitionListener.PICKER_STATE_ACTIVE;
         }
     }
+
+    private Bundle bundleForTextRecognitionResult(RecognizedText recognizedText) {
+        Bundle bundle = new Bundle();
+        JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_TEXT_EVENT,
+                ResultRelay.jsonForRecognizedText(recognizedText));
+        bundle.putString("jsonString", eventArgs.toString());
+        return bundle;
+    }
     
     @Override
     public void onBackPressed() {
+        sPendingClose.set(true);
         didCancel();
-    }
-
-    
-    public static void close() {
-        if (sActiveActivity != null) {
-            sActiveActivity.didCancel();
-        } else {
-            sPendingClose.set(true);
-        }
-    }
-
-    public static void setTorchEnabled(boolean enabled) {
-        if (sActiveActivity != null) {
-            sActiveActivity.switchTorchOn(enabled);
-        } else {
-            sBufferedTorchEnabled.set(enabled);
-        }
     }
 
     @Override
@@ -311,19 +381,8 @@ public class FullScreenPickerActivity
         ResultRelay.relayResult(resultBundle);
     }
 
-    public static void applyScanSettings(ScanSettings scanSettings) {
-        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
-
-        sActiveActivity.mPickerStateMachine.applyScanSettings(scanSettings);
-    }
-
-    public static void updateUI(Bundle overlayOptions) {
-        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
-        UIParamParser.updatePickerUI(sActiveActivity.mPickerStateMachine.getPicker(), overlayOptions);
-    }
-
-    public static void startScanning() {
-        if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
-        sActiveActivity.mPickerStateMachine.startScanning();
+    @Override
+    public void pickerSwitchedMatrixScanState(BarcodePickerWithSearchBar picker, boolean matrixScan) {
+        mLastFrameTrackedCodeIds.clear();
     }
 }

@@ -1,11 +1,11 @@
 
 function MatrixScanSession(newlyTrackedCodes) {
 	this.newlyTrackedCodes = newlyTrackedCodes;
-	this.rejectedTrackedCode = [];
+	this.rejectedTrackedCodes = [];
 }
 
 MatrixScanSession.prototype.rejectTrackedCode = function(code) {
-	this.rejectedTrackedCode.push(code.uniqueId);
+	this.rejectedTrackedCodes.push(code.uniqueId);
 }
 
 module.exports = MatrixScanSession;

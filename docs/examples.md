@@ -5,7 +5,7 @@ For barcode scanner usage examples, you can either use one of the sample apps in
 
 ## Build the sample apps
 
-In order to build the simple, extended, or matrix scan sample apps you must import one of them upon creation of your project as follows.
+In order to build the sample apps you must import one of them upon creation of your project as follows.
 
 Note that you will still need to add the platform and plugin as described in {@link cordova-integrate here}. You will also need to replace the license key in the samples with your license key.
 
@@ -34,6 +34,20 @@ Note that the `--link-to` option will symlink to the specified www directory wit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
 > cordova create helloworld --id "com.scandit.helloworld" --template <path-to-repository>/samples/matrixscan/www/
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### OCR sample
+
+For the OCR sample, the license key is in `<path-to-repository>/samples/ocr/src/providers/scanner.ts`, in the `setAppKey` method. After setting the license key, running `npm run build` is necessary for the build files in the `www` folder to be updated — the recommendation is to add the license key before running the commands below.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.java}
+> cd <path-to-repository>/samples/ocr
+> npm install
+> npm run build
+> cd <path-to-folder-to-contain-cordova-project>
+> cordova create helloworld --id "com.scandit.helloworld" --link-to <path-to-repository>/samples/ocr/www
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note that the `--link-to` option will symlink to the specified www directory without creating a copy. For more information, see https://cordova.apache.org/docs/en/latest/reference/cordova-cli/#cordova-create-command.
 
 ## Simple Fullscreen
 

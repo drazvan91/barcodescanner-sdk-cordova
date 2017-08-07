@@ -215,6 +215,6 @@ export class Scanner {
   }
 
   private setAppKey(): void {
-    Scandit.License.setAddppKey("-- ENTER YOUR SCANDIT LICENSE KEY HERE --");
+    Scandit.License.setAppKey("-- ENTER YOUR SCANDIT LICENSE KEY HERE --");
   }
 }

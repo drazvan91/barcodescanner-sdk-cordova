@@ -13,7 +13,7 @@
         <script type="text/javascript">
             function newTrackedCodes(matrixScanSession) {
                 matrixScanSession.newlyTrackedCodes.forEach(function(element) {
-                    if (element.symbology == Scandit.Barcode.Symbology.EAN13) {
+                    if (element.symbology == Scandit.Barcode.Symbology.EAN8) {
                         matrixScanSession.rejectTrackedCode(element)
                     }
                 }, this);

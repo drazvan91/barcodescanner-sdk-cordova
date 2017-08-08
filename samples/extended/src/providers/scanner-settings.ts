@@ -151,6 +151,8 @@ export class ScannerSettings {
 
     settings.symbologies['msi-plessey'].checksums = ['mod10'];
 
+    settings.highDensityModeEnabled = false;
+
     return settings;
   }
 

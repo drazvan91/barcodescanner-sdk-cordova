@@ -28,7 +28,8 @@ function ScanSettings() {
     
     this.symbologies[Barcode.Symbology.CODE128] = new SymbologySettings();
     this.symbologies[Barcode.Symbology.CODE128].activeSymbolCounts = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    
+    this.symbologies[Barcode.Symbology.CODE128].extensions = ["strip_leading_fnc1"];
+
     this.symbologies[Barcode.Symbology.CODE39] = new SymbologySettings();
     this.symbologies[Barcode.Symbology.CODE39].activeSymbolCounts = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
     

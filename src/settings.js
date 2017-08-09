@@ -42,7 +42,8 @@ function ScanSettings() {
     this.symbologies[Barcode.Symbology.QR] = new SymbologySettings();
     
     this.symbologies[Barcode.Symbology.DATA_MATRIX] = new SymbologySettings();
-    
+    this.symbologies[Barcode.Symbology.DATA_MATRIX].extensions = ["strip_leading_fnc1"];
+
     this.symbologies[Barcode.Symbology.PDF417] = new SymbologySettings();
     this.symbologies[Barcode.Symbology.MICRO_PDF417] = new SymbologySettings();
     

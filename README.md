@@ -1,7 +1,7 @@
 Scandit Barcode Scanner SDK Plugin for Cordova/Phonegap
 ===================================
 
-Cross platform Phonegap/Cordova Plugin of the Scandit Barcode Scanner SDK for iOS, Android, Windows 8.1, Windows Phone 8.1 and Windows 10 Universal Applications.
+Cross platform PhoneGap/Cordova Plugin of the Scandit Barcode Scanner SDK for iOS, Android, Windows 8.1, Windows Phone 8.1 and Windows 10 Universal Applications.
 
 **Important:** This repository does not contain the core library of the Scandit Barcode Scanner since the library can not be publicly distributed. It only contains the classes that wrap the library to create a PhoneGap plugin and is therefore not an installable PhoneGap plugin. The actual library is only available from your [Scandit account](https://ssl.scandit.com/account) where you can download the fully installable PhoneGap plugin that includes the libraries. 
 

@@ -397,7 +397,7 @@ public class SubViewPickerController
         if (mPendingClose.get()) {
             return;
         }
-        if (!mPickerStateMachine.isMatrixScanEnabled() || session.getTrackedCodes() == null) {
+        if (!(mPickerStateMachine != null && !mPickerStateMachine.isMatrixScanEnabled()) || session.getTrackedCodes() == null) {
             return;
         }
 

@@ -39,6 +39,9 @@ type UiSettings = {
       top: number,
     }
   },
+  textRecognitionSwitch: {
+    visible: boolean,
+  },
   cameraSwitch: {
     visibility: number, // enum
     offset: {

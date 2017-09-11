@@ -110,11 +110,14 @@ export class ScannerSettings {
         vibrate: true,
       },
       torch: {
-        enabled: false,
+        enabled: true,
         offset: {
           left: 15,
           top: 15,
         }
+      },
+      textRecognitionSwitch: {
+        visible: false,
       },
       cameraSwitch: {
         visibility: this.Enums.CameraSwitchVisibility.never,

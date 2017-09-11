@@ -168,6 +168,8 @@ export class Scanner {
       40,
     );
 
+    overlay.setTextRecognitionSwitchVisible(uiSettings.textRecognitionSwitch.visible);
+
     overlay.setGuiStyle(uiSettings.viewfinder.style);
     overlay.setViewfinderDimension(
       uiSettings.viewfinder.portrait.width,

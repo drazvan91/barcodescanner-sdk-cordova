@@ -1022,7 +1022,7 @@ public class Scandit {
          *
          * By default the white list is null and all characters will be recognized.
          *
-         * /since 5.3.0
+         * \since 5.3.0
          */
         public String characterWhitelist;
     }
@@ -1483,6 +1483,9 @@ public class Scandit {
 		public enum Extension {
 			/**
 			 * Enable decoder optimizations for small data-matrix codes.
+			 *
+			 * \deprecated Since version 5.2 this extension has no effect anymore. Zoom should be
+			 * used to improve scanning of very small codes.
 			 */
 			TINY,
 			/**

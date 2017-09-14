@@ -917,9 +917,12 @@ public class Scandit {
     	 * for barcodes.
     	 * <p>
     	 * X and Y can be between 0 and 1, where 0/0 corresponds to the top left
-    	 * corner and 1/1 to the bottom right corner.
+    	 * corner and 1/1 to the bottom right corner of the screen.
     	 *
     	 * The default hotspot is centered on the image (0.5,0.5)
+    	 *
+    	 * When setting the hot spot to values outside the allowed range, the hot 
+    	 * spot value is ignored.
     	 */
     	public Point scanningHotSpot;
 

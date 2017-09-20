@@ -48,15 +48,21 @@ export class ScanPage {
   public ionViewWillEnter(): void {
     this.subscribe();
   }
+  
+  public onPause(): void {
+    this.shouldBeScanning = false;
+  }
+  
+  public onResume(): void {
+    this.shouldBeScanning = true;
+  }
 
   public ionViewDidEnter(): void {
-    this.shouldBeScanning = true;
     this.startScanner();
     this.setScannerConstraints();
   }
 
   public ionViewWillLeave(): void {
-    this.shouldBeScanning = false;
     this.unsubscribe();
   }
 
@@ -68,6 +74,8 @@ export class ScanPage {
   private subscribe(): void {
     this.events.subscribe(this.scanner.event.scan, this.onScanHandler);
     this.events.subscribe(this.scanner.event.stateChange, this.onStateChangeHandler);
+    document.addEventListener('pause', this.onPause, false);
+    document.addEventListener('resume', this.onResume, false);
   }
 
   private unsubscribe(): void {

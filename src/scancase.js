@@ -36,6 +36,9 @@ ScanCase.acquire = function(scanSettings, callbacks) {
   return sc;
 };
 
+ScanCase.prototype.volumeButtonToScanEnabled = function(enabled) {
+  cordova.exec(null, null, "SBSScanCasePlugin", "volumeButtonToScanEnabled", [enabled]);
+}
 
 ScanCase.State = {
     ACTIVE : 'active',

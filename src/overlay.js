@@ -16,7 +16,7 @@ ScanOverlay.GuiStyle = {
 	NONE: 2,
 	MATRIXSCAN: 3,
     MATRIX_SCAN: 3,
-	LOCATIONSONLY: 4,
+    LOCATIONSONLY: 4,
     LOCATIONS_ONLY: 4
 }
 

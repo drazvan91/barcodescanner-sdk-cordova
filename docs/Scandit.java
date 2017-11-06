@@ -832,7 +832,11 @@ public class Scandit {
          *
          * By default, the barcode recognition engine searches the whole image for barcodes.
          * Use this method to define the area in which barcodes are to be searched. Rectangle
-         * coordinates run from 0 to 1. The coordinates are relative to the camera preview.
+         * coordinates run from 0 to 1. The coordinates are relative to the whole camera preview 
+         * frames and not the view in which the preview frames are displayed. When displaying 
+         * the picker as a subview with an aspect ratio different from the camera image, it is 
+         * generally a good idea to restrict the active scanning area to the visible part of 
+         * the preview. 
          *
          * @since 4.11.0
          *
@@ -846,7 +850,11 @@ public class Scandit {
          *
          * By default, the barcode recognition engine searches the whole image for barcodes.
          * Use this method to define the area in which barcodes are to be searched. Rectangle
-         * coordinates run from 0 to 1. The coordinates are relative to the camera preview.
+         * coordinates run from 0 to 1. The coordinates are relative to the whole camera preview 
+         * frames and not the view in which the preview frames are displayed. When displaying 
+         * the picker as a subview with an aspect ratio different from the camera image, it is 
+         * generally a good idea to restrict the active scanning area to the visible part of 
+         * the preview. 
          *
          * @since 4.11.0
          *

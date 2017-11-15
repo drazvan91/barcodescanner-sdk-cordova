@@ -946,6 +946,10 @@ public class Scandit {
          * Sets the location in the image which is decoded with the highest priority
          * when multiple barcodes are present in the image.
          * <p>
+         * In restrictActiveScanningArea mode (activated with setting either
+         * {@link ScanSettings.activeScanningAreaPortrait activeScanningAreaPortrait}
+         * or {@link ScanSettings.activeScanningAreaLandscape activeScanningAreaLandscape}):
+         * <p>
          * Changes the location of the spot where the barcode decoder actively scans
          * for barcodes.
          * <p>

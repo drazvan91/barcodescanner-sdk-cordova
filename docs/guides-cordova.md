@@ -1,4 +1,4 @@
-Overview         			{#cordova-guides}
+Overview                     {#cordova-guides}
 ===================================
 \ingroup scanditsdk-cordova-guides
 
@@ -28,6 +28,7 @@ How to setup the plugin on Telerik can be found in the \subpage cordova-telerik 
 * \subpage cordova-cropped-or-scaled-picker
 * \subpage cordova-restrict-scanning-area
 * \subpage cordova-active-symbols-counts
+* \subpage cordova-scan-case
 
 ### Version/edition upgrades
 

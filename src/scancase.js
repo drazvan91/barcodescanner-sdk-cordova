@@ -46,4 +46,10 @@ ScanCase.State = {
     STANDBY : 'standby'
 };
 
+ScanCase.StateChangeReason = {
+    MANUAL : 'manual',
+    TIMEOUT : 'timeout',
+    VOLUME_BUTTON : 'volumeButton'
+};
+
 module.exports = ScanCase

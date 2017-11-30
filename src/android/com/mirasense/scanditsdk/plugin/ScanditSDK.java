@@ -204,8 +204,7 @@ public class ScanditSDK extends CordovaPlugin {
                         options.containsKey(PhonegapParamParser.paramPortraitMargins) ||
                         options.containsKey(PhonegapParamParser.paramLandscapeMargins) ||
                         options.containsKey(PhonegapParamParser.paramPortraitConstraints) ||
-                        options.containsKey(PhonegapParamParser.paramLandscapeConstraints)
-                ;
+                        options.containsKey(PhonegapParamParser.paramLandscapeConstraints);
                 if (showPickerAsSubView) {
                     mPickerController = new SubViewPickerController(ScanditSDK.this, mCallbackContext);
                 } else {
@@ -393,10 +392,8 @@ public class ScanditSDK extends CordovaPlugin {
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mPickerController == null)
-            return;
+        if (mPickerController == null) return;
         mPickerController.onActivityResult(requestCode, resultCode, data);
-
     }
 
     @Override
@@ -413,6 +410,4 @@ public class ScanditSDK extends CordovaPlugin {
         if (mPickerController == null) return;
         mPickerController.onActivityResume();
     }
-
-
 }

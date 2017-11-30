@@ -75,7 +75,6 @@ public class SubViewPickerController
 
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
-
     }
 
     @Override
@@ -90,7 +89,6 @@ public class SubViewPickerController
                 mPickerStateMachine.setState(state);
             }
         });
-
     }
 
     @Override
@@ -107,7 +105,6 @@ public class SubViewPickerController
         int width = (int) (display.widthPixels * 160.f / display.densityDpi);
         int height = (int) (display.heightPixels * 160.f / display.densityDpi);
         mScreenDimensions = new Point(Math.min(width, height), Math.max(width, height));
-
 
         // initialization must be performed on main thread.
         this.runOnUiThread(new Runnable() {
@@ -148,12 +145,10 @@ public class SubViewPickerController
                 PhonegapParamParser.updateLayout(pluginActivity, mPickerStateMachine.getPicker(),
                         options, mScreenDimensions);
 
-
                 if (mPendingClose.compareAndSet(true, false)) {
                     // picker was closed(canceled) in the meantime. close it now.
                     SubViewPickerController.this.close();
                 }
-
             }
         });
     }
@@ -205,7 +200,6 @@ public class SubViewPickerController
                 mPickerStateMachine.applyScanSettings(scanSettings);
             }
         });
-
     }
 
     @Override
@@ -249,7 +243,6 @@ public class SubViewPickerController
                 mPickerStateMachine.getPicker().switchTorchOn(enabled);
             }
         });
-
     }
 
     @Override
@@ -260,7 +253,6 @@ public class SubViewPickerController
         if (!mContinuousMode) {
             this.close();
         }
-
     }
 
     @Override
@@ -309,7 +301,6 @@ public class SubViewPickerController
         if (mPickerStateMachine != null) {
             mPickerStateMachine.setState(PickerStateMachine.ACTIVE);
         }
-
     }
 
     @Override

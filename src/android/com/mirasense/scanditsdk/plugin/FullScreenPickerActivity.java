@@ -50,8 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * FullScreenPickerController
  *
  */
-public class FullScreenPickerActivity
-        extends Activity
+public class FullScreenPickerActivity extends Activity
         implements OnScanListener, BarcodePickerWithSearchBar.SearchBarListener,
         ProcessFrameListener, TextRecognitionListener, PickerStateMachine.Callback {
     
@@ -81,7 +80,6 @@ public class FullScreenPickerActivity
 
     public static void applyScanSettings(ScanSettings scanSettings) {
         if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
-
         sActiveActivity.mPickerStateMachine.applyScanSettings(scanSettings);
     }
 
@@ -119,7 +117,6 @@ public class FullScreenPickerActivity
             sActiveActivity.didCancel();
         }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

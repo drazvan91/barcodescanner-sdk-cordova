@@ -130,9 +130,9 @@ public class PhonegapParamParser {
         }
 
         BarcodePickerWithSearchBar.Constraints portraitConstraints =
-        new BarcodePickerWithSearchBar.Constraints(portraitMargins);
+                new BarcodePickerWithSearchBar.Constraints(portraitMargins);
         BarcodePickerWithSearchBar.Constraints landscapeConstraints =
-        new BarcodePickerWithSearchBar.Constraints(landscapeMargins);
+                new BarcodePickerWithSearchBar.Constraints(landscapeMargins);
         picker.adjustSize(activity, portraitConstraints, landscapeConstraints, animationDuration);
     }
 
@@ -190,8 +190,7 @@ public class PhonegapParamParser {
     public static boolean shouldRunInContinuousMode(Bundle options) {
         return options != null &&
                 options.containsKey(PhonegapParamParser.paramContinuousMode) &&
-                options.getBoolean(PhonegapParamParser.paramContinuousMode)
-                ;
+                options.getBoolean(PhonegapParamParser.paramContinuousMode);
     }
 
     public static boolean shouldStartInPausedState(Bundle options) {

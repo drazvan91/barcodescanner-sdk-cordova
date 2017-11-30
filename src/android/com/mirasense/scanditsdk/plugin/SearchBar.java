@@ -90,6 +90,7 @@ public class SearchBar extends RelativeLayout {
 	public String getText() {
 		return mSearchEditText.getText().toString();
 	}
+
     public void clear() {
         mSearchEditText.setText("");
     }

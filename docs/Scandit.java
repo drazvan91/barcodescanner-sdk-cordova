@@ -434,6 +434,15 @@ public class Scandit {
          * callback is the new state (see {@link BarcodePicker.State} for possible values).
          */
         public function didChangeState;
+
+        /**
+         * @brief Callback to be invoked whenever the state of the barcode picker changes, e.g.
+         * when the torch is turned on.
+         *
+         * The callback receives the name of the changed property as the first argument and the new
+         * state of that property as its second argument.
+         */
+        public function didChangeProperty;
     }
 
     /**
@@ -517,7 +526,8 @@ public class Scandit {
          *    argument.
          */
         public void show(function didScan, function didManualSearch=null, function didCancel=null,
-                         function didRecognizeText=null, function didRecognizeNewCodes=null);
+                         function didRecognizeText=null, function didRecognizeNewCodes=null,
+                         function didChangeProperty=null);
 
         /**
          * Visibly shows the picker to the user. This should be called after the picker has been

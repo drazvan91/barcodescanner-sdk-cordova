@@ -54,6 +54,7 @@ BarcodePicker.prototype.show = function () {
         callbacks.didCancel = arguments.length > 2 && arguments[2] || null;
         callbacks.didRecognizeText = arguments.length > 3 && arguments[3] || null;
         callbacks.didRecognizeNewCodes = arguments.length > 4 && arguments[4] || null;
+        callbacks.didChangeProperty = arguments.length > 5 && arguments[5] || null;
     } else {
         // new method signature: BarcodePicker.show({ didScan : function() });
         callbacks = arguments[0];
@@ -176,6 +177,10 @@ BarcodePicker.prototype.show = function () {
                 throw exceptionRaisedDuringDidRecognizeNewCodes;
             }
             return;
+        } else if (event == 'didChangeProperty') {
+            if (callbacks.didChangeProperty) {
+                callbacks.didChangeProperty(args[1].name, args[1].newState)
+            }
         }
     }, callbacks.didCancel, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);
 
@@ -300,6 +305,12 @@ BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDura
         landscapeConstraints.bottomMargin = landscape.bottom;
 	}
     this.setConstraints(portraitConstraints, landscapeConstraints, animationDuration);
+}
+
+BarcodePicker.prototype.setPropertyChangeListener = function(listener) {
+	if (this.isShown) {
+    	cordova.exec(null, null, "ScanditSDK", "propertyChangeListener", [listener]);
+    }
 }
 
 module.exports = BarcodePicker;

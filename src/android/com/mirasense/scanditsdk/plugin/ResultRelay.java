@@ -39,7 +39,36 @@ public class ResultRelay {
         }
         return 0;
     }
-    
+
+    public static JSONObject jsonForPropertyChange(int propertyName, int newState) {
+        String name;
+        switch (propertyName) {
+            case 0:
+                name = "torchOn";
+                break;
+            case 1:
+                name = "switchCamera";
+                break;
+            case 2:
+                name = "recognitionMode";
+                break;
+            case 3:
+                name = "relativeZoom";
+                break;
+            default:
+                name = "";
+                break;
+        }
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", name);
+            json.put("newState", newState);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     public static JSONObject jsonForSession(ScanSession session) {
         JSONObject json = new JSONObject();
         try {
@@ -78,7 +107,7 @@ public class ResultRelay {
                     JSONArray bytes = new JSONArray();
                     byte[] rawData = code.getRawData();
                     for (byte theByte : rawData) {
-                        bytes.put((int)theByte);
+                        bytes.put((int) theByte);
                     }
                     object.put("rawData", bytes);
                 }
@@ -99,7 +128,7 @@ public class ResultRelay {
         }
         return json;
     }
-    
+
     public interface Callback {
         int onRelayedResult(Bundle bundle);
     }

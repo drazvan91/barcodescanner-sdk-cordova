@@ -26,6 +26,7 @@ import android.view.WindowManager;
 
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ProcessFrameListener;
+import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ocr.RecognizedText;
@@ -48,12 +49,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Activity implementing the full-screen picker support. This activity is launched by the
  * FullScreenPickerController
- *
  */
-public class FullScreenPickerActivity extends Activity
-        implements OnScanListener, BarcodePickerWithSearchBar.SearchBarListener,
-        ProcessFrameListener, TextRecognitionListener, PickerStateMachine.Callback {
-    
+public class FullScreenPickerActivity extends Activity implements OnScanListener,
+        BarcodePickerWithSearchBar.SearchBarListener, ProcessFrameListener, TextRecognitionListener,
+        PickerStateMachine.Callback, PropertyChangeListener {
+
     public static final int CANCEL = 0;
     public static final int SCAN = 1;
     public static final int MANUAL = 2;
@@ -140,7 +140,7 @@ public class FullScreenPickerActivity extends Activity
 
         initializeAndStartBarcodeRecognition(settings, options, overlayOptions);
     }
-    
+
     @SuppressWarnings("deprecation")
     private void initializeAndStartBarcodeRecognition(
             JSONObject settings, Bundle options, Bundle overlayOptions) {
@@ -165,6 +165,7 @@ public class FullScreenPickerActivity extends Activity
         picker.setOnScanListener(this);
         picker.setProcessFrameListener(this);
         picker.setTextRecognitionListener(this);
+        picker.setPropertyChangeListener(this);
 
         this.setContentView(picker);
         mPickerStateMachine = new PickerStateMachine(picker, scanSettings, this);
@@ -185,7 +186,7 @@ public class FullScreenPickerActivity extends Activity
         mStateBeforeSuspend = PhonegapParamParser.shouldStartInPausedState(options)
                 ? PickerStateMachine.PAUSED : PickerStateMachine.ACTIVE;
     }
-    
+
     @Override
     protected void onPause() {
         sActiveActivity = null;
@@ -196,7 +197,7 @@ public class FullScreenPickerActivity extends Activity
         mPickerStateMachine.setState(PickerStateMachine.STOPPED);
         super.onPause();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -296,7 +297,7 @@ public class FullScreenPickerActivity extends Activity
         bundle.putString("jsonString", eventArgs.toString());
         return bundle;
     }
-    
+
     @Override
     public void didEnter(String entry) {
         if (!mContinuousMode) {
@@ -362,7 +363,7 @@ public class FullScreenPickerActivity extends Activity
         bundle.putString("jsonString", eventArgs.toString());
         return bundle;
     }
-    
+
     @Override
     public void onBackPressed() {
         sPendingClose.set(true);
@@ -381,5 +382,17 @@ public class FullScreenPickerActivity extends Activity
     @Override
     public void pickerSwitchedMatrixScanState(BarcodePickerWithSearchBar picker, boolean matrixScan) {
         mLastFrameTrackedCodeIds.clear();
+    }
+
+    @Override
+    public void onPropertyChange(int name, int newState) {
+        ResultRelay.relayResult(bundleForPropertyChange(name, newState));
+    }
+
+    private Bundle bundleForPropertyChange(int name, int newState) {
+        Bundle bundle = new Bundle();
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_PROPERTY,
+                ResultRelay.jsonForPropertyChange(name, newState));
+        bundle.putString("jsonString", args.toString());
     }
 }

@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ProcessFrameListener;
+import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ocr.RecognizedText;
@@ -52,10 +53,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Controls a subview picker, e.g. a picker shown in the actual plugin activity, displayed on
  * top of the webview.
  */
-public class SubViewPickerController
-        extends PickerControllerBase
-        implements BarcodePickerWithSearchBar.SearchBarListener, OnScanListener,
-        ProcessFrameListener, PickerStateMachine.Callback, TextRecognitionListener {
+public class SubViewPickerController extends PickerControllerBase implements
+        BarcodePickerWithSearchBar.SearchBarListener, OnScanListener, ProcessFrameListener,
+        PickerStateMachine.Callback, TextRecognitionListener, PropertyChangeListener {
 
     private RelativeLayout mLayout;
 
@@ -96,12 +96,11 @@ public class SubViewPickerController
                      boolean legacyMode) {
         mPendingClose.set(false);
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
-        mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin,
-                                                                  null);
+        mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin, null);
         mCloseWhenDidScanCallbackFinishes = false;
         mOrientationHandler.start(true);
         final Activity pluginActivity = mPlugin.cordova.getActivity();
-        DisplayMetrics display =  pluginActivity.getApplicationContext().getResources().getDisplayMetrics();
+        DisplayMetrics display = pluginActivity.getApplicationContext().getResources().getDisplayMetrics();
         int width = (int) (display.widthPixels * 160.f / display.densityDpi);
         int height = (int) (display.heightPixels * 160.f / display.densityDpi);
         mScreenDimensions = new Point(Math.min(width, height), Math.max(width, height));
@@ -125,6 +124,7 @@ public class SubViewPickerController
                 picker.setOnScanListener(SubViewPickerController.this);
                 picker.setProcessFrameListener(SubViewPickerController.this);
                 picker.setTextRecognitionListener(SubViewPickerController.this);
+                picker.setPropertyChangeListener(SubViewPickerController.this);
                 mPickerStateMachine = new PickerStateMachine(
                         picker, scanSettings, SubViewPickerController.this);
                 mOrientationHandler.setScreenDimensions(mScreenDimensions);
@@ -135,8 +135,7 @@ public class SubViewPickerController
                 // Create the layout to add the picker to and add it on top of the web view.
                 mLayout = new RelativeLayout(pluginActivity);
                 ViewGroup viewGroup = getPickerParent();
-                if (viewGroup == null)
-                    return; // couldn't determine view group, nothing to be done.
+                if (viewGroup == null) return; // couldn't determine view group, nothing to be done.
                 viewGroup.addView(mLayout);
                 RelativeLayout.LayoutParams rLayoutParams =
                         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -339,13 +338,13 @@ public class SubViewPickerController
     private ViewGroup getPickerParent() {
         CordovaWebView webView = mPlugin.webView;
         if (webView instanceof WebView) {
-            return (ViewGroup)webView;
+            return (ViewGroup) webView;
         } else {
             try {
                 java.lang.reflect.Method getViewMethod = webView.getClass().getMethod("getView");
                 Object viewObject = getViewMethod.invoke(webView);
                 if (viewObject instanceof View) {
-                    View view = (View)viewObject;
+                    View view = (View) viewObject;
                     ViewParent parentView = view.getParent();
                     if (parentView instanceof ViewGroup) {
                         return (ViewGroup) parentView;
@@ -457,5 +456,13 @@ public class SubViewPickerController
     @Override
     public void pickerSwitchedMatrixScanState(BarcodePickerWithSearchBar picker, boolean matrixScan) {
         mLastFrameTrackedCodeIds.clear();
+    }
+
+    @Override
+    public void onPropertyChange(int name, int newState) {
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_PROPERTY,
+                ResultRelay.jsonForPropertyChange(name, newState));
+        PluginResult result = Marshal.createOkResult(args);
+        mCallbackContext.sendPluginResult(result);
     }
 }

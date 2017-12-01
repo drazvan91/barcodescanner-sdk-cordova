@@ -82,7 +82,6 @@ class PickerStateMachine {
             case STOPPED:
                 transitionToStoppedState();
                 break;
-
         }
         Callback cb = mCallback.get();
         if (cb != null) {

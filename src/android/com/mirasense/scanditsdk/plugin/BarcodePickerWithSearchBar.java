@@ -44,7 +44,6 @@ public class BarcodePickerWithSearchBar extends BarcodePicker {
 
     public BarcodePickerWithSearchBar(Context context, ScanSettings settings) {
         super(context, settings);
-
     }
 
     public void adjustSize(Activity activity, Constraints newPortraitConstraints,

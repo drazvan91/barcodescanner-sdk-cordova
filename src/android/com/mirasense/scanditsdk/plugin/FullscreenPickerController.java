@@ -119,7 +119,6 @@ class FullscreenPickerController extends PickerControllerBase implements ResultR
         }
         mCallbackContext.sendPluginResult(resultForBundle(bundle));
         return 0;
-
     }
 
     PluginResult createOkResult(JSONArray args) {

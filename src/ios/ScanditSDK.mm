@@ -25,7 +25,7 @@
 @end
 
 @interface ScanditSDK () <SBSScanDelegate, SBSOverlayControllerDidCancelDelegate, ScanditSDKSearchBarDelegate,
-SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
+SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBSPropertyObserver>
 
 @property (nonatomic, copy) NSString *callbackId;
 @property (readwrite, assign) BOOL hasPendingOperation;
@@ -147,6 +147,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
             // Set this class as the delegate for the overlay controller. It will now receive events when
             // a barcode was successfully scanned, manually entered or the cancel button was pressed.
             self.picker.scanDelegate = self;
+            [self.picker addPropertyObserver:self];
             self.picker.processFrameDelegate = self;
             if ([self.picker respondsToSelector:@selector(setTextRecognitionDelegate:)]) {
                 self.picker.textRecognitionDelegate = self;
@@ -591,4 +592,13 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate>
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 }
 
+#pragma mark - SBSPropertyObserver
+
+- (void)barcodePicker:(SBSBarcodePicker *)barcodePicker property:(NSString *)property changedToValue:(NSObject *)value {
+    auto dictionary = @{@"name": property, @"newState": value};
+    auto pluginResult = [self createResultForEvent:@"didChangeProperty" value:dictionary];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+}
+
 @end
+

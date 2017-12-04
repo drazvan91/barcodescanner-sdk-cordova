@@ -45,6 +45,12 @@ BarcodePicker.State = {
     ACTIVE : 3
 };
 
+BarcodePicker.TorchMode = {
+    NONE : 0,
+    ON : 1,
+    OFF : 2
+};
+
 BarcodePicker.prototype.show = function () {
     var callbacks = {};
     if (typeof arguments[0] === 'function' || arguments.length !== 1) {

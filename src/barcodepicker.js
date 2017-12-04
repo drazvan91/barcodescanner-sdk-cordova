@@ -307,10 +307,4 @@ BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDura
     this.setConstraints(portraitConstraints, landscapeConstraints, animationDuration);
 }
 
-BarcodePicker.prototype.setPropertyChangeListener = function(listener) {
-	if (this.isShown) {
-    	cordova.exec(null, null, "ScanditSDK", "propertyChangeListener", [listener]);
-    }
-}
-
 module.exports = BarcodePicker;

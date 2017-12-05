@@ -394,5 +394,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_PROPERTY,
                 ResultRelay.jsonForPropertyChange(name, newState));
         bundle.putString("jsonString", args.toString());
+        bundle.putBoolean("waitForResult", false);
+        return bundle;
     }
 }

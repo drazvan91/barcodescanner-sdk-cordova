@@ -26,6 +26,7 @@ import android.view.WindowManager;
 
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ProcessFrameListener;
+import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ocr.RecognizedText;
@@ -48,13 +49,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Activity implementing the full-screen picker support. This activity is launched by the
  * FullScreenPickerController
- *
  */
-public class FullScreenPickerActivity
-        extends Activity
-        implements OnScanListener, BarcodePickerWithSearchBar.SearchBarListener,
-        ProcessFrameListener, TextRecognitionListener, PickerStateMachine.Callback {
-    
+public class FullScreenPickerActivity extends Activity implements OnScanListener,
+        BarcodePickerWithSearchBar.SearchBarListener, ProcessFrameListener, TextRecognitionListener,
+        PickerStateMachine.Callback, PropertyChangeListener {
+
     public static final int CANCEL = 0;
     public static final int SCAN = 1;
     public static final int MANUAL = 2;
@@ -81,7 +80,6 @@ public class FullScreenPickerActivity
 
     public static void applyScanSettings(ScanSettings scanSettings) {
         if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
-
         sActiveActivity.mPickerStateMachine.applyScanSettings(scanSettings);
     }
 
@@ -120,7 +118,6 @@ public class FullScreenPickerActivity
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +140,7 @@ public class FullScreenPickerActivity
 
         initializeAndStartBarcodeRecognition(settings, options, overlayOptions);
     }
-    
+
     @SuppressWarnings("deprecation")
     private void initializeAndStartBarcodeRecognition(
             JSONObject settings, Bundle options, Bundle overlayOptions) {
@@ -168,6 +165,7 @@ public class FullScreenPickerActivity
         picker.setOnScanListener(this);
         picker.setProcessFrameListener(this);
         picker.setTextRecognitionListener(this);
+        picker.setPropertyChangeListener(this);
 
         this.setContentView(picker);
         mPickerStateMachine = new PickerStateMachine(picker, scanSettings, this);
@@ -188,7 +186,7 @@ public class FullScreenPickerActivity
         mStateBeforeSuspend = PhonegapParamParser.shouldStartInPausedState(options)
                 ? PickerStateMachine.PAUSED : PickerStateMachine.ACTIVE;
     }
-    
+
     @Override
     protected void onPause() {
         sActiveActivity = null;
@@ -199,7 +197,7 @@ public class FullScreenPickerActivity
         mPickerStateMachine.setState(PickerStateMachine.STOPPED);
         super.onPause();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -299,7 +297,7 @@ public class FullScreenPickerActivity
         bundle.putString("jsonString", eventArgs.toString());
         return bundle;
     }
-    
+
     @Override
     public void didEnter(String entry) {
         if (!mContinuousMode) {
@@ -365,7 +363,7 @@ public class FullScreenPickerActivity
         bundle.putString("jsonString", eventArgs.toString());
         return bundle;
     }
-    
+
     @Override
     public void onBackPressed() {
         sPendingClose.set(true);
@@ -384,5 +382,19 @@ public class FullScreenPickerActivity
     @Override
     public void pickerSwitchedMatrixScanState(BarcodePickerWithSearchBar picker, boolean matrixScan) {
         mLastFrameTrackedCodeIds.clear();
+    }
+
+    @Override
+    public void onPropertyChange(int name, int newState) {
+        ResultRelay.relayResult(bundleForPropertyChange(name, newState));
+    }
+
+    private Bundle bundleForPropertyChange(int name, int newState) {
+        Bundle bundle = new Bundle();
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_PROPERTY,
+                ResultRelay.jsonForPropertyChange(name, newState));
+        bundle.putString("jsonString", args.toString());
+        bundle.putBoolean("waitForResult", false);
+        return bundle;
     }
 }

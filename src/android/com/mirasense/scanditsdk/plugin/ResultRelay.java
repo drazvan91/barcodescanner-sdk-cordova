@@ -14,6 +14,7 @@ package com.mirasense.scanditsdk.plugin;
 
 import android.os.Bundle;
 
+import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.recognition.Barcode;
@@ -39,7 +40,36 @@ public class ResultRelay {
         }
         return 0;
     }
-    
+
+    public static JSONObject jsonForPropertyChange(int propertyName, int newState) {
+        String name;
+        switch (propertyName) {
+            case PropertyChangeListener.TORCH:
+                name = "torchOn";
+                break;
+            case PropertyChangeListener.SWITCH_CAMERA:
+                name = "switchCamera";
+                break;
+            case PropertyChangeListener.RECOGNITION_MODE:
+                name = "recognitionMode";
+                break;
+            case PropertyChangeListener.RELATIVE_ZOOM:
+                name = "relativeZoom";
+                break;
+            default:
+                name = "";
+                break;
+        }
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", name);
+            json.put("newState", newState);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     public static JSONObject jsonForSession(ScanSession session) {
         JSONObject json = new JSONObject();
         try {
@@ -78,7 +108,7 @@ public class ResultRelay {
                     JSONArray bytes = new JSONArray();
                     byte[] rawData = code.getRawData();
                     for (byte theByte : rawData) {
-                        bytes.put((int)theByte);
+                        bytes.put((int) theByte);
                     }
                     object.put("rawData", bytes);
                 }
@@ -99,7 +129,7 @@ public class ResultRelay {
         }
         return json;
     }
-    
+
     public interface Callback {
         int onRelayedResult(Bundle bundle);
     }

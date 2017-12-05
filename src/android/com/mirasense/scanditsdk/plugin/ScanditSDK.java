@@ -15,18 +15,15 @@ package com.mirasense.scanditsdk.plugin;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.util.Log;
 
 import com.scandit.barcodepicker.ScanSettings;
 import com.scandit.barcodepicker.ScanditLicense;
 import com.scandit.barcodepicker.internal.ScanditSDKGlobals;
-
 import com.scandit.base.util.JSONParseException;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +39,7 @@ public class ScanditSDK extends CordovaPlugin {
     public static final String DID_RECOGNIZE_TEXT_EVENT = "didRecognizeText";
     public static final String DID_CHANGE_STATE_EVENT = "didChangeState";
     public static final String DID_RECOGNIZE_NEW_CODES = "didRecognizeNewCodes";
+    public static final String DID_CHANGE_PROPERTY = "didChangeProperty";
 
 
     private static final String INIT_LICENSE_COMMAND = "initLicense";
@@ -162,8 +160,7 @@ public class ScanditSDK extends CordovaPlugin {
     }
 
     public void onRequestPermissionResult(int requestCode, String[] permissions,
-                                          int[] grantResults) throws JSONException
-    {
+                                          int[] grantResults) throws JSONException {
         if (requestCode != REQUEST_CAMERA_PERMISSION) {
             return;
         }
@@ -171,11 +168,10 @@ public class ScanditSDK extends CordovaPlugin {
         // execute all the queued commands and clear.
         for (Command queuedCommand : mQueuedCommands) {
             this.executeCommand(queuedCommand.action, queuedCommand.args,
-                                queuedCommand.callbackContext, true);
+                    queuedCommand.callbackContext, true);
         }
         mQueuedCommands.clear();
     }
-
 
     private void show(JSONArray data) {
         if (data.length() > 2) {
@@ -202,10 +198,9 @@ public class ScanditSDK extends CordovaPlugin {
             public void run() {
                 boolean showPickerAsSubView =
                         options.containsKey(PhonegapParamParser.paramPortraitMargins) ||
-                        options.containsKey(PhonegapParamParser.paramLandscapeMargins) ||
-                        options.containsKey(PhonegapParamParser.paramPortraitConstraints) ||
-                        options.containsKey(PhonegapParamParser.paramLandscapeConstraints)
-                ;
+                                options.containsKey(PhonegapParamParser.paramLandscapeMargins) ||
+                                options.containsKey(PhonegapParamParser.paramPortraitConstraints) ||
+                                options.containsKey(PhonegapParamParser.paramLandscapeConstraints);
                 if (showPickerAsSubView) {
                     mPickerController = new SubViewPickerController(ScanditSDK.this, mCallbackContext);
                 } else {
@@ -213,11 +208,10 @@ public class ScanditSDK extends CordovaPlugin {
                 }
 
                 mPickerController.show(settings, options, overlayOptions, legacyMode);
-
             }
         });
     }
-    
+
     private void applySettings(JSONArray data) {
         if (data.length() < 1) {
             Log.e("ScanditSDK", "The applySettings call received too few arguments and has to return without starting.");
@@ -225,7 +219,7 @@ public class ScanditSDK extends CordovaPlugin {
         }
         try {
             final JSONObject settings = data.getJSONObject(0);
-            
+
             mWorker.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
@@ -248,7 +242,7 @@ public class ScanditSDK extends CordovaPlugin {
             e.printStackTrace();
         }
     }
-    
+
     private void updateOverlay(final JSONArray data) {
         if (data.length() < 1) {
             Log.e("ScanditSDK", "The updateOverlay call received too few arguments and has to return without starting.");
@@ -270,7 +264,7 @@ public class ScanditSDK extends CordovaPlugin {
             }
         });
     }
-    
+
     private void cancel(JSONArray data) {
         mWorker.getHandler().post(new Runnable() {
             @Override
@@ -280,7 +274,7 @@ public class ScanditSDK extends CordovaPlugin {
             }
         });
     }
-    
+
     private void startScanning() {
         mWorker.getHandler().post(new Runnable() {
             @Override
@@ -321,7 +315,7 @@ public class ScanditSDK extends CordovaPlugin {
             }
         });
     }
-    
+
     private void torch(final JSONArray data) {
         if (data.length() < 1) {
             Log.e("ScanditSDK", "The torch call received too few arguments and has to return without starting.");
@@ -340,7 +334,7 @@ public class ScanditSDK extends CordovaPlugin {
             }
         });
     }
-    
+
     private void finishDidScanCallback(final JSONArray data) {
         mPickerController.finishDidScanCallback(data);
     }
@@ -368,7 +362,7 @@ public class ScanditSDK extends CordovaPlugin {
                     bundle.putString(key.toLowerCase(), (String) obj);
                 } else if (obj instanceof JSONArray) {
                     ArrayList<Object> list = new ArrayList<Object>();
-                    JSONArray array = (JSONArray)obj;
+                    JSONArray array = (JSONArray) obj;
                     for (int i = 0; i < array.length(); i++) {
                         try {
                             Object item = array.get(i);
@@ -384,19 +378,17 @@ public class ScanditSDK extends CordovaPlugin {
                     bundle.putSerializable(key.toLowerCase(), list);
                 } else if (obj instanceof JSONObject) {
                     Bundle dictionary = new Bundle();
-                    setOptionsOnBundle((JSONObject)obj, dictionary);
+                    setOptionsOnBundle((JSONObject) obj, dictionary);
                     bundle.putBundle(key.toLowerCase(), dictionary);
                 }
             }
         }
     }
-    
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mPickerController == null)
-            return;
+        if (mPickerController == null) return;
         mPickerController.onActivityResult(requestCode, resultCode, data);
-
     }
 
     @Override
@@ -409,10 +401,7 @@ public class ScanditSDK extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-
         if (mPickerController == null) return;
         mPickerController.onActivityResume();
     }
-
-
 }

@@ -134,7 +134,6 @@ class PickerStateMachine {
             } else {
                 mPicker.resumeScanning();
             }
-
         }
     }
 

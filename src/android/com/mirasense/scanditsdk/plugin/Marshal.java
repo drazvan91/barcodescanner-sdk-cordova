@@ -96,5 +96,4 @@ public class Marshal {
             recognizedText.setRejected(true);
         }
     }
-
 }

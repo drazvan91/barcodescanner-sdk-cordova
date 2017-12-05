@@ -48,7 +48,8 @@ BarcodePicker.State = {
 BarcodePicker.TorchMode = {
     NONE : 0,
     ON : 1,
-    OFF : 2
+    OFF : 2,
+    TORCH_ALTERNATING : 3
 };
 
 BarcodePicker.prototype.show = function () {
@@ -274,12 +275,12 @@ BarcodePicker.prototype.setConstraints = function(portrait, landscape, animation
 	if (portrait == null) {
 		this.portraitConstraints = new Constraints();
 	} else {
-		this.portraitConstraints = portrait
+		this.portraitConstraints = portrait;
 	}
 	if (landscape == null) {
 		this.landscapeConstraints = new Constraints();
 	} else {
-		this.landscapeConstraints = landscape
+		this.landscapeConstraints = landscape;
 	}
 	if (this.isShown) {
 		var duration = 0;
@@ -297,7 +298,7 @@ BarcodePicker.prototype.setMargins = function(portrait, landscape, animationDura
     var landscapeConstraints = null;
 
     if (portrait != null) {
-		portraitConstraints = new Constraints()
+		portraitConstraints = new Constraints();
         portraitConstraints.leftMargin = portrait.left;
         portraitConstraints.topMargin = portrait.top;
         portraitConstraints.rightMargin = portrait.right;

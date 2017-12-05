@@ -14,6 +14,7 @@ package com.mirasense.scanditsdk.plugin;
 
 import android.os.Bundle;
 
+import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.recognition.Barcode;
@@ -43,16 +44,16 @@ public class ResultRelay {
     public static JSONObject jsonForPropertyChange(int propertyName, int newState) {
         String name;
         switch (propertyName) {
-            case 0:
+            case PropertyChangeListener.TORCH:
                 name = "torchOn";
                 break;
-            case 1:
+            case PropertyChangeListener.SWITCH_CAMERA:
                 name = "switchCamera";
                 break;
-            case 2:
+            case PropertyChangeListener.RECOGNITION_MODE:
                 name = "recognitionMode";
                 break;
-            case 3:
+            case PropertyChangeListener.RELATIVE_ZOOM:
                 name = "relativeZoom";
                 break;
             default:

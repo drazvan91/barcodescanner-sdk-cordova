@@ -10,6 +10,7 @@ export class Scanner {
   public event: {
     scan: string,
     stateChange: string,
+    didChangeProperty: string,
   };
 
   public state;
@@ -26,6 +27,7 @@ export class Scanner {
     this.event = {
       scan: 'scanner:scan',
       stateChange: 'scanner:stateChange',
+      didChangeProperty: 'scanner:didChangeProperty',
     };
 
     this.events.subscribe(this.settings.event.settingsChanged, (newScanSettings: ScanSettings, newUiSettings: UiSettings) => {
@@ -133,13 +135,13 @@ export class Scanner {
       didScan: this.onScan.bind(this),
       didRecognizeText: this.onScan.bind(this),
       didChangeState: this.onStateChange.bind(this),
+      didChangeProperty: this.onDidChangeProperty.bind(this),
       didCancel: this.onCancel.bind(this),
       didManualSearch: this.onManualInput.bind(this),
     });
   }
 
   private applyScanSettings(newScanSettings: ScanSettings): void {
-    console.log('applying scan settings', newScanSettings);
     this.picker.applyScanSettings(newScanSettings);
   }
 
@@ -195,9 +197,26 @@ export class Scanner {
     this.changeState(state);
   }
 
+  private onDidChangeProperty(property, newValue): void {
+    this.didChangeProperty(property, newValue);
+  }
+
   private changeState(state): void {
     this.state = state;
     this.events.publish(this.event.stateChange, state);
+  }
+
+  private didChangeProperty(property, newValue): void {
+    if (property === 'recognitionMode') {
+      if (newValue === 1 || newValue === Scandit.ScanSettings.RecognitionMode.TEXT) {
+        this.settings.setRecognitionMode(Scandit.ScanSettings.RecognitionMode.TEXT);
+        this.settings.setViewfinderSize({ width: 0.9, height: 0.1 }, { width: 0.6, height: 0.2 });
+      } else if (newValue === 2 || newValue === Scandit.ScanSettings.RecognitionMode.CODE) {
+        this.settings.setRecognitionMode(Scandit.ScanSettings.RecognitionMode.CODE);
+        this.settings.setViewfinderSize({ width: 0.9, height: 0.2 }, { width: 0.6, height: 0.4 });
+      }
+      this.events.publish(this.event.didChangeProperty, property, newValue);
+    }
   }
 
   private applyConstraints(animationDuration: number = 0): void {

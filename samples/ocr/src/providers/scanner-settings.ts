@@ -25,7 +25,7 @@ export class ScannerSettings {
     };
 
     this.scanningModeRegex[this.Enums.ScanningMode[this.Enums.ScanningMode.iban]] =
-      '([A-Z]{2}[A-Z0-9]{2}\\s([A-Z0-9]{4}\\s){4,}([A-Z0-9]{1,4}))';
+      '([A-Z]{2}[0-9]{2}\\s([0-9]{4}\\s){4}([A-Z0-9]{1}))';
     this.scanningModeRegex[this.Enums.ScanningMode[this.Enums.ScanningMode.gs1]] =
       '((\\(01\\)[0-9]{13,14})(\\s*(\\(10\\)[0-9a-zA-Z]{1,20})|(\\(11\\)[0-9]{6})|(\\(17\\)[0-9]{6})|(\\(21\\)[0-9a-zA-Z]{1,20}))+)';
     this.scanningModeRegex[this.Enums.ScanningMode[this.Enums.ScanningMode.price]] =
@@ -57,6 +57,20 @@ export class ScannerSettings {
     this.emitSettingsChanged();
   }
 
+  public setViewfinderSize(
+    portrait: { width: number, height: number },
+    landscape: { width: number, height: number }
+  ): void {
+    this.uiSettings.viewfinder.portrait = portrait;
+    this.uiSettings.viewfinder.landscape = landscape;
+    this.updateUiSettings(this.uiSettings);
+  }
+
+  public setRecognitionMode(recognitionMode): void {
+    this.settings.recognitionMode = recognitionMode;
+    this.updateScanSettings(this.settings);
+  }
+
   public setScanningMode(newScanningMode): void {
     console.log(newScanningMode);
     this.scanningMode = newScanningMode;
@@ -67,10 +81,20 @@ export class ScannerSettings {
     this.updateScanSettings(this.settings);
   }
 
+
   private getDefaultScanSettings(): ScanSettings {
     let settings = new Scandit.ScanSettings();
     settings.recognitionMode = Scandit.ScanSettings.RecognitionMode.TEXT;
-    settings.textRecognition = {}; // new Scandit.TextRecognitionSettings()
+
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN13);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.EAN8);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPCA);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.DATA_MATRIX);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.QR);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.CODE39);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.CODE128);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.ITF);
+    settings.setSymbologyEnabled(Scandit.Barcode.Symbology.UPCE);
 
     settings.activeScanningAreaPortrait = new Scandit.Rect(0, 0.4, 0.9, 0.1); // default active scanning area
     settings.scanningHotSpot = new Scandit.Point(
@@ -81,12 +105,10 @@ export class ScannerSettings {
     settings.activeScanningAreaLandscape = settings.activeScanningAreaPortrait;
     console.log(settings.scanningHotSpot, settings.activeScanningAreaPortrait, settings.activeScanningAreaLandscape);
 
+    settings.textRecognition = new Scandit.TextRecognitionSettings();
     settings.textRecognition.areaPortrait = settings.activeScanningAreaPortrait;
     settings.textRecognition.areaLandscape = settings.activeScanningAreaLandscape;
-
     settings.textRecognition.regex = this.scanningModeRegex[this.Enums.ScanningMode[this.scanningMode]];
-
-    console.log(settings.textRecognition);
 
     return settings;
   }
@@ -100,8 +122,8 @@ export class ScannerSettings {
           height: 0.1,
         },
         landscape: {
-          width: 0.9,
-          height: 0.1,
+          width: 0.6,
+          height: 0.2,
         },
       },
       searchBar: false,
@@ -117,7 +139,7 @@ export class ScannerSettings {
         }
       },
       textRecognitionSwitch: {
-        visible: false,
+        visible: true,
       },
       cameraSwitch: {
         visibility: this.Enums.CameraSwitchVisibility.never,

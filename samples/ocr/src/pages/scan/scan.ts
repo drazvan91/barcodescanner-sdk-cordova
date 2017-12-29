@@ -19,6 +19,7 @@ export class ScanPage {
 
   private onScanHandler: Function;
   private onStateChangeHandler: Function;
+  private onPropertyChangeHandler: Function;
 
   constructor(
     private ngZone: NgZone,
@@ -35,15 +36,24 @@ export class ScanPage {
     this.onStateChangeHandler = (state) => {
       this.handleStateChange(state);
     }
+
+    this.onPropertyChangeHandler = (property, newValue) => {
+      this.handlePropertyChange(property, newValue);
+    }
   }
 
   public get scanResult(): string {
-    let scanResult = this.scanSession && JSON.stringify(this.scanSession.text.trim() || this.scanSession.newlyRecognizedCodes);
-    const isRejected = this.scanSession && this.scanSession.rejected;
     const noScansText = 'nothing recognized yet';
-    const rejectedText = 'rejected';
-    const result = isRejected ? `${rejectedText} (${scanResult})` : scanResult;
-    return this.scanSession ? result : noScansText;
+    if (this.scanSession && this.scanSession.text) {
+      let scanResult = this.scanSession.text.trim();
+      const isRejected = this.scanSession.rejected;
+      return isRejected ? `rejected (${scanResult})` : scanResult;
+    } else if (this.scanSession && this.scanSession.newlyRecognizedCodes) {
+      const barcodes = this.scanSession.newlyRecognizedCodes.map(barcode => barcode.data);
+      return barcodes.join(', ');
+    } else {
+      return noScansText;
+    }
   }
 
   public ionViewWillEnter(): void {
@@ -69,16 +79,19 @@ export class ScanPage {
   private subscribe(): void {
     this.events.subscribe(this.scanner.event.scan, this.onScanHandler);
     this.events.subscribe(this.scanner.event.stateChange, this.onStateChangeHandler);
+    this.events.subscribe(this.scanner.event.didChangeProperty, this.onPropertyChangeHandler);
   }
 
   private unsubscribe(): void {
     this.events.unsubscribe(this.scanner.event.scan, this.onScanHandler);
     this.events.unsubscribe(this.scanner.event.stateChange, this.onStateChangeHandler);
+    this.events.unsubscribe(this.scanner.event.didChangeProperty, this.onPropertyChangeHandler);
   }
 
   private startScanner(): void {
     this.setScannerConstraints();
     this.scanner.start();
+    this.scanner.resume();
     this.scanSession = undefined;
   }
 
@@ -111,5 +124,9 @@ export class ScanPage {
 
   private handleStateChange(state): void {
     console.log(this.Enums.ScannerState[state]);
+  }
+
+  private handlePropertyChange(property, newValue): void {
+    console.log(property, newValue);
   }
 }

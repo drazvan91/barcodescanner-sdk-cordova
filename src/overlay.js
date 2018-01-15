@@ -2,6 +2,7 @@
 function ScanOverlay() {
     this.pickerIsShown = false;
     this.properties = {};
+    this.matrixScanHighlightingColor = {};
 }
 
 ScanOverlay.CameraSwitchVisibility = {
@@ -18,6 +19,12 @@ ScanOverlay.GuiStyle = {
     MATRIX_SCAN: 3,
 	LOCATIONSONLY: 4,
     LOCATIONS_ONLY: 4
+}
+
+ScanOverlay.MatrixScanState = {
+    LOCALIZED: 0,
+    RECOGNIZED: 1,
+    REJECTED: 2
 }
 
 ScanOverlay.prototype.setGuiStyle = function(guiStyle) {
@@ -150,5 +157,9 @@ ScanOverlay.prototype.updateOverlayIfExists = function() {
     }
 }
 
+ScanOverlay.prototype.setMatrixScanHighlightingColor = function(hexCode, state) {
+    this.matrixScanHighlightingColor[state] = hexCode;
+    this.updateOverlayIfExists();
+}
 
 module.exports = ScanOverlay;

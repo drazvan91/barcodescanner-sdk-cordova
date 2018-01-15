@@ -306,16 +306,13 @@
 
     NSObject *matrixScanHighlightingColor = [options objectForKey:[self paramMatrixScanHighlightingColor]];
     if (matrixScanHighlightingColor) {
-        if ([matrixScanHighlightingColor isKindOfClass:[NSString class]]) {
-            NSString *decodedColorString = (NSString *)matrixScanHighlightingColor;
-            NSDictionary *matrixScanStateNames = @{
-                                                   @"MATRIX_SCAN_STATE_LOCALIZED": @(SBSMatrixScanHighlightingStateLocalized),
-                                                   @"MATRIX_SCAN_STATE_RECOGNIZED": @(SBSMatrixScanHighlightingStateRecognized),
-                                                   @"MATRIX_SCAN_STATE_REJECTED": @(SBSMatrixScanHighlightingStateRejected),
-                                                   };
-
-            for (NSString *name in matrixScanStateNames) {
-                if ([decodedColorString length] == 8) {
+        if ([matrixScanHighlightingColor isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *decodedColor = (NSDictionary *)matrixScanHighlightingColor;
+            for (NSNumber *stateKey in decodedColor) {
+                NSString *decodedColorString = decodedColor[stateKey];
+                if ([decodedColorString isKindOfClass:[NSString class]]
+                    && [stateKey isKindOfClass:[NSNumber class]]
+                    && [decodedColorString length] == 8) {
                     float argbComponents[4] = {0.0f, 0.0f, 0.0f, 0.0f};
                     for (int i = 0; i < 4; i++) {
                         NSString *componentString = [decodedColorString substringWithRange:NSMakeRange(i * 2, 2)];
@@ -330,7 +327,7 @@
                                                       blue:argbComponents[3]
                                                      alpha:argbComponents[0]];
 
-                    SBSMatrixScanHighlightingState state = (SBSMatrixScanHighlightingState)[matrixScanStateNames[name] integerValue];
+                    SBSMatrixScanHighlightingState state = (SBSMatrixScanHighlightingState)[stateKey integerValue];
                     [picker.overlayController setMatrixScanHighlightingColor:color forState:state];
                 } else {
                     NSLog(@"SBS Plugin: failed to parse color - wrong format");

@@ -48,6 +48,10 @@ ScanCase.prototype.errorSoundEnabled = function(enabled) {
   cordova.exec(null, null, "SBSScanCasePlugin", "errorSoundEnabled", [enabled]);
 }
 
+ScanCase.prototype.setTimeout = function(timeout, fromState, toState) {
+  cordova.exec(null, null, "SBSScanCasePlugin", "setTimeout", [timeout, fromState, toState]);
+}
+
 ScanCase.State = {
     ACTIVE : 'active',
     OFF : 'off',

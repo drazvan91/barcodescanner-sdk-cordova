@@ -87,6 +87,21 @@ const static NSString *kSBSScanCaseDidScanEvent = @"didScan";
     });
 }
 
+- (void)setTimeout:(CDVInvokedUrlCommand *)command {
+    NSNumber *timeout = [command.arguments objectAtIndex:0];
+    NSNumber *fromState = [command.arguments objectAtIndex:1];
+    NSNumber *toState = [command.arguments objectAtIndex:2];
+    if ([timeout isKindOfClass:[NSNumber class]]
+        && [fromState isKindOfClass:[NSNumber class]]
+        && [toState isKindOfClass:[NSNumber class]]) {
+        [self.scanCase setTimeout:[timeout doubleValue]
+                        fromState:(SBSScanCaseState)[fromState integerValue]
+                          toState:(SBSScanCaseState)[toState integerValue]];
+    } else {
+        NSLog(@"SBS Plugin: failed to parse setTimeout arguments");
+    }
+}
+
 # pragma mark SBSScanCaseDelegate
 
 - (void)didInitializeScanCase:(SBSScanCase *)scanCase {

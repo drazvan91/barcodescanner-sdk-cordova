@@ -58,7 +58,7 @@
 + (NSString *)paramProperties { return [@"properties" lowercaseString]; }
 + (NSString *)paramTextRecognitionSwitchVisible { return [@"textRecognitionSwitchVisible" lowercaseString]; }
 + (NSString *)paramMissingCameraPermissionInfoText { return [@"missingCameraPermissionInfoText" lowercaseString]; }
-+ (NSString *)paramMatrixScanHighlightingColor { return [@"matrixScanHighlightingColor" lowercaseString]; }
++ (NSString *)paramMatrixScanHighlightingColors { return [@"matrixScanHighlightingColors" lowercaseString]; }
 
 #pragma mark - Picker Updates
 
@@ -304,18 +304,18 @@
         }
     }
 
-    NSObject *matrixScanHighlightingColor = [options objectForKey:[self paramMatrixScanHighlightingColor]];
-    if (matrixScanHighlightingColor) {
-        if ([matrixScanHighlightingColor isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *decodedColor = (NSDictionary *)matrixScanHighlightingColor;
-            for (NSNumber *stateKey in decodedColor) {
-                NSString *decodedColorString = decodedColor[stateKey];
-                if ([decodedColorString isKindOfClass:[NSString class]]
+    NSObject *matrixScanHighlightingColors = [options objectForKey:[self paramMatrixScanHighlightingColors]];
+    if (matrixScanHighlightingColors) {
+        if ([matrixScanHighlightingColors isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *colors = (NSDictionary *)matrixScanHighlightingColors;
+            for (NSNumber *stateKey in colors) {
+                NSString *colorString = colors[stateKey];
+                if ([colorString isKindOfClass:[NSString class]]
                     && [stateKey isKindOfClass:[NSNumber class]]
-                    && [decodedColorString length] == 8) {
+                    && [colorString length] == 8) {
                     float argbComponents[4] = {0.0f, 0.0f, 0.0f, 0.0f};
                     for (int i = 0; i < 4; i++) {
-                        NSString *componentString = [decodedColorString substringWithRange:NSMakeRange(i * 2, 2)];
+                        NSString *componentString = [colorString substringWithRange:NSMakeRange(i * 2, 2)];
                         NSScanner *scanner = [NSScanner scannerWithString:componentString];
                         unsigned int componentInt;
                         [scanner scanHexInt:&componentInt];

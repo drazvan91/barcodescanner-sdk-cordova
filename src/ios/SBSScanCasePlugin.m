@@ -73,6 +73,20 @@ const static NSString *kSBSScanCaseDidScanEvent = @"didScan";
     });
 }
 
+- (void)scanBeepEnabled:(CDVInvokedUrlCommand *)command {
+    NSNumber *enabled = [command.arguments objectAtIndex:0];
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        self.scanCase.scanBeepEnabled = [enabled boolValue];
+    });
+}
+
+- (void)errorSoundEnabled:(CDVInvokedUrlCommand *)command {
+    NSNumber *enabled = [command.arguments objectAtIndex:0];
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        self.scanCase.errorSoundEnabled = [enabled boolValue];
+    });
+}
+
 # pragma mark SBSScanCaseDelegate
 
 - (void)didInitializeScanCase:(SBSScanCase *)scanCase {

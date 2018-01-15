@@ -40,6 +40,14 @@ ScanCase.prototype.volumeButtonToScanEnabled = function(enabled) {
   cordova.exec(null, null, "SBSScanCasePlugin", "volumeButtonToScanEnabled", [enabled]);
 }
 
+ScanCase.prototype.scanBeepEnabled = function(enabled) {
+  cordova.exec(null, null, "SBSScanCasePlugin", "scanBeepEnabled", [enabled]);
+}
+
+ScanCase.prototype.errorSoundEnabled = function(enabled) {
+  cordova.exec(null, null, "SBSScanCasePlugin", "errorSoundEnabled", [enabled]);
+}
+
 ScanCase.State = {
     ACTIVE : 'active',
     OFF : 'off',

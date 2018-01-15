@@ -1130,6 +1130,24 @@ public class Scandit {
         }
 
         /**
+         * Enumeration of different highlighting state of locations when using matrix scan.
+         */
+        public enum MatrixScanState  {
+            /**
+             * @brief The code has been localized but not yet recognized.
+             */
+            LOCALIZED,
+            /**
+             * @brief The code has been recognized.
+             */
+            RECOGNIZED,
+            /**
+             * @brief The code has been visually rejected.
+             */
+            REJECTED
+        }
+
+        /**
          * @brief Scan UI style
          */
         public enum GuiStyle  {
@@ -1486,9 +1504,18 @@ public class Scandit {
          * @param text The text that is displayed.
          */
         public void setMissingCameraPermissionInfoText(String text);
+
+        /**
+         * \brief Sets the color of the tracked barcodes to use for the specified state.
+         *
+         * @since 5.7
+         *
+         * @param color The color to use for tracked barcodes in the specified state.
+         * @param state The state that uses the specified color.
+         */
+        public void setMatrixScanHighlightingColor(String hexColor, String state);
         ///@}
     }
-
 
     /**
      * @brief Holds settings specific to a particular symbology (1d, 2d)

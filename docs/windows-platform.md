@@ -29,6 +29,11 @@ cd myapp
 cordova platform add windows
 cordova plugin add ..\path\to\unzipped-barcode-scanner-plugin --nofetch
 ~~~~~~~~~~~~~~~~
+Starting from cordova 7.0, the cordova windows version installed by default is recent enough to support the Scandit plugin. If you are on an older cordova version, you can update the cordova windows platform using the following command:
+
+~~~~~~~~~~~~~~~~{.java}
+cordova platform update windows@5.0.0 
+~~~~~~~~~~~~~~~~
 
 Cordova Windows 4.3: Modify plugin.xml by hand (not recommended)
 -----------------------------------------------------------------------------------

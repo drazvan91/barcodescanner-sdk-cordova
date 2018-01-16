@@ -76,10 +76,12 @@ BarcodePicker.prototype.show = function () {
     if (this.landscapeConstraints != null) {
         options.landscapeConstraints = this.landscapeConstraints;
     }
-
     if (this.orientations.length > 0) {
         options.orientations = this.orientations;
     }
+    
+    options.isDidScanDefined = callbacks.didScan != null;
+    
     var picker = this;
     cordova.exec(function (args) {
         // all the events are serialized as an array, where the first argument is the event name

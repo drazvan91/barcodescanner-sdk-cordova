@@ -20,6 +20,7 @@
 @interface SBSPhonegapParamParser : NSObject
 
 + (NSString *)paramContinuousMode;
++ (NSString *)paramIsDidScanDefined;
 + (NSString *)paramPortraitMargins;
 + (NSString *)paramLandscapeMargins;
 + (NSString *)paramPortraitConstraints;

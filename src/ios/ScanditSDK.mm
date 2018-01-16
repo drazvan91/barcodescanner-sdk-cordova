@@ -45,6 +45,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 @property (nonatomic, assign) BOOL didRecognizeNewCodesCallbackFinish;
 
 @property (nonatomic, assign) BOOL matrixScanEnabled;
+@property (nonatomic, assign) BOOL isDidScanDefined;
 
 @property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
 
@@ -111,9 +112,15 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     dispatch_async(self.queue, ^{
         // Continuous mode support.
         self.continuousMode = NO;
-        NSObject *continuousMode = [options objectForKey:[SBSPhonegapParamParser paramContinuousMode]];
+        NSNumber *continuousMode = [options objectForKey:[SBSPhonegapParamParser paramContinuousMode]];
         if (continuousMode && [continuousMode isKindOfClass:[NSNumber class]]) {
-            self.continuousMode = [((NSNumber *)continuousMode) boolValue];
+            self.continuousMode = [continuousMode boolValue];
+        }
+        
+        // check if didScan callback is defined
+        NSNumber *isDidScanDefined = [options objectForKey:[SBSPhonegapParamParser paramIsDidScanDefined]];
+        if (isDidScanDefined && [isDidScanDefined isKindOfClass:[NSNumber class]]) {
+            self.isDidScanDefined = [isDidScanDefined boolValue];
         }
 
         dispatch_main_sync_safe(^{
@@ -395,6 +402,10 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 #pragma mark - SBSScanDelegate methods
 
 - (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
+    if (!self.isDidScanDefined) { 
+        return; 
+    }
+    
     CDVPluginResult *pluginResult = [self resultForSession:session];
 
     int nextState = [self sendPluginResultBlocking:pluginResult];

@@ -356,7 +356,7 @@
     if ([obj isKindOfClass:[NSNumber class]]) {
         return [(NSNumber *) obj floatValue];
     } else if ([obj isKindOfClass:[NSString class]]) {
-        NSString* str = (NSString *) obj;
+        NSString *str = (NSString *)obj;
         if ([[str substringFromIndex: [str length] - 1] isEqualToString:@"%"]) {
             return [[str substringToIndex: [str length] - 1] floatValue] * max / 100.;
         } else {

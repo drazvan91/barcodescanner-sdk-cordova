@@ -46,7 +46,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 
 @property (nonatomic, assign) BOOL matrixScanEnabled;
 
-@property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker* picker;
+@property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
 
 @end
 
@@ -66,7 +66,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     return queue;
 }
 
-- (ScanditSDKRotatingBarcodePicker*)picker {
+- (ScanditSDKRotatingBarcodePicker *)picker {
     return self.pickerStateMachine.picker;
 }
 
@@ -101,7 +101,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 }
 
 - (void)picker:(ScanditSDKRotatingBarcodePicker *)picker didChangeState:(SBSPickerState)newState {
-    CDVPluginResult * result = [self createResultForEvent:@"didChangeState" value:@(newState)];
+    CDVPluginResult *result = [self createResultForEvent:@"didChangeState" value:@(newState)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
 }
 
@@ -179,7 +179,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     });
 }
 
-- (void)startScanning:(NSNumber*)startPaused {
+- (void)startScanning:(NSNumber *)startPaused {
     [self.pickerStateMachine startScanningInPausedState:[startPaused boolValue]];
 }
 
@@ -282,7 +282,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     });
 }
 
-- (void)finishDidScanCallback:(CDVInvokedUrlCommand*)command {
+- (void)finishDidScanCallback:(CDVInvokedUrlCommand *)command {
     NSArray *args = command.arguments;
     self.nextState = 0;
     if ([args count] > 1) {
@@ -402,10 +402,10 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
         nextState = SBSPickerStateStopped;
     }
     [self switchToNextScanState:nextState withSession:session];
-    NSArray* newlyRecognized = session.newlyRecognizedCodes;
-    for (NSNumber* codeId in self.rejectedCodeIds) {
+    NSArray *newlyRecognized = session.newlyRecognizedCodes;
+    for (NSNumber *codeId in self.rejectedCodeIds) {
         long value = [codeId longValue];
-        for (SBSCode* code in newlyRecognized) {
+        for (SBSCode *code in newlyRecognized) {
             if (code.uniqueId == value) {
                 [session rejectCode:code];
                 break;
@@ -427,8 +427,8 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     }
 }
 
-- (CDVPluginResult*)createResultForEvent:(NSString*)name value:(NSObject*)value {
-    NSArray* args = @[name, value];
+- (CDVPluginResult *)createResultForEvent:(NSString *)name value:(NSObject *)value {
+    NSArray *args = @[name, value];
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                  messageAsArray:args];
     [result setKeepCallback:@YES];
@@ -461,8 +461,8 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     }
     // We are on the main thread where the callback will be invoked on as well, we
     // have to manually assemble the command to be executed.
-    NSString* command = @"cordova.callbacks['%@'].success(%@);";
-    NSString* commandSubst = [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
+    NSString *command = @"cordova.callbacks['%@'].success(%@);";
+    NSString *commandSubst = [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
     [self.commandDelegate evalJs:commandSubst scheduledOnRunLoop:NO];
     return self.nextState;
 }

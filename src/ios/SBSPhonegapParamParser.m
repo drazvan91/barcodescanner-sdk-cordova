@@ -18,6 +18,7 @@
 @implementation SBSPhonegapParamParser
 
 + (NSString *)paramContinuousMode { return [@"continuousMode" lowercaseString]; }
++ (NSString *)paramIsDidScanDefined { return [@"isDidScanDefined" lowercaseString]; }
 + (NSString *)paramPortraitMargins { return [@"portraitMargins" lowercaseString]; }
 + (NSString *)paramLandscapeMargins { return [@"landscapeMargins" lowercaseString]; }
 + (NSString *)paramPortraitConstraints { return [@"portraitConstraints" lowercaseString]; }

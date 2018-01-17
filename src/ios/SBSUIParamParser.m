@@ -58,7 +58,7 @@
 + (NSString *)paramProperties { return [@"properties" lowercaseString]; }
 + (NSString *)paramTextRecognitionSwitchVisible { return [@"textRecognitionSwitchVisible" lowercaseString]; }
 + (NSString *)paramMissingCameraPermissionInfoText { return [@"missingCameraPermissionInfoText" lowercaseString]; }
-
++ (NSString *)paramMatrixScanHighlightingColors { return [@"matrixScanHighlightingColors" lowercaseString]; }
 
 #pragma mark - Picker Updates
 
@@ -252,25 +252,18 @@
         if ([viewfinderColor isKindOfClass:[NSString class]]) {
             NSString *viewfinderColorString = (NSString *)viewfinderColor;
             if ([viewfinderColorString length] == 6) {
-                unsigned int redInt;
-                NSScanner *redScanner = [NSScanner scannerWithString:
-                                         [viewfinderColorString substringToIndex:2]];
-                [redScanner scanHexInt:&redInt];
-                float red = ((float) redInt) / 256.0;
+                float argbComponents[3] = {0.0f, 0.0f, 0.0f};
+                for (int i = 0; i < 3; i++) {
+                    NSString *componentString = [viewfinderColorString substringWithRange:NSMakeRange(i * 2, 2)];
+                    NSScanner *scanner = [NSScanner scannerWithString:componentString];
+                    unsigned int componentInt;
+                    [scanner scanHexInt:&componentInt];
+                    argbComponents[i] = ((float)componentInt) / 256.0;
+                }
 
-                unsigned int greenInt;
-                NSScanner *greenScanner = [NSScanner scannerWithString:
-                                           [[viewfinderColorString substringFromIndex:2] substringToIndex:2]];
-                [greenScanner scanHexInt:&greenInt];
-                float green = ((float) greenInt) / 256.0;
-
-                unsigned int blueInt;
-                NSScanner *blueScanner = [NSScanner scannerWithString:
-                                          [viewfinderColorString substringFromIndex:4]];
-                [blueScanner scanHexInt:&blueInt];
-                float blue = ((float) blueInt) / 256.0;
-
-                [picker.overlayController setViewfinderColor:red green:green blue:blue];
+                [picker.overlayController setViewfinderColor:argbComponents[0]
+                                                       green:argbComponents[1]
+                                                        blue:argbComponents[2]];
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse viewfinder color - wrong type");
@@ -282,25 +275,20 @@
         if ([decodedColor isKindOfClass:[NSString class]]) {
             NSString *decodedColorString = (NSString *)decodedColor;
             if ([decodedColorString length] == 6) {
-                unsigned int redInt;
-                NSScanner *redScanner = [NSScanner scannerWithString:
-                                         [decodedColorString substringToIndex:2]];
-                [redScanner scanHexInt:&redInt];
-                float red = ((float) redInt) / 256.0;
+                float argbComponents[3] = {0.0f, 0.0f, 0.0f};
+                for (int i = 0; i < 3; i++) {
+                    NSString *componentString = [decodedColorString substringWithRange:NSMakeRange(i * 2, 2)];
+                    NSScanner *scanner = [NSScanner scannerWithString:componentString];
+                    unsigned int componentInt;
+                    [scanner scanHexInt:&componentInt];
+                    argbComponents[i] = ((float)componentInt) / 256.0;
+                }
 
-                unsigned int greenInt;
-                NSScanner *greenScanner = [NSScanner scannerWithString:
-                                           [[decodedColorString substringFromIndex:2] substringToIndex:2]];
-                [greenScanner scanHexInt:&greenInt];
-                float green = ((float) greenInt) / 256.0;
-
-                unsigned int blueInt;
-                NSScanner *blueScanner = [NSScanner scannerWithString:
-                                          [decodedColorString substringFromIndex:4]];
-                [blueScanner scanHexInt:&blueInt];
-                float blue = ((float) blueInt) / 256.0;
-
-                [picker.overlayController setViewfinderDecodedColor:red green:green blue:blue];
+                [picker.overlayController setViewfinderDecodedColor:argbComponents[0]
+                                                              green:argbComponents[1]
+                                                               blue:argbComponents[2]];
+            } else {
+                NSLog(@"SBS Plugin: failed to parse color - wrong format");
             }
         } else {
             NSLog(@"SBS Plugin: failed to parse viewfinder decoded color - wrong type");
@@ -309,10 +297,44 @@
 
     NSObject *toolbarCaption = [options objectForKey:[self paramToolBarButtonCaption]];
     if (toolbarCaption) {
-        if([toolbarCaption isKindOfClass:[NSString class]]) {
+        if ([toolbarCaption isKindOfClass:[NSString class]]) {
             [picker.overlayController setToolBarButtonCaption:((NSString *) toolbarCaption)];
         } else {
             NSLog(@"SBS Plugin: failed to parse toolbar caption - wrong type");
+        }
+    }
+
+    NSObject *matrixScanHighlightingColors = [options objectForKey:[self paramMatrixScanHighlightingColors]];
+    if (matrixScanHighlightingColors) {
+        if ([matrixScanHighlightingColors isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *colors = (NSDictionary *)matrixScanHighlightingColors;
+            for (NSNumber *stateKey in colors) {
+                NSString *colorString = colors[stateKey];
+                if ([colorString isKindOfClass:[NSString class]]
+                    && [stateKey isKindOfClass:[NSNumber class]]
+                    && [colorString length] == 8) {
+                    float argbComponents[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+                    for (int i = 0; i < 4; i++) {
+                        NSString *componentString = [colorString substringWithRange:NSMakeRange(i * 2, 2)];
+                        NSScanner *scanner = [NSScanner scannerWithString:componentString];
+                        unsigned int componentInt;
+                        [scanner scanHexInt:&componentInt];
+                        argbComponents[i] = ((float)componentInt) / 256.0;
+                    }
+
+                    UIColor *color = [UIColor colorWithRed:argbComponents[1]
+                                                     green:argbComponents[2]
+                                                      blue:argbComponents[3]
+                                                     alpha:argbComponents[0]];
+
+                    SBSMatrixScanHighlightingState state = (SBSMatrixScanHighlightingState)[stateKey integerValue];
+                    [picker.overlayController setMatrixScanHighlightingColor:color forState:state];
+                } else {
+                    NSLog(@"SBS Plugin: failed to parse color - wrong format");
+                }
+            }
+        } else {
+            NSLog(@"SBS Plugin: failed to parse MatrixScan highlighting color - wrong type");
         }
     }
     

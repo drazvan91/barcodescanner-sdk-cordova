@@ -19,10 +19,12 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -90,6 +92,7 @@ abstract class PickerControllerBase implements IPickerController {
     @Override
     public void finishDidRecognizeNewCodesCallback(JSONArray data) {
         setRejectedTrackedCodeIds(determineRejectedCodes(data, 0));
+        setTrackedCodeStates(BubbleUtils.determineStateObjects(data, 1));
         clearInFlightResultCallbackAndNotify();
     }
 
@@ -119,6 +122,8 @@ abstract class PickerControllerBase implements IPickerController {
     protected abstract void setRejectedCodeIds(List<Long> rejectedCodeIds);
 
     protected abstract void setRejectedTrackedCodeIds(List<Long> rejectedCodeIds);
+
+    protected void setTrackedCodeStates(Map<Long, JSONObject> trackedCodeStates) {}
 
     int sendPluginResultBlocking(PluginResult result) {
         int currentId = mLastResultCallbackId.incrementAndGet();

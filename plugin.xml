@@ -152,5 +152,8 @@
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/SubViewPickerOrientationHandler.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/UIParamParser.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/PermissionHelper.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/BubbleData.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/CustomBubbleOverlay.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/BubbleUtils.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
     </platform>
 </plugin>

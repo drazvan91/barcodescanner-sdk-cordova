@@ -34,6 +34,7 @@ import com.scandit.barcodepicker.ocr.RecognizedText;
 import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
 import com.scandit.recognition.TrackedBarcode;
+import com.scandit.recognition.Quadrilateral;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -44,8 +45,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,7 +61,7 @@ public class SubViewPickerController extends PickerControllerBase implements
         PickerStateMachine.Callback, TextRecognitionListener, PropertyChangeListener {
 
     private RelativeLayout mLayout;
-
+    private CustomBubbleOverlay mOverlay;
     private PickerStateMachine mPickerStateMachine = null;
 
     private SubViewPickerOrientationHandler mOrientationHandler = null;
@@ -141,6 +144,8 @@ public class SubViewPickerController extends PickerControllerBase implements
                         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                                 RelativeLayout.LayoutParams.MATCH_PARENT);
                 mLayout.addView(mPickerStateMachine.getPicker(), rLayoutParams);
+                mOverlay = new CustomBubbleOverlay(mLayout.getContext());
+                mLayout.addView(mOverlay, rLayoutParams);
                 PhonegapParamParser.updateLayout(pluginActivity, mPickerStateMachine.getPicker(),
                         options, mScreenDimensions);
 
@@ -170,6 +175,15 @@ public class SubViewPickerController extends PickerControllerBase implements
     @Override
     protected void setRejectedTrackedCodeIds(List<Long> rejectedCodeIds) {
         mRejectedTrackedCodeIds = rejectedCodeIds;
+    }
+    
+    @Override
+    protected void setTrackedCodeStates(Map<Long, JSONObject> trackedCodeStates) {
+        Map<Long, BubbleData> stateData = new HashMap();
+        for (Entry<Long, JSONObject> entry: trackedCodeStates.entrySet()) {
+            stateData.put(entry.getKey(), new BubbleData(entry.getValue()));
+        }
+        mOverlay.setBarcodeStates(stateData);
     }
 
     @Override
@@ -392,23 +406,26 @@ public class SubViewPickerController extends PickerControllerBase implements
         }
 
         Map<Long, TrackedBarcode> trackedCodes = session.getTrackedCodes();
-        List<TrackedBarcode> newlyTrackedCodes = new ArrayList<TrackedBarcode>();
+        Map<Long, TrackedBarcode> newlyTrackedCodes = new HashMap<Long, TrackedBarcode>();
         Set<Long> recognizedCodeIds = new HashSet<Long>();
+        Map<Long, Quadrilateral> newLocations = new HashMap();
 
         for (Map.Entry<Long, TrackedBarcode> entry : trackedCodes.entrySet()) {
             // Check if it's a new identifier.
             if (entry.getValue().isRecognized()) {
+                newLocations.put(entry.getKey(), BubbleUtils.convertLocation(entry.getValue().getPredictedLocation(),
+                    mPickerStateMachine.getPicker()));
                 recognizedCodeIds.add(entry.getKey());
                 if (!mLastFrameTrackedCodeIds.contains(entry.getKey())) {
                     // Add the new identifier.
                     mLastFrameTrackedCodeIds.add(entry.getKey());
-                    newlyTrackedCodes.add(entry.getValue());
+                    newlyTrackedCodes.put(entry.getKey(), entry.getValue());
                 }
             }
         }
         // Update the recognized code ids for next frame.
         mLastFrameTrackedCodeIds = recognizedCodeIds;
-
+        mOverlay.updateTrackedBarcodes(newLocations);
         if (newlyTrackedCodes.size() > 0) {
             JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_NEW_CODES,
                     ResultRelay.jsonForTrackedCodes(newlyTrackedCodes));

@@ -41,6 +41,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -266,7 +267,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         }
 
         Map<Long, TrackedBarcode> trackedCodes = session.getTrackedCodes();
-        List<TrackedBarcode> newlyTrackedCodes = new ArrayList<TrackedBarcode>();
+        Map<Long, TrackedBarcode> newlyTrackedCodes = new HashMap();
         Set<Long> recognizedCodeIds = new HashSet<Long>();
 
         for (Map.Entry<Long, TrackedBarcode> entry : trackedCodes.entrySet()) {
@@ -276,7 +277,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
                 if (!mLastFrameTrackedCodeIds.contains(entry.getKey())) {
                     // Add the new identifier.
                     mLastFrameTrackedCodeIds.add(entry.getKey());
-                    newlyTrackedCodes.add(entry.getValue());
+                    newlyTrackedCodes.put(entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -290,7 +291,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         }
     }
 
-    private Bundle bundleForProcessResult(List<TrackedBarcode> newylTrackedCodes) {
+    private Bundle bundleForProcessResult(Map<Long, TrackedBarcode> newylTrackedCodes) {
         Bundle bundle = new Bundle();
         JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_RECOGNIZE_NEW_CODES,
                 ResultRelay.jsonForTrackedCodes(newylTrackedCodes));

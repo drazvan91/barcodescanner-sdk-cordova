@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 public class ResultRelay {
     
@@ -82,10 +83,10 @@ public class ResultRelay {
         return json;
     }
 
-    public static JSONObject jsonForTrackedCodes(List<TrackedBarcode> trackedCodes) {
+    public static JSONObject jsonForTrackedCodes(Map<Long, TrackedBarcode> trackedCodes) {
         JSONObject json = new JSONObject();
         try {
-            json.put("newlyTrackedCodes", jsonForCodes(trackedCodes));
+            json.put("newlyTrackedCodes", BubbleUtils.jsonForTrackedCodes(trackedCodes));
         } catch (JSONException e) {
             e.printStackTrace();
         }

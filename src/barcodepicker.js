@@ -180,7 +180,7 @@ BarcodePicker.prototype.show = function () {
             // Inform plugin that callback has finished executing. Required for synchronization on
             // Android/iOS. Windows doesn't require it.
             cordova.exec(null, null, "ScanditSDK", "finishDidRecognizeNewCodesCallback",
-                         [matrixScanSession.rejectedTrackedCodes]);
+                         [matrixScanSession.rejectedTrackedCodes, matrixScanSession.trackedCodeStates]);
             picker.executingCallback = false;
             if (exceptionRaisedDuringDidRecognizeNewCodes) {
                 throw exceptionRaisedDuringDidRecognizeNewCodes;

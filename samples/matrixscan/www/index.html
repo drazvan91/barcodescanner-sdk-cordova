@@ -58,6 +58,9 @@
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript">
             let recognizedCodes = [];
+            let green = "#9939CC61";
+            let red = "#99E44C4C";
+            let yellow = "#99FAD05C";
             var picker;
 
             function setUI(isScanning, scannedCodes) {
@@ -79,6 +82,17 @@
                     if (element.symbology == Scandit.Barcode.Symbology.EAN8) {
                         matrixScanSession.rejectTrackedCode(element)
                     }
+                    var state = {};
+                    state.date = "14-2-18";
+                    state.stock = getRandomInt(100);
+                    if (state.stock <= 10) {
+                      state.color = red;
+                    } else if (state.stock <= 50) {
+                      state.color = yellow;
+                    } else {
+                      state.color = green;
+                    }
+                    matrixScanSession.setStateForTrackedCode(element, state)
                 });
             }
 

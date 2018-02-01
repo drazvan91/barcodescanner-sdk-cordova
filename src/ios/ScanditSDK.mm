@@ -606,6 +606,9 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 #pragma mark - SBSPropertyObserver
 
 - (void)barcodePicker:(SBSBarcodePicker *)barcodePicker property:(NSString *)property changedToValue:(NSObject *)value {
+    if (![value isKindOfClass:[NSString class]] && ![value isKindOfClass:[NSNumber class]]) {
+        return;
+    }
     auto dictionary = @{@"name": property, @"newState": value};
     auto pluginResult = [self createResultForEvent:@"didChangeProperty" value:dictionary];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];

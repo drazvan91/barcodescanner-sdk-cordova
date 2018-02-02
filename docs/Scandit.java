@@ -1,22 +1,22 @@
 /**
  * Module for all functionality of the barcode recognition plugin.
  *
- * @since 4.11.0
+ * \since 4.11.0
  */
 public class Scandit {
 
     /**
      * A convenience class for points with an x and y coordinate.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class Point {
         public number x;
         public number y;
 
         /**
-         * @param x The x coordinate.
-         * @param y the y coordinate.
+         * \param x The x coordinate.
+         * \param y the y coordinate.
          */
         public Point(number x, number y);
     }
@@ -24,7 +24,7 @@ public class Scandit {
     /**
      * A convenience class for Rectangles.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class Rect {
         public number x;
@@ -33,45 +33,45 @@ public class Scandit {
         public number height;
 
         /**
-         * @param x The x coordinate.
-         * @param y The y coordinate.
-         * @param width The rectangle's width.
-         * @param height The rectangle's height.
+         * \param x The x coordinate.
+         * \param y The y coordinate.
+         * \param width The rectangle's width.
+         * \param height The rectangle's height.
          */
         public Rect(number x, number y, number width, number height);
     }
 
     /**
-     * @brief A 2-dimensional polygon with 4 corners.
+     * \brief A 2-dimensional polygon with 4 corners.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class Quadrilateral {
         /**
-         * @brief Top left corner of the quadrilateral.
+         * \brief Top left corner of the quadrilateral.
          */
         public Point topLeft;
         /**
-         * @brief Top right corner of the quadrilateral.
+         * \brief Top right corner of the quadrilateral.
          */
         public Point topRight;
         /**
-         * @brief Bottom left corner of the quadrilateral.
+         * \brief Bottom left corner of the quadrilateral.
          */
         public Point bottomLeft;
         /**
-         * @brief Bottom right corner of the quadrilateral.
+         * \brief Bottom right corner of the quadrilateral.
          */
         public Point bottomRight;
     }
 
     /**
-     * @brief Constraints for the scanner view. Margins have higher priority than width and height,
+     * \brief Constraints for the scanner view. Margins have higher priority than width and height,
      * for example if the horizontal margins and the width are all set, the width is ignored. If the
      * width is set but no horizontal margins are set the plugin will set the left margin to 0. For
      * the same scenario with the vertical margins and height, the top margin will be set to 0.
      *
-     * @since 4.13.1
+     * \since 4.13.1
      */
     public class Constraints {
         /**
@@ -114,10 +114,10 @@ public class Scandit {
     }
 
     /**
-     * @brief Margins for a view.
-     * @deprecated Replaced by Scandit.Constraints.
+     * \brief Margins for a view.
+     * \deprecated Replaced by Scandit.Constraints.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class Margins {
         public int left;
@@ -126,10 +126,10 @@ public class Scandit {
         public int left;
 
         /**
-         * @param left The left margin.
-         * @param top The top margin.
-         * @param right The top margin.
-         * @param bottom The bottom margin.
+         * \param left The left margin.
+         * \param top The top margin.
+         * \param right The top margin.
+         * \param bottom The bottom margin.
          */
         public Margins(int left, int top, int right, int bottom);
 
@@ -140,121 +140,120 @@ public class Scandit {
          * the string. When expressing the margins in percent, the margin is set
          * to the desired percentage of the screen width or height.
          *
-         * @param left The left margin.
-         * @param top The top margin.
-         * @param right The top margin.
-         * @param bottom The bottom margin.
+         * \param left The left margin.
+         * \param top The top margin.
+         * \param right The top margin.
+         * \param bottom The bottom margin.
          */
         public Margins(String left, String top, String right, String bottom);
-
     }
 
     /**
-     * @brief Represents a recognized/localized barcode/2D code.
+     * \brief Represents a recognized/localized barcode/2D code.
      *
      * The Barcode class represents a  barcode, or 2D code that has been localized or recognized
      * by the barcode recognition engine.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class Barcode {
         /**
-         * @brief An enumeration of all supported barcode symbologies.
+         * \brief An enumeration of all supported barcode symbologies.
          *
          * The availability of a symbology depends on your license and contract. For example, community
          * licenses only include EAN8, EAN13, UPCA, UPCE and QR.
          */
         public enum Symbology  {
             /**
-             * @brief Sentinel value to represent an unknown symbology
+             * \brief Sentinel value to represent an unknown symbology
              */
             UNKNOWN,
             /**
-             * @brief EAN13 1D barcode symbology.
+             * \brief EAN13 1D barcode symbology.
              */
             EAN13,
             /**
-             * @brief EAN8 1D barcode symbology.
+             * \brief EAN8 1D barcode symbology.
              */
             EAN8,
             /**
-             * @brief UPC12/UPCA 1D barcode symbology.
+             * \brief UPC12/UPCA 1D barcode symbology.
              */
             UPCA,
             /**
-             * @brief UPCE 1D barcode symbology.
+             * \brief UPCE 1D barcode symbology.
              */
             UPCE,
             /**
-             * @brief Code 11 barcode symbology.
+             * \brief Code 11 barcode symbology.
              */
             CODE11,
             /**
-             * @brief Code 25 barcode symbology.
+             * \brief Code 25 barcode symbology.
              */
             CODE25,
             /**
-             * @brief Code39 barcode symbology.
+             * \brief Code39 barcode symbology.
              */
             CODE39,
             /**
-             * @brief Code 93 barcode symbology.
+             * \brief Code 93 barcode symbology.
              */
             CODE93,
             /**
-             * @brief Code 128 1D barcode symbology, including GS1-Code128.
+             * \brief Code 128 1D barcode symbology, including GS1-Code128.
              */
             CODE128,
             /**
-             * @brief Interleaved-Two-of-Five (ITF) 1D barcode symbology.
+             * \brief Interleaved-Two-of-Five (ITF) 1D barcode symbology.
              */
             ITF,
             /**
-             * @brief QR Code 2D barcode symbology.
+             * \brief QR Code 2D barcode symbology.
              */
             QR,
             /**
-             * @brief Datamatrix 2D barcode symbology.
+             * \brief Datamatrix 2D barcode symbology.
              */
             DATA_MATRIX,
             /**
-             * @brief PDF417 barcode symbology.
+             * \brief PDF417 barcode symbology.
              */
             PDF417,
             /**
-             * @brief MSI Plessey 1D barcode symbology.
+             * \brief MSI Plessey 1D barcode symbology.
              */
             MSI_PLESSEY,
             /**
-             * @brief Databar 1D barcode symbology.
+             * \brief Databar 1D barcode symbology.
              */
             GS1_DATABAR,
             /**
-             * @brief Databar Limited 1D barcode symbology.
+             * \brief Databar Limited 1D barcode symbology.
              */
             GS1_DATABAR_LIMITED,
             /**
-             * @brief Databar Expanded 1D barcode symbology.
+             * \brief Databar Expanded 1D barcode symbology.
              */
             GS1_DATABAR_EXPANDED,
             /**
-             * @brief Codabar 1D barcode symbology.
+             * \brief Codabar 1D barcode symbology.
              */
             CODABAR,
             /**
-             * @brief Aztec 2D barcode symbology.
+             * \brief Aztec 2D barcode symbology.
              */
             AZTEC,
             /**
-             * @brief DotCode 2D barcode symbology.
+             * \brief DotCode 2D barcode symbology.
              */
             DOTCODE,
             /**
-             * @brief Maxicode 2D barcode symbology.
+             * \brief Maxicode 2D barcode symbology.
              */
             MAXICODE,
             /**
-             * @brief Five-digit add-on for UPC and EAN codes.
+             * \brief Five-digit add-on for UPC and EAN codes.
              *
              * In order to scan five-digit add-on codes, at least one of these symbologies must be activated
              * as well: \ref SYMBOLOGY_EAN13, \ref SYMBOLOGY_UPCA, \ref SYMBOLOGY_UPCE, or
@@ -262,7 +261,7 @@ public class Scandit {
              */
             FIVE_DIGIT_ADD_ON,
             /**
-             * @brief Two-digit add-on for UPC and EAN codes.
+             * \brief Two-digit add-on for UPC and EAN codes.
              *
              * In order to scan two-digit add-on codes, at least one of these symbologies must be activated
              * as well: \ref SYMBOLOGY_EAN13, \ref SYMBOLOGY_UPCA, \ref SYMBOLOGY_UPCE, or
@@ -271,42 +270,41 @@ public class Scandit {
             TWO_DIGIT_ADD_ON
         }
 
-
         /**
-         * @brief Composite flags for barcodes/2D codes.
+         * \brief Composite flags for barcodes/2D codes.
          */
         public enum CompositeFlag {
             /**
-             * @brief Code is not part of a composite code.
+             * \brief Code is not part of a composite code.
              */
             NONE,
             /**
-             * @brief Code could be part of a composite code.
+             * \brief Code could be part of a composite code.
              *
              * This flag is set by linear (1d) symbologies that have no composite flag support
              * but can be part of a composite code like the EAN/UPC symbology family.
              */
             UNKNOWN,
             /**
-             * @brief Code is the linear component of a composite code.
+             * \brief Code is the linear component of a composite code.
              *
              * This flag can be set by GS1 DataBar or GS1-128 (Code 128).
              */
             LINKED,
             /**
-             * @brief Code is a GS1 Composite Code Type A (CC-A).
+             * \brief Code is a GS1 Composite Code Type A (CC-A).
              *
              * This flag can be set by MicroPDF417 codes.
              */
             GS1_TYPE_A,
             /**
-             * @brief Code is a GS1 Composite Code Type B (CC-B).
+             * \brief Code is a GS1 Composite Code Type B (CC-B).
              *
              * This flag can be set by MicroPDF417 codes.
              */
             GS1_TYPE_B,
             /**
-             * @brief Code is a GS1 Composite Code Type C (CC-C).
+             * \brief Code is a GS1 Composite Code Type C (CC-C).
              *
              * This flag can be set by PDF417 codes.
              */
@@ -314,60 +312,58 @@ public class Scandit {
         };
 
         /**
-         * The symbology of a recognized barcode. Codes for which {@link isRecognized()} returns
-         * false, {@link SYMBOLOGY_UNKNOWN} is returned. For all other codes, the symbology of the
+         * The symbology of a recognized barcode. Codes for which {\link isRecognized()} returns
+         * false, {\link SYMBOLOGY_UNKNOWN} is returned. For all other codes, the symbology of the
          * recognized code is returned.
          */
         public Symbology symbology;
 
         /**
-         * @brief Whether the code is a GS1 data carrier
+         * \brief Whether the code is a GS1 data carrier
          *
-         * @return True if the code is a GS1 data carrier, false if not. False is returned for codes
+         * \return True if the code is a GS1 data carrier, false if not. False is returned for codes
          *     that have only been localized but not recognized.
          */
         public boolean isGs1DataCarrier();
 
         /**
-         * @brief Whether the code was completely recognized.
+         * \brief Whether the code was completely recognized.
          *
          * This property is true for barcodes that were completely recognized and false for
          * codes that were localized but not recognized. For codes returned by
-         * {@link BarcodeScannerSession.getNewlyRecognizedCodes()} and
-         * {@link BarcodeScannerSession.getAllRecognizedCodes()} this method always returns
-         * true, for codes returned by {@link BarcodeScannerSession.getNewlyLocalizedCodes()}
-         * {@link isRecognized()} always returns false.
+         * {\link BarcodeScannerSession.getNewlyRecognizedCodes()} and
+         * {\link BarcodeScannerSession.getAllRecognizedCodes()} this method always returns
+         * true, for codes returned by {\link BarcodeScannerSession.getNewlyLocalizedCodes()}
+         * {\link isRecognized()} always returns false.
          *
-         * @return True if the code has been recognized.
+         * \return True if the code has been recognized.
          */
         public boolean isRecognized();
 
         /**
-         * @brief The data contained in the barcode/2D code, for example the 13 digit number of an EAN13 code.
+         * \brief The data contained in the barcode/2D code, for example the 13 digit number of an EAN13 code.
          *
          * For some types of barcodes/2D codes (for example DATAMATRIX, AZTEC, PDF417), the
          * data string may contain non-printable characters and nul-bytes in the middle of
-         * the string. Use {@link rawData} if your application scans these types of codes
+         * the string. Use {\link rawData} if your application scans these types of codes
          * and you are expecting binary/non-printable data.
          *
-         * @return the data contained in the code.
+         * \return the data contained in the code.
          */
         public String data;
 
-
         /**
-         * @brief The data contained in the barcode/2D code, for example the 13 digit number of an EAN13 code.
+         * \brief The data contained in the barcode/2D code, for example the 13 digit number of an EAN13 code.
          *
          * The data is stored as an array of integers, where each item in the array corresponds
-         * to the char code. Use this property instead of {@link data} if your application
+         * to the char code. Use this property instead of {\link data} if your application
          * expects to scan codes containing binary data that can not be represented as UTF-8
          * strings.
          */
         public int[] rawData;
 
-
         /**
-         * @brief the composite flag of the barcode
+         * \brief the composite flag of the barcode
          *
          * For codes that have been localized but not recognized, CompositeFlag.UNKNOWN is
          * returned.
@@ -375,7 +371,7 @@ public class Scandit {
         public CompositeFlag compositeFlag;
 
         /**
-         * @brief The location of the code in the image.
+         * \brief The location of the code in the image.
          *
          * The location is returned as a a polygon with 4 corners. The corners are in the
          * coordinate system of the raw preview image. In order to be displayed they must be
@@ -383,60 +379,60 @@ public class Scandit {
          * topRight etc is such that the topLeft point corresponds to the top-left corner of the
          * barcode  regardless of how it is oriented in the image.
          *
-         * @return The location of the code as a quadrilateral.
+         * \return The location of the code as a quadrilateral.
          *
-         * @see Scandit.BarcodePicker#convertPointToPickerCoordinates(Point)
+         * \see Scandit.BarcodePicker#convertPointToPickerCoordinates(Point)
          */
         public Quadrilateral location;
     }
 
     /**
-     * @brief A class that holds all the callbacks available in the BarcodePicker.
+     * \brief A class that holds all the callbacks available in the BarcodePicker.
      * <p>
-     * This class is passed when showing the {@link BarcodePicker}
+     * This class is passed when showing the {\link BarcodePicker}
      */
     public class Callbacks {
         /**
-         * @brief Callback to be invoked whenever codes have been successfully scanned.
+         * \brief Callback to be invoked whenever codes have been successfully scanned.
          *
          * The callback receives the scan session as the first and only argument which contains
          * a list of recognized codes. Zero or more callbacks can be set.
          */
         public function didScan;
         /**
-         * @brief Callback to be invoked when the user enters a text in the search bar.
+         * \brief Callback to be invoked when the user enters a text in the search bar.
          *
          * The entered text is passed as the first argument to the callback. If you do not
          * use the search bar, you may pass null.
          */
         public function didManualSearch;
         /**
-         * @brief Callback to be invoked upon failure, or when cancel is called on the
+         * \brief Callback to be invoked upon failure, or when cancel is called on the
          * picker. The callback is passed a reason for failure as the only argument.
          */
         public function didCancel;
         /**
-         * @brief Callback to be invoked whenever text has been successfully recognized.
+         * \brief Callback to be invoked whenever text has been successfully recognized.
          *
-         * The callback receives the {@link RecognizedText} as the first and only argument.
+         * The callback receives the {\link RecognizedText} as the first and only argument.
          */
         public function didRecognizeText;
         /**
-         * @brief Callback to be invoked whenever a new code is being tracked by Matrix Scan.
+         * \brief Callback to be invoked whenever a new code is being tracked by Matrix Scan.
          *
          * The callback receives the matrix scan session as the first and only argument which
          * contains a list fo newly tracked codes.
          */
         public function didRecognizeNewCodes;
         /**
-         * @brief Callback that gets invoked whenever the picker changes state, e.g. when the
+         * \brief Callback that gets invoked whenever the picker changes state, e.g. when the
          * picker changes from stopped to active, or from active to paused. The argument to the
-         * callback is the new state (see {@link BarcodePicker.State} for possible values).
+         * callback is the new state (see {\link BarcodePicker.State} for possible values).
          */
         public function didChangeState;
 
         /**
-         * @brief Callback to be invoked whenever the state of the barcode picker changes, e.g.
+         * \brief Callback to be invoked whenever the state of the barcode picker changes, e.g.
          * when the torch is turned on.
          *
          * The callback receives the name of the changed property as the first argument and the new
@@ -446,14 +442,14 @@ public class Scandit {
     }
 
     /**
-     * @brief The main class for scanning barcodes with the Scandit Barcode Scanner.
+     * \brief The main class for scanning barcodes with the Scandit Barcode Scanner.
      *<p>
      * This class sets up the recognition process, the preview view, controls the camera and provides
      * a callback interface when barcodes are recognized.
      * <p>
      * The picker class is a able to run in full-screen or as a subview in an existing activity.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class BarcodePicker {
 
@@ -483,25 +479,24 @@ public class Scandit {
             LANDSCAPE_LEFT
         }
 
-
         /**
-         * @brief List of states the picker can be in. Used as arguments for the didChangeState
+         * \brief List of states the picker can be in. Used as arguments for the didChangeState
          *     callback.
          *
-         * @since 4.15
+         * \since 4.15
          */
         public enum State {
             /**
-             * @brief The picker is in stopped state: the camera preview is off, barcode scanning is off
+             * \brief The picker is in stopped state: the camera preview is off, barcode scanning is off
              */
             STOPPED,
             /**
-             * @brief The picker is in active state. The camera preview is running and barcode scanning
+             * \brief The picker is in active state. The camera preview is running and barcode scanning
              *    is active.
              */
             ACTIVE,
             /**
-             * @brief The picker is in paused state. The camera preview is running and barcode scanning
+             * \brief The picker is in paused state. The camera preview is running and barcode scanning
              *     is inactive.
              */
             PAUSED
@@ -510,19 +505,19 @@ public class Scandit {
         /**
          * Visibly shows the picker to the user. This should be called after the picker has been
          * fully configured. Once it is shown make sure to call
-         * {@link startScanning() startScanning()} if you want to start the video feed and scan for
+         * {\link startScanning() startScanning()} if you want to start the video feed and scan for
          * barcodes.
          *
-         * @param didScan callback to be invoked whenever codes have been successfully scanned.
+         * \param didScan callback to be invoked whenever codes have been successfully scanned.
          *    The callback receives the scan session as the first and only argument which contains
          *    a list of recognized codes.
-         * @param didManualSearch callback to be invoked when the user enters a text in the search bar.
+         * \param didManualSearch callback to be invoked when the user enters a text in the search bar.
          *    The entered text is passed as the first argument to the callback. If you do not
          *    use the search bar, you may pass null.
-         * @param didCancel callback to be invoked upon failure, or when cancel is called on the
+         * \param didCancel callback to be invoked upon failure, or when cancel is called on the
          *    picker. The callback is passed a reason for failure as the only argument.
-         * @param didRecognizeText callback to be invoked whenever text has been successfully
-         *    recognized. The callback receives the {@link RecognizedText} as the first and only
+         * \param didRecognizeText callback to be invoked whenever text has been successfully
+         *    recognized. The callback receives the {\link RecognizedText} as the first and only
          *    argument.
          */
         public void show(function didScan, function didManualSearch=null, function didCancel=null,
@@ -532,18 +527,17 @@ public class Scandit {
         /**
          * Visibly shows the picker to the user. This should be called after the picker has been
          * fully configured. Once it is shown make sure to call
-         * {@link startScanning() startScanning()} if you want to start the video feed and scan
+         * {\link startScanning() startScanning()} if you want to start the video feed and scan
          * for barcodes.
          *
          * \code
          * picker.show({ didScan : function(session) {}, ...  })
          * \endcode
          *
-         * @param callbacks An object containing one or more callbacks that are invoked when a
+         * \param callbacks An object containing one or more callbacks that are invoked when a
          *    certain events happens.
          */
         public void show(Callbacks callbacks);
-
 
         /**
          * Cancels the picker by stopping it and removing it from the screen. If the picker is not
@@ -552,161 +546,160 @@ public class Scandit {
         public void cancel();
 
         /**
-         * @brief Reconfigure the barcode picker with new settings
+         * \brief Reconfigure the barcode picker with new settings
          *
          * The settings are applied asynchronously. Once they have been applied,  all new frames
          * will be processed with the new settings.
          *
-         * @param settings the settings to apply.
+         * \param settings the settings to apply.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void applyScanSettings(ScanSettings settings);
 
         /**
-         * @brief Allows to scan multiple codes without closing the scanner.
+         * \brief Allows to scan multiple codes without closing the scanner.
          *
          * By default continuousMode is false and the scanner closes after scanning a code.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public boolean continuousMode;
 
         /**
-         * @brief The orientations to which the barcode picker is allowed to rotate to.
+         * \brief The orientations to which the barcode picker is allowed to rotate to.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public Orientation[] orientations;
 
         /**
-         * @brief Sets the view constraints of the barcode picker.
+         * \brief Sets the view constraints of the barcode picker.
          *
          * A call to this function causes the barcode picker to be added as a subview on top of the webview
          * instead of as full screen in a new view controller or activity.
          *
          * Margins, width and height may either be specified using device-independent pixels/points
-         * or in percent of the screen size. See {@link Constraints} for details.
+         * or in percent of the screen size. See {\link Constraints} for details.
          *
-         * @param portraitConstraints Constraints for when the device is in portrait or upside-down
+         * \param portraitConstraints Constraints for when the device is in portrait or upside-down
          *        portrait orientation. Can be null to indicate no margins and full width and height.
-         * @param landscapeConstraints Constraints for when the device is in landscape left or right
-         *          orientation. Can be null to indicate no margins and full width and height
-         * @param animationDuration The duration the layout change takes to animate. At 0 it will
+         * \param landscapeConstraints Constraints for when the device is in landscape left or right
+         *        orientation. Can be null to indicate no margins and full width and height
+         * \param animationDuration The duration the layout change takes to animate. At 0 it will
          *        instantly change.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void setConstraints(Constraints portraitConstraints, Constraints, landscapeConstraints, number animationDuration);
 
         /**
-         * @deprecated Replaced by setConstraints(portraitConstraints, landscapeConstraints, animationDuration)
+         * \deprecated Replaced by setConstraints(portraitConstraints, landscapeConstraints, animationDuration)
          * to allow more customization.
-         * @brief Sets the margins of the barcode picker.
+         * \brief Sets the margins of the barcode picker.
          *
          * A call to this function causes the barcode picker to be added as a subview on top of the webview
          * instead of as full screen in a new view controller or activity.
          *
          * Margins may either be specified using absolute, device-independent pixel units, or in percent
-         * of the screen size. See {@link Margins(String,String,String,String)} for details.
+         * of the screen size. See {\link Margins(String,String,String,String)} for details.
          *
-         * @param portraitMargins Margins for when the device is in portrait or upside-down portrait
+         * \param portraitMargins Margins for when the device is in portrait or upside-down portrait
          *        orientation. Can be null to indicate no margins.
-         * @param landscapeMargins Margins for when the device is in landscape left or right
-         *          orientation. Can be null to indicate no margins.
-         * @param animationDuration The duration the margin change takes to animate. At 0 it will
+         * \param landscapeMargins Margins for when the device is in landscape left or right
+         *        orientation. Can be null to indicate no margins.
+         * \param animationDuration The duration the margin change takes to animate. At 0 it will
          *        instantly change.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void setMargins(Margins portraitMargins, Margins landscapeMargins, number animationDuration);
 
         /**
-         * @brief Asynchronously pause the scanning process while keeping the camera preview running.
+         * \brief Asynchronously pause the scanning process while keeping the camera preview running.
          *
          * Use this method when you plan to briefly pause the scanning process and intend to
          * resume it later. It is not recommended to use this method when you are interrupting the
          * scanning process for longer periods of time as the camera preview will use considerable
-         * power. For such scenarios use {@link stopScanning} instead.
+         * power. For such scenarios use {\link stopScanning} instead.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void pauseScanning();
 
         /**
-         * @brief Asynchronously resume a previously paused scanning process
+         * \brief Asynchronously resume a previously paused scanning process
          *
-         * Use this method to resume scanning after {@link ScanSession.pauseScanning} or
-         * {@link pauseScanning} was called. Calling resume on a picker that was not previously
+         * Use this method to resume scanning after {\link ScanSession.pauseScanning} or
+         * {\link pauseScanning} was called. Calling resume on a picker that was not previously
          * started with with startScanning() is undefined.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void resumeScanning();
 
         /**
-         * @brief Asynchronously stop the scanning process and camera preview
+         * \brief Asynchronously stop the scanning process and camera preview
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void stopScanning();
 
         /**
-         * @brief Asynchronously start the camera preview and scanning process
+         * \brief Asynchronously start the camera preview and scanning process
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void startScanning();
 
         /**
-         * @brief Asynchronously start the camera preview and scanning process
+         * \brief Asynchronously start the camera preview and scanning process
          *
          * Allows to start the camera preview without immediately also starting the scanning process.
          *
-         * @param startInPausedState Whether the scanning process should be paused.
+         * \param startInPausedState Whether the scanning process should be paused.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void startScanning(boolean startInPausedState);
 
         /**
          * Switches the torch on or off.
          *
-         * @param on Whether the torch should be switched on.
+         * \param on Whether the torch should be switched on.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void switchTorchOn(boolean on);
 
         /**
          * Returns the overlay view which contains the main UI.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public ScanOverlay getOverlayView();
 
         /**
-         * @brief Converts a point of an Barcode's location into this picker's coordinate system.
+         * \brief Converts a point of an Barcode's location into this picker's coordinate system.
          *
          * The conversion takes the current resolution of the camera feed into consideration which means
          * that if the resolution should change, converting a previously retrieved point successfully is
          * no longer possible. A change in resolution happens for example if
-         * {@link ScanSettings.setHighDensityModeEnabled(boolean)} is changed
+         * {\link ScanSettings.setHighDensityModeEnabled(boolean)} is changed
          * or the camera is switched from back to front or vice versa.
          *
-         * @param point The point to be converted.
-         * @return The point in this picker's coordinate system. Can be null if an error occurs.
+         * \param point The point to be converted.
+         * \return The point in this picker's coordinate system. Can be null if an error occurs.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @see {@link Scandit.Barcode.location}
+         * \see {\link Scandit.Barcode.location}
          */
         public Point convertPointToPickerCoordinates(Point point);
     }
 
-
     /**
-     * @brief Settings to configure the decoding process
+     * \brief Settings to configure the decoding process
      */
     public class ScanSettings {
 
@@ -768,8 +761,8 @@ public class Scandit {
 
         /**
          * The working range tells the engine at which distance barcodes are to be
-         * expected. When set to {@link WORKING_RANGE_STANDARD} (the default), the focus is optimized
-         * for barcodes close to the camera. When set to {@link WORKING_RANGE_LONG}, the focus is
+         * expected. When set to {\link WORKING_RANGE_STANDARD} (the default), the focus is optimized
+         * for barcodes close to the camera. When set to {\link WORKING_RANGE_LONG}, the focus is
          * optimized for far-away codes.
          * <p>
          * When using non-standard working range, it is better to directly pass the
@@ -781,7 +774,6 @@ public class Scandit {
         public int workingRange;
 
         ///@}
-
 
         /** @name Scan Session Configuration
          * @{
@@ -809,7 +801,7 @@ public class Scandit {
          *
          * By default, the duplicate filter is set to 500ms
          *
-         * @see #codeCachingDuration
+         * \see #codeCachingDuration
          */
         public int codeDuplicateFilter;
 
@@ -842,13 +834,13 @@ public class Scandit {
          *
          * By default, the barcode recognition engine searches the whole image for barcodes.
          * Use this method to define the area in which barcodes are to be searched. Rectangle
-         * coordinates run from 0 to 1. The coordinates are relative to the whole camera preview 
-         * frames and not the view in which the preview frames are displayed. When displaying 
-         * the picker as a subview with an aspect ratio different from the camera image, it is 
-         * generally a good idea to restrict the active scanning area to the visible part of 
-         * the preview. 
+         * coordinates run from 0 to 1. The coordinates are relative to the whole camera preview
+         * frames and not the view in which the preview frames are displayed. When displaying
+         * the picker as a subview with an aspect ratio different from the camera image, it is
+         * generally a good idea to restrict the active scanning area to the visible part of
+         * the preview.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
          * Invoking this method with invalid rectangles, e.g. rectangles whose x, y, width or height
          * attributes are outside the allowed range of 0.0-1.0 will have no effect.
@@ -860,13 +852,13 @@ public class Scandit {
          *
          * By default, the barcode recognition engine searches the whole image for barcodes.
          * Use this method to define the area in which barcodes are to be searched. Rectangle
-         * coordinates run from 0 to 1. The coordinates are relative to the whole camera preview 
-         * frames and not the view in which the preview frames are displayed. When displaying 
-         * the picker as a subview with an aspect ratio different from the camera image, it is 
-         * generally a good idea to restrict the active scanning area to the visible part of 
-         * the preview. 
+         * coordinates run from 0 to 1. The coordinates are relative to the whole camera preview
+         * frames and not the view in which the preview frames are displayed. When displaying
+         * the picker as a subview with an aspect ratio different from the camera image, it is
+         * generally a good idea to restrict the active scanning area to the visible part of
+         * the preview.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
          * Invoking this method with invalid rectangles, e.g. rectangles whose top, left,
          * right, or bottom attributes are outside the allowed range of 0.0-1.0, or rectangles
@@ -878,25 +870,25 @@ public class Scandit {
          * Sets the device name to identify the current device when looking at analytics tools. Sends a request to
          * the server to set this as soon as a connection is available.
          *
-         * @param deviceName A device name.
+         * \param deviceName A device name.
          */
         public String deviceName;
 
         /**
-         * @brief Whether MatrixScan should be enabled.
+         * \brief Whether MatrixScan should be enabled.
          *
          * MatrixScan allows you to show the locations of all localized codes.
          * In order to get MatrixScan, it is recommended to implement the
-         * {@link Callbacks#didRecognizeNewCodes didRecognizeNewCodes} callback and to use
-         * {@link MatrixScanSession#newlyTrackedCodes newlyTrackedCodes}.
+         * {\link Callbacks#didRecognizeNewCodes didRecognizeNewCodes} callback and to use
+         * {\link MatrixScanSession#newlyTrackedCodes newlyTrackedCodes}.
          * To use the default MatrixScan UI, it is necessary to set
-         * {@link ScanOverlay#setGuiStyle() setGuiStyle()} to
-         * {@link ScanOverlay.GuiStyle.MATRIX_SCAN Scandit.ScanOverlay.GuiStyle.MATRIX_SCAN}.
+         * {\link ScanOverlay#setGuiStyle() setGuiStyle()} to
+         * {\link ScanOverlay.GuiStyle.MATRIX_SCAN Scandit.ScanOverlay.GuiStyle.MATRIX_SCAN}.
          * Implementing a custom MatrixScan UI is not possible.
          *
-         * @param enabled Whether MatrixScan should be enabled.
+         * \param enabled Whether MatrixScan should be enabled.
          *
-         * @since 5.5.0
+         * \since 5.5.0
          */
         public Boolean matrixScanEnabled;
 
@@ -906,17 +898,17 @@ public class Scandit {
         public HashMap<Barcode.Symbology, SymbologySettings> symbologies;
 
         /**
-         * @brief Retrieve symbology specific-settings
+         * \brief Retrieve symbology specific-settings
          *
-         * @param symbology the symbology settings to retrieve
-         * @return the symbology settings object, or null, if symbology is an invalid symbology.
+         * \param symbology the symbology settings to retrieve
+         * \return the symbology settings object, or null, if symbology is an invalid symbology.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public SymbologySettings getSymbologySettings(Barcode.Symbology symbology);
 
         /**
-         * @brief Enable/disable decoding of a certain symbology.
+         * \brief Enable/disable decoding of a certain symbology.
          *
          * This function provides a convenient shortcut to enabling/disabling decoding of a
          * particular symbology without having to go through SymbologySettings.
@@ -928,10 +920,10 @@ public class Scandit {
          * for this symbology. For details on defaults and how to calculate the symbol counts for
          * each symbology, take a look at <a href="../phonegap/cordova-active-symbols-counts.html">the barcode length page</a>.
          *
-         * @param symbology The symbology to be enabled.
-         * @param enabled true when decoding of the symbology should be enabled, false if not.
+         * \param symbology The symbology to be enabled.
+         * \param enabled true when decoding of the symbology should be enabled, false if not.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void setSymbologyEnabled(int symbology, boolean enabled);
 
@@ -942,7 +934,7 @@ public class Scandit {
          * <p>
          * By default, the back-facing camera is preferred.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public CameraFacing cameraFacingPreference;
 
@@ -957,8 +949,8 @@ public class Scandit {
          * when multiple barcodes are present in the image.
          * <p>
          * In restrictActiveScanningArea mode (activated with setting either
-         * {@link ScanSettings.activeScanningAreaPortrait activeScanningAreaPortrait}
-         * or {@link ScanSettings.activeScanningAreaLandscape activeScanningAreaLandscape}):
+         * {\link ScanSettings.activeScanningAreaPortrait activeScanningAreaPortrait}
+         * or {\link ScanSettings.activeScanningAreaLandscape activeScanningAreaLandscape}):
          * <p>
          * Changes the location of the spot where the barcode decoder actively scans
          * for barcodes.
@@ -992,39 +984,37 @@ public class Scandit {
          * version to the next. Do not call this function unless you specifically
          * have to.
          *
-         * @param key The property's name.
-         * @param value The property's value.
+         * \param key The property's name.
+         * \param value The property's value.
          */
         public void setProperty(String key, Object value);
 
-
         /**
-         * @brief Whether code rejection is enabled
+         * \brief Whether code rejection is enabled
          *
          * Property indicating whether code rejection is enabled. This feature
          * allows you to implement custom integrity checks for recognized barcodes by
          * rejecting codes that don't satisfy additional criteria. By default, code
          * rejection is disabled.
          *
-         * @see {@link ScanSession.rejectCode(Barcode)}
+         * \see {\link ScanSession.rejectCode(Barcode)}
          *
-         * @since 4.15.0
+         * \since 4.15.0
          */
         public boolean codeRejectionEnabled;
 
         /**
-         * @brief Settings to configure the text recognition
+         * \brief Settings to configure the text recognition
          *
          * Note that text recognition is not available in the default builds.
          */
         public TextRecognitionSettings textRecognition;
     }
 
-
     /**
-     * @brief Settings to configure the text recognition
+     * \brief Settings to configure the text recognition
      *
-     * @since 5.3.0
+     * \since 5.3.0
      */
     public class TextRecognitionSettings {
         /**
@@ -1079,9 +1069,9 @@ public class Scandit {
 
 
     /**
-     * @brief Holds the text recognition result as identified in a frame.
+     * \brief Holds the text recognition result as identified in a frame.
      *
-     * @since 5.3.0
+     * \since 5.3.0
      */
     public class RecognizedText {
         /**
@@ -1102,29 +1092,29 @@ public class Scandit {
 
 
     /**
-     * @brief Abstract scan UI class
+     * \brief Abstract scan UI class
      *
      * The ScanOverlay implements the scan UI displayed on top of the video feed. It is responsible
      * for highlighting barcodes and draw the viewfinder rectangle or laser UI.
      *
-     * @since 4.11.0
+     * \since 4.11.0
      */
     public class ScanOverlay {
 
         /**
-         * @brief Camera Switch Button Visibility
+         * \brief Camera Switch Button Visibility
          */
         public enum CameraSwitchVisibility  {
             /**
-             * @brief The camera switch button is always hidden.
+             * \brief The camera switch button is always hidden.
              */
             NEVER,
             /**
-             * @brief The camera switch button is shown on tablet devices with front and back cameras.
+             * \brief The camera switch button is shown on tablet devices with front and back cameras.
              */
             ON_TABLET,
             /**
-             * @brief The camera switch button is shown on all devices that have front and back cameras.
+             * \brief The camera switch button is shown on all devices that have front and back cameras.
              */
             ALWAYS
         }
@@ -1134,21 +1124,21 @@ public class Scandit {
          */
         public enum MatrixScanState  {
             /**
-             * @brief The code has been localized but not yet recognized.
+             * \brief The code has been localized but not yet recognized.
              */
             LOCALIZED,
             /**
-             * @brief The code has been recognized.
+             * \brief The code has been recognized.
              */
             RECOGNIZED,
             /**
-             * @brief The code has been visually rejected.
+             * \brief The code has been visually rejected.
              */
             REJECTED
         }
 
         /**
-         * @brief Scan UI style
+         * \brief Scan UI style
          */
         public enum GuiStyle  {
             /**
@@ -1168,27 +1158,26 @@ public class Scandit {
              */
             NONE,
             /**
-             * Like {@link ScanOverlay.GuiStyle.NONE Scandit.ScanOverlay.GuiStyle.NONE}, but
+             * Like {\link ScanOverlay.GuiStyle.NONE Scandit.ScanOverlay.GuiStyle.NONE}, but
              * barcode locations are highlighted in the UI.
              */
             LOCATIONS_ONLY
         }
         /**
-         * @brief The GUI style drawn to display the indicator where the code should be scanned and the
+         * \brief The GUI style drawn to display the indicator where the code should be scanned and the
          *   visualization of recognized codes.
          *
-         * @param guiStyle Must be one of
-         * {@link ScanOverlay.GuiStyle.DEFAULT Scandit.ScanOverlay.GuiStyle.DEFAULT},
-         * {@link ScanOverlay.GuiStyle.LASER Scandit.ScanOverlay.GuiStyle.LASER},
-         * {@link ScanOverlay.GuiStyle.MATRIX_SCAN Scandit.ScanOverlay.GuiStyle.MATRIX_SCAN},
-         * {@link ScanOverlay.GuiStyle.LOCATIONS_ONLY Scandit.ScanOverlay.GuiStyle.LOCATIONS_ONLY} or
-         * {@link ScanOverlay.GuiStyle.NONE Scandit.ScanOverlay.GuiStyle.NONE}. By default this is
+         * \param guiStyle Must be one of
+         * {\link ScanOverlay.GuiStyle.DEFAULT Scandit.ScanOverlay.GuiStyle.DEFAULT},
+         * {\link ScanOverlay.GuiStyle.LASER Scandit.ScanOverlay.GuiStyle.LASER},
+         * {\link ScanOverlay.GuiStyle.MATRIX_SCAN Scandit.ScanOverlay.GuiStyle.MATRIX_SCAN},
+         * {\link ScanOverlay.GuiStyle.LOCATIONS_ONLY Scandit.ScanOverlay.GuiStyle.LOCATIONS_ONLY} or
+         * {\link ScanOverlay.GuiStyle.NONE Scandit.ScanOverlay.GuiStyle.NONE}. By default this is
          * Scandit.ScanOverlay.GuiStyle.DEFAULT.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void setGuiStyle(GuiStyle guiStyle);
-
 
         /** @name Sound Configuration
          *  Customize the scan sound.
@@ -1201,9 +1190,9 @@ public class Scandit {
          *
          * Enabled by default.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param enabled Whether the beep is enabled.
+         * \param enabled Whether the beep is enabled.
          */
         public void setBeepEnabled(boolean enabled);
 
@@ -1213,13 +1202,12 @@ public class Scandit {
          *
          * Enabled by default.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param enabled Whether vibrate is enabled.
+         * \param enabled Whether vibrate is enabled.
          */
         public void setVibrateEnabled(boolean enabled);
         ///@}
-
 
         /** @name Torch Configuration
          *  Enable and customize appearance of the torch icon.
@@ -1232,57 +1220,56 @@ public class Scandit {
          * By default it is enabled. The torch icon is never shown when the camera does not have a
          * torch (most tablets, front cameras, etc).
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param enabled Whether the torch button should be shown.
+         * \param enabled Whether the torch button should be shown.
          */
         public void setTorchEnabled(boolean enabled);
 
         /**
-         * @brief Sets the position at which the button to enable the torch is drawn.
+         * \brief Sets the position at which the button to enable the torch is drawn.
          *
          * By default the margins are 15 and width and height are 40.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param leftMargin Left margin in points.
-         * @param topMargin Top margin in points.
-         * @param width Width in points.
-         * @param height Height in points.
+         * \param leftMargin Left margin in points.
+         * \param topMargin Top margin in points.
+         * \param width Width in points.
+         * \param height Height in points.
          */
         public void setTorchButtonMarginsAndSize(int leftMargin, int topMargin, int width, int height);
 
         /**
-         * @brief Sets the accessibility label and hint for the torch button while the torch is off.
+         * \brief Sets the accessibility label and hint for the torch button while the torch is off.
          *
          * The accessibility label and hint give vision-impaired users voice over guidance for the torch
          * button while the torch is turned on. The default label is "Torch Switch (Currently Off)", the
          * default hint "Double-tap to switch the torch on". The hint is only set on iOS devices as Android
          * does not support it.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param label The accessibility label.
-         * @param hint The accessibility hint.
+         * \param label The accessibility label.
+         * \param hint The accessibility hint.
          */
         public void setTorchButtonOffAccessibility(String label, String hint);
 
         /**
-         * @brief Sets the accessibility label and hint for the torch button while the torch is on.
+         * \brief Sets the accessibility label and hint for the torch button while the torch is on.
          *
          * The accessibility label and hint give vision-impaired users voice over guidance for the torch
          * button while the torch is turned on. The default label is "Torch Switch (Currently On)", the
          * default hint "Double-tap to switch the torch off". The hint is only set on iOS devices as Android
          * does not support it.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param label The accessibility label.
-         * @param hint The accessibility hint.
+         * \param label The accessibility label.
+         * \param hint The accessibility hint.
          */
         public void setTorchButtonOnAccessibility(String label, String hint);
         ///@}
-
 
         /** @name Camera Switch Configuration
          *  Enable camera switch and set icons
@@ -1292,34 +1279,32 @@ public class Scandit {
         /**
          * Sets when the camera switch button is visible for devices that have more than one camera.
          *
-         * By default it is {@link ScanOverlay.CameraSwitchVisibility.NEVER Scandit.ScanOverlay.CameraSwitchVisibility.NEVER}.
+         * By default it is {\link ScanOverlay.CameraSwitchVisibility.NEVER Scandit.ScanOverlay.CameraSwitchVisibility.NEVER}.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param visibility The visibility of the camera switch button
-         *                   ({@link ScanOverlay.CameraSwitchVisibility.NEVER Scandit.ScanOverlay.CameraSwitchVisibility.NEVER},
-         *                   {@link ScanOverlay.CameraSwitchVisibility.ON_TABLET Scandit.ScanOverlay.CameraSwitchVisibility.ON_TABLET},
-         *                   {@link ScanOverlay.CameraSwitchVisibility.ALWAYS Scandit.ScanOverlay.CameraSwitchVisibility.ALWAYS})
+         * \param visibility The visibility of the camera switch button
+         *                   ({\link ScanOverlay.CameraSwitchVisibility.NEVER Scandit.ScanOverlay.CameraSwitchVisibility.NEVER},
+         *                   {\link ScanOverlay.CameraSwitchVisibility.ON_TABLET Scandit.ScanOverlay.CameraSwitchVisibility.ON_TABLET},
+         *                   {\link ScanOverlay.CameraSwitchVisibility.ALWAYS Scandit.ScanOverlay.CameraSwitchVisibility.ALWAYS})
          */
         public void setCameraSwitchVisibility(CameraSwitchVisibility visibility);
 
         /**
-         * @brief Sets the position at which the button to switch the camera is drawn.
+         * \brief Sets the position at which the button to switch the camera is drawn.
          *
          * By default the margins are 15 and width and height are 40.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param rightMargin Right margin in dp.
-         * @param topMargin Top margin in dp.
-         * @param width Width in dp.
-         * @param height Height in dp.
+         * \param rightMargin Right margin in dp.
+         * \param topMargin Top margin in dp.
+         * \param width Width in dp.
+         * \param height Height in dp.
          */
-        public void setCameraSwitchButtonMarginsAndSize(
-                int rightMargin, int topMargin, int width, int height);
-
+        public void setCameraSwitchButtonMarginsAndSize(int rightMargin, int topMargin, int width, int height);
         /**
-         * @brief Sets the accessibility label and hint for the camera switch button while the back-facing
+         * \brief Sets the accessibility label and hint for the camera switch button while the back-facing
          * camera is active.
          *
          * The accessibility label and hint give vision-impaired users voice over guidance for the camera
@@ -1327,15 +1312,15 @@ public class Scandit {
          * (Currently back-facing)", the default hint "Double-tap to switch to the front-facing camera".
          * The hint is only set on iOS devices as Android does not support it.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param label The accessibility label.
-         * @param hint The accessibility hint.
+         * \param label The accessibility label.
+         * \param hint The accessibility hint.
          */
         public void setCameraSwitchButtonBackAccessibility(String label, String hint);
 
         /**
-         * @brief Sets the accessibility label and hint for the camera switch button while the front-facing
+         * \brief Sets the accessibility label and hint for the camera switch button while the front-facing
          * camera is active.
          *
          * The accessibility label and hint give vision-impaired users voice over guidance for the camera
@@ -1343,10 +1328,10 @@ public class Scandit {
          * (Currently front-facing)", the default hint "Double-tap to switch to the back-facing camera".
          * The hint is only set on iOS devices as Android does not support it.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param label The accessibility label.
-         * @param hint The accessibility hint.
+         * \param label The accessibility label.
+         * \param hint The accessibility hint.
          */
         public void setCameraSwitchButtonFrontAccessibility(String label, String hint);
         ///@}
@@ -1363,20 +1348,19 @@ public class Scandit {
          * recognized. It only changes the size of the box drawn onto the scan screen. To restrict the
          * active scanning area, use the methods listed below.
          *
-         * @see ScanSettings.setScanningHotSpot(number, number)
-         * @see ScanSettings.setScanningHotSpotHeight(number)
+         * \see ScanSettings.setScanningHotSpot(number, number)
+         * \see ScanSettings.setScanningHotSpotHeight(number)
          *
          * By default the width is 0.8, height is 0.4, landscapeWidth is 0.6, landscapeHeight is 0.4
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param width Width of the viewfinder rectangle in portrait orientation.
-         * @param height Height of the viewfinder rectangle in portrait orientation.
-         * @param landscapeWidth Width of the viewfinder rectangle in landscape orientation.
-         * @param landscapeHeight Height of the viewfinder rectangle in landscape orientation.
+         * \param width Width of the viewfinder rectangle in portrait orientation.
+         * \param height Height of the viewfinder rectangle in portrait orientation.
+         * \param landscapeWidth Width of the viewfinder rectangle in landscape orientation.
+         * \param landscapeHeight Height of the viewfinder rectangle in landscape orientation.
          */
-        public void setViewfinderDimension(
-                number width, number height, number landscapeWidth, number landscapeHeight);
+        public void setViewfinderDimension(number width, number height, number landscapeWidth, number landscapeHeight);
 
         /**
          * Sets the color of the viewfinder before a bar code has been recognized
@@ -1385,9 +1369,9 @@ public class Scandit {
          *
          * By default this is: white (1.0, 1.0, 1.0)
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param hexColor String of the color's hex value ("FF0000" for red, "00FF00" for green).
+         * \param hexColor String of the color's hex value ("FF0000" for red, "00FF00" for green).
          */
         public void setViewfinderColor(String hexColor);
 
@@ -1398,13 +1382,12 @@ public class Scandit {
          *
          * By default this is: light blue (0.222, 0.753, 0.8)
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param hexColor String of the color's hex value ("FF0000" for red, "00FF00" for green).
+         * \param hexColor String of the color's hex value ("FF0000" for red, "00FF00" for green).
          */
         public void setViewfinderDecodedColor(String hexColor);
         ///@}
-
 
         /** @name Search Bar Configuration
          *  Customize the search bar.
@@ -1416,23 +1399,23 @@ public class Scandit {
          *
          * The search bar allows the user to manually enter the data of a barcode. When the
          * user finished entering data, the manual callback provided to the
-         * {@link BarcodePicker.show BarcodePicker.show} method is invoked with the entered
+         * {\link BarcodePicker.show BarcodePicker.show} method is invoked with the entered
          * data as a string.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param show Whether the search bar should be visible.
+         * \param show Whether the search bar should be visible.
          */
         public void showSearchBar(boolean show);
 
         /**
-         * @brief Sets the caption of the search button at the top of the numerical keyboard.
+         * \brief Sets the caption of the search button at the top of the numerical keyboard.
          *
          * By default this is: "Go"
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param caption Caption of the search button.
+         * \param caption Caption of the search button.
          */
         public void setSearchBarActionButtonCaption(String caption);
 
@@ -1442,13 +1425,12 @@ public class Scandit {
          *
          * By default this is: "Scan barcode or enter it here"
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param text A placeholder text shown when the search bar is empty.
+         * \param text A placeholder text shown when the search bar is empty.
          */
         public void setSearchBarPlaceholderText(String text);
         ///@}
-
 
         /** @name Tool Bar Configuration
          *  Customize the tool bar (iOS only).
@@ -1460,13 +1442,12 @@ public class Scandit {
          *
          * By default this is: "Cancel"
          *
-         * @since 4.13.0
+         * \since 4.13.0
          *
-         * @param caption The cancel button's caption.
+         * \param caption The cancel button's caption.
          */
         public void setToolBarButtonCaption(String caption);
         ///@}
-
 
         /** @name Non-Official Methods
          */
@@ -1478,10 +1459,10 @@ public class Scandit {
          * can be accessed through it can and will vanish without public notice from one version to
          * the next. Do not use this method unless you specifically have to.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          *
-         * @param key The name of the property
-         * @param value the value for the property.
+         * \param key The name of the property
+         * \param value the value for the property.
          */
         public void setProperty(String key, Object value);
 
@@ -1489,9 +1470,9 @@ public class Scandit {
          * Sets whether the button to switch between different recognition modes should be visible.
          * If The scanner only supports one recognition mode the button is never shown.
          *
-         * @since 5.4
+         * \since 5.4
          *
-         * @param visible Whether the switch should be visible.
+         * \param visible Whether the switch should be visible.
          */
         public void setTextRecognitionSwitchVisible(boolean visible);
 
@@ -1499,26 +1480,26 @@ public class Scandit {
          * Sets the text shown if the camera can not be aquired because the app does not have
          * permission to access the camera.
          *
-         * @since 5.4
+         * \since 5.4
          *
-         * @param text The text that is displayed.
+         * \param text The text that is displayed.
          */
         public void setMissingCameraPermissionInfoText(String text);
 
         /**
          * \brief Sets the color of the tracked barcodes to use for the specified state.
          *
-         * @since 5.7
+         * \since 5.7
          *
-         * @param color The color to use for tracked barcodes in the specified state.
-         * @param state The state that uses the specified color.
+         * \param color The color to use for tracked barcodes in the specified state.
+         * \param state The state that uses the specified color.
          */
         public void setMatrixScanHighlightingColor(String hexColor, String state);
         ///@}
     }
 
     /**
-     * @brief Holds settings specific to a particular symbology (1d, 2d)
+     * \brief Holds settings specific to a particular symbology (1d, 2d)
      */
     public class SymbologySettings {
 
@@ -1590,7 +1571,7 @@ public class Scandit {
          * It is advised to only enable symbologies that are required by the application as every enabled
          * symbology adds processing overhead.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public boolean enabled;
 
@@ -1601,7 +1582,7 @@ public class Scandit {
          * It is advised to only enable symbologies that are required by the application as every enabled
          * symbology adds processing overhead.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public boolean colorInvertedEnabled;
 
@@ -1611,7 +1592,7 @@ public class Scandit {
          * Extensions are custom features that are only supported by a small number of
          * symbologies. For a list of supported extensions, consult the constants of this class.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public Extension[] extensions;
 
@@ -1621,7 +1602,7 @@ public class Scandit {
          * the symbology specification. If any of the checksums matches, the code is returned as
          * recognized, otherwise it is discarded.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public Checksum[] checksums;
 
@@ -1638,15 +1619,14 @@ public class Scandit {
          * codes) as well as 2d codes. For other symbologies, see <a href="../c_api/symbologies.html">
          * Calculating symbol counts for variable-length symbologies</a>.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public int[] activeSymbolCounts;
     }
 
-
     /**
      * The scan session holds all barcodes that were decoded in the current
-     * session. These codes are available as {@link getAllRecognizedCodes()}.
+     * session. These codes are available as {\link getAllRecognizedCodes()}.
      *
      * <h2>Configuring Session Behaviour</h2>
      *
@@ -1662,25 +1642,25 @@ public class Scandit {
      * By default, if a barcode has the same symbology and data as code that was
      * decoded less than 500ms ago, it is filtered out as a duplicate. The exact
      * filtering behaviour can be changed by setting the "code duplicate filter", see
-     * {@link ScanSettings.setCodeDuplicateFilter} for details.
+     * {\link ScanSettings.setCodeDuplicateFilter} for details.
      *
      * <h2>Session Lifetime</h2>
      *
-     * The session is cleared when either {@link BarcodePicker.startScanning} or ,
-     * {@link BarcodePicker.stopScanning} is called, or when the user manually clears
-     * the session using {@link clear}.
+     * The session is cleared when either {\link BarcodePicker.startScanning} or ,
+     * {\link BarcodePicker.stopScanning} is called, or when the user manually clears
+     * the session using {\link clear}.
      *
-     * @see ScanSettings.setCodeCachingDuration
-     * @see ScanSettings.setCodeDuplicateFilter
+     * \see ScanSettings.setCodeCachingDuration
+     * \see ScanSettings.setCodeDuplicateFilter
      *
-     * @since 4.11.0
+     * \since 4.11.0
      *
      */
     public class ScanSession {
         /**
          * List of barcodes that have been successfully recognized in the last frame.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public Barcode[] newlyRecognizedCodes;
 
@@ -1688,43 +1668,43 @@ public class Scandit {
          * List of barcodes that have been localized in the last frame. This list does not include
          * barcodes that have been successfully recognized.
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public Barcode[] newlyLocalizedCodes;
 
         /**
-         * @brief Returns the list of barcodes (data, symbology) that have been recognized
+         * \brief Returns the list of barcodes (data, symbology) that have been recognized
          *     in this session.
          *
          * Depending on the code caching and duplicate filtering behaviour, different
          * sets of codes are returned by this method.
          *
-         * @see ScanSettings.setCodeCachingDuration
-         * @see ScanSettings.setCodeDuplicateFilter
+         * \see ScanSettings.setCodeCachingDuration
+         * \see ScanSettings.setCodeDuplicateFilter
          *
-         * @return a new copy of the list of barcodes that have been successfully
+         * \return a new copy of the list of barcodes that have been successfully
          *    decoded in this session
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public Barcode[] allRecognizedCodes;
 
         /**
-         * @brief Immediately Pauses barcode recognition, but keeps camera preview open.
+         * \brief Immediately Pauses barcode recognition, but keeps camera preview open.
          *
          * This is useful for briefly pausing the barcode recognition to show the
          * recognized code in an overlay and then resume the scan process to scan
          * more codes.
          * <p>
          * When only scanning one code and then returning to another part of the
-         * application, it is recommended to call {@link stopScanning()} instead.
+         * application, it is recommended to call {\link stopScanning()} instead.
          * <p>
          * Pausing will not clear the scan session. To remove all codes from the
-         * scan session call {@link clear()}.
+         * scan session call {\link clear()}.
          *
-         * @see BarcodePicker.resumeScanning()
+         * \see BarcodePicker.resumeScanning()
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void pauseScanning();
 
@@ -1734,14 +1714,14 @@ public class Scandit {
          * Calling stop will release the camera, so that other applications can use
          * it.
          *
-         * @see BarcodePicker.stopScanning(), pauseScanning()
+         * \see BarcodePicker.stopScanning(), pauseScanning()
          *
-         * @since 4.11.0
+         * \since 4.11.0
          */
         public void stopScanning();
 
         /**
-         * @brief Prevent beeping/vibrate and highlighting for a particular code.
+         * \brief Prevent beeping/vibrate and highlighting for a particular code.
          *
          * Use this method to reject a certain code if you have additional methods for verifying
          * the integrity of the code, e.g. with a custom checksum. Rejected
@@ -1749,67 +1729,67 @@ public class Scandit {
          * will be surpressed.
          *
          * For code rejection to work, you must enabled it by setting
-         * {@link ScanSettings.codeRejectionEnabled code rejection} to true.
+         * {\link ScanSettings.codeRejectionEnabled code rejection} to true.
          *
-         * Rejected codes will be added to {@link allRecognizedCodes} like all other codes.
+         * Rejected codes will be added to {\link allRecognizedCodes} like all other codes.
          *
-         * Note that you should only pass codes returned by {@link newlyRecognizedCodes}
+         * Note that you should only pass codes returned by {\link newlyRecognizedCodes}
          * as passing any other code will have no effect. Additionally, you should only
          * calls this method from the scan callback.
          *
-         * @param code The code to reject
+         * \param code The code to reject
          *
-         * @since 4.15.0
+         * \since 4.15.0
          */
         public void rejectCode(Barcode code);
     }
 
     /**
      * The matrix scan session holds all tracked codes that are newly available in the current
-     * session. These codes are available as {@link newlyTrackedCodes()}. It also allows the
+     * session. These codes are available as {\link newlyTrackedCodes()}. It also allows the
      * rejection of codes, showing a different color when visualizing them.
      *
      * <h2>Session Lifetime</h2>
      *
-     * The session is cleared when either {@link BarcodePicker.startScanning} or ,
-     * {@link BarcodePicker.stopScanning} is called.
+     * The session is cleared when either {\link BarcodePicker.startScanning} or ,
+     * {\link BarcodePicker.stopScanning} is called.
      *
-     * @since 5.5.0
+     * \since 5.5.0
      */
     public class MatrixScanSession {
         /**
          * List of barcodes that have been successfully recognized in the last frame.
          *
-         * @since 5.5.0
+         * \since 5.5.0
          */
         public Barcode[] newlyTrackedCodes;
 
         /**
          * Rejects the specified barcode, showing a different
          *
-         * @param code The barcode to be rejected (should be inside MatrixScanSession#ewlyTrackedCodes)
+         * \param code The barcode to be rejected (should be inside MatrixScanSession#ewlyTrackedCodes)
          *
-         * @since 5.5.0
+         * \since 5.5.0
          */
         public void rejectTrackedCode(Barcode code);
     }
     
     /**
-     * @brief A class that holds all the callbacks available in the ScanCase.
+     * \brief A class that holds all the callbacks available in the ScanCase.
      */
     public class CaseCallbacks {
         /**
-         * @brief Callback to be invoked when SBSScanCase has finished the initialization.
+         * \brief Callback to be invoked when SBSScanCase has finished the initialization.
          */
         public function didInitialize;
         
         /**
-         * @brief Callback to be invoked whenever a new code is scanned.
+         * \brief Callback to be invoked whenever a new code is scanned.
          */
         public function didScan;
         
         /**
-         * @brief Callback to be invoked whenever ScanCase.State changed.
+         * \brief Callback to be invoked whenever ScanCase.State changed.
          */
         public function didChangeState;
     }
@@ -1829,13 +1809,13 @@ public class Scandit {
      *     didInitialize: function () { },
      *     // Called whenever a code has been scanned.
      *     didScan: function (session) {
-     *         console.log(session.newlyRecognizedCodes[0].data);           
+     *         console.log(session.newlyRecognizedCodes[0].data);
      *         return Scandit.ScanCase.State.STANDBY;
-     *     },  
+     *     },
      *     // Called whenever the scan case changes state, e.g. when switching from standby to active.
      *     didChangeState: function (data) { console.log(data.state); }
      * };
-     *    
+     *
      * // Acquire exclusive access to the scan case.
      * scanCase = Scandit.ScanCase.acquire(scanSettings, callbacks);
      * \endcode
@@ -1859,7 +1839,7 @@ public class Scandit {
             OFF,
             /**
              * Camera is on, scanner is on, torch is on.
-             */    
+             */
             STANDBY
         }
         
@@ -1879,7 +1859,7 @@ public class Scandit {
             TIMEOUT,
             /**
              * The change of state was driven by the volume button.
-             */ 
+             */
             VOLUME_BUTTON
         }
         
@@ -1904,7 +1884,7 @@ public class Scandit {
         /**
          * \brief Turn on/off scanning via the volume button
          *
-         * Set to true to change the state of the scan case using the volume button 
+         * Set to true to change the state of the scan case using the volume button
          * (holding the volume button changes the state to \ref ScanCase.State.Active,
          * while releasing it changes the state to \ref ScanCase.State.Standby).
          * Set to false to avoid controlling the state of the scan case via the volume button.
@@ -1917,9 +1897,9 @@ public class Scandit {
         
         /**
          * \brief Whether to play a beep sound upon a successful scan.
-         * 
-         * By default, a beep sound is played upon successfully scanning a barcode. Set this property to 
-         * false, to disable the sound. If the ringer mode is set to silent, no beep sound is played, 
+         *
+         * By default, a beep sound is played upon successfully scanning a barcode. Set this property to
+         * false, to disable the sound. If the ringer mode is set to silent, no beep sound is played,
          * regardless of the value of this property.
          *
          * \since 5.7.0
@@ -1929,20 +1909,20 @@ public class Scandit {
         /**
          * \brief Whether to play an error sound when no code was scanned.
          *
-         * By default, an error sound is played when activating the scanner using the volume button control 
-         * when no could be scanned. If the ringer mode is set to silent, no sound is played, regardless of 
+         * By default, an error sound is played when activating the scanner using the volume button control
+         * when no could be scanned. If the ringer mode is set to silent, no sound is played, regardless of
          * the value of this property.
          *
          * \since 5.7.0
          */
-        public void errorSoundEnabled(boolean enabled);        
+        public void errorSoundEnabled(boolean enabled);
         
         /**
          * \brief Set a timeout to automatically change state after a specific interval.
          *
-         * Set a timer that is started whenever the state is changed to fromState. 
-         * The timer will have a time interval equal to timeout and then it will switch the state of the 
-         * scan case to toState. The timer will be created every time the state of the scan case is equal to 
+         * Set a timer that is started whenever the state is changed to fromState.
+         * The timer will have a time interval equal to timeout and then it will switch the state of the
+         * scan case to toState. The timer will be created every time the state of the scan case is equal to
          * fromState.
          * At any given time there could not be more than one timeout for each fromState.
          *
@@ -1952,6 +1932,6 @@ public class Scandit {
          *
          * \since 5.7.0
          */
-        public void setTimeout(boolean timeout, ScanCase.State fromState, ScanCase.State toState);           
+        public void setTimeout(boolean timeout, ScanCase.State fromState, ScanCase.State toState);
     }
 }

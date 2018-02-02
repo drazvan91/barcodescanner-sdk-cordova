@@ -34,9 +34,11 @@
         Scandit.License.setAppKey("-- ENTER YOUR SCANDIT LICENSE KEY HERE --");
         // Enable EAN13, EAN8 and Code 128 code scanning.
         var scanSettings = {
-            symbologies: [Scandit.Barcode.Symbology.EAN13,
-            Scandit.Barcode.Symbology.EAN8,
-            Scandit.Barcode.Symbology.CODE128]
+            symbologies: [
+                Scandit.Barcode.Symbology.EAN13,
+                Scandit.Barcode.Symbology.EAN8,
+                Scandit.Barcode.Symbology.CODE128
+            ]
         };
         // Define the callbacks for scan case life-cycle events.
         var callbacks = {

@@ -591,7 +591,7 @@ public class Scandit {
          * @param portraitConstraints Constraints for when the device is in portrait or upside-down
          *        portrait orientation. Can be null to indicate no margins and full width and height.
          * @param landscapeConstraints Constraints for when the device is in landscape left or right
-         *		  orientation. Can be null to indicate no margins and full width and height
+         *          orientation. Can be null to indicate no margins and full width and height
          * @param animationDuration The duration the layout change takes to animate. At 0 it will
          *        instantly change.
          *
@@ -613,7 +613,7 @@ public class Scandit {
          * @param portraitMargins Margins for when the device is in portrait or upside-down portrait
          *        orientation. Can be null to indicate no margins.
          * @param landscapeMargins Margins for when the device is in landscape left or right
-         *		  orientation. Can be null to indicate no margins.
+         *          orientation. Can be null to indicate no margins.
          * @param animationDuration The duration the margin change takes to animate. At 0 it will
          *        instantly change.
          *
@@ -1792,5 +1792,166 @@ public class Scandit {
          * @since 5.5.0
          */
         public void rejectTrackedCode(Barcode code);
+    }
+    
+    /**
+     * @brief A class that holds all the callbacks available in the ScanCase.
+     */
+    public class CaseCallbacks {
+        /**
+         * @brief Callback to be invoked when SBSScanCase has finished the initialization.
+         */
+        public function didInitialize;
+        
+        /**
+         * @brief Callback to be invoked whenever a new code is scanned.
+         */
+        public function didScan;
+        
+        /**
+         * @brief Callback to be invoked whenever ScanCase.State changed.
+         */
+        public function didChangeState;
+    }
+
+    /**
+     * \brief Start a scanner for the Scandit case (iOS only).
+     *
+     * Example (minimal) usage:
+     *
+     * \code
+     * // Set your app key on the license first.
+     * Scandit.License.setAppKey("-- ENTER YOUR SCANDIT LICENSE KEY HERE --");
+     *
+     * // Define the callbacks for scan case life-cycle events.
+     * var callbacks = {
+     *     // Called when the scan case is initialized.
+     *     didInitialize: function () { },
+     *     // Called whenever a code has been scanned.
+     *     didScan: function (session) {
+     *         console.log(session.newlyRecognizedCodes[0].data);           
+     *         return Scandit.ScanCase.State.STANDBY;
+     *     },  
+     *     // Called whenever the scan case changes state, e.g. when switching from standby to active.
+     *     didChangeState: function (data) { console.log(data.state); }
+     * };
+     *    
+     * // Acquire exclusive access to the scan case.
+     * scanCase = Scandit.ScanCase.acquire(scanSettings, callbacks);
+     * \endcode
+     *
+     * \since 4.14.0
+     */
+    public class ScanCase {
+        /**
+         * Enumerates the possible state for the scan case
+         *
+         * \since 4.14.0
+         */
+        public enum State {
+            /**
+             * Camera is off, torch is off.
+             */
+            ACTIVE,
+            /**
+             * Camera is on but with throttled frame-rate, scanner is off, torch is off.
+             */
+            OFF,
+            /**
+             * Camera is on, scanner is on, torch is on.
+             */    
+            STANDBY
+        }
+        
+        /**
+         * Enumerates the possible reasons for which the scan case state has changed
+         *
+         * \since 5.6.0
+         */
+        public enum StateChangeReason {
+            /**
+             * The state was changed directly.
+             */
+            MANUAL,
+            /**
+             * The change of state was driven by a timeout.
+             */
+            TIMEOUT,
+            /**
+             * The change of state was driven by the volume button.
+             */ 
+            VOLUME_BUTTON
+        }
+        
+        /**
+         * \brief Initializes a new scan case.
+         *
+         * Note that the initial invocation of this method will activate the Scandit Barcode Scanner SDK,
+         * after which the device will count towards your device limit.
+         *
+         * Make sure to set the app key available from your Scandit account through SBSLicense#setAppKey:
+         * before you call this initializer.
+         *
+         * This is the recommended way to create a new ScanCase object.
+         *
+         * \param settings The scan settings to use.
+         * \param callbacks The scan case callbacks.
+         *
+         * \since 4.14.0
+         */
+        public void acquire(ScanSettings settings, CaseCallbacks callbacks);
+        
+        /**
+         * \brief Turn on/off scanning via the volume button
+         *
+         * Set to true to change the state of the scan case using the volume button 
+         * (holding the volume button changes the state to \ref ScanCase.State.Active,
+         * while releasing it changes the state to \ref ScanCase.State.Standby).
+         * Set to false to avoid controlling the state of the scan case via the volume button.
+         *
+         * The default value is false.
+         *
+         * \since 5.5.0
+         */
+        public void volumeButtonToScanEnabled(boolean enabled);
+        
+        /**
+         * \brief Whether to play a beep sound upon a successful scan.
+         * 
+         * By default, a beep sound is played upon successfully scanning a barcode. Set this property to 
+         * false, to disable the sound. If the ringer mode is set to silent, no beep sound is played, 
+         * regardless of the value of this property.
+         *
+         * \since 5.7.0
+         */
+        public void scanBeepEnabled(boolean enabled);
+        
+        /**
+         * \brief Whether to play an error sound when no code was scanned.
+         *
+         * By default, an error sound is played when activating the scanner using the volume button control 
+         * when no could be scanned. If the ringer mode is set to silent, no sound is played, regardless of 
+         * the value of this property.
+         *
+         * \since 5.7.0
+         */
+        public void errorSoundEnabled(boolean enabled);        
+        
+        /**
+         * \brief Set a timeout to automatically change state after a specific interval.
+         *
+         * Set a timer that is started whenever the state is changed to fromState. 
+         * The timer will have a time interval equal to timeout and then it will switch the state of the 
+         * scan case to toState. The timer will be created every time the state of the scan case is equal to 
+         * fromState.
+         * At any given time there could not be more than one timeout for each fromState.
+         *
+         * \param timeout The interval of the timer.
+         * \param fromState The state from which the timer should start.
+         * \param toState The new state when the timer is fired.
+         *
+         * \since 5.7.0
+         */
+        public void setTimeout(boolean timeout, ScanCase.State fromState, ScanCase.State toState);           
     }
 }

@@ -133,6 +133,10 @@
       <ion-toggle [disabled]="!scanSettings.symbologies['dotcode'].enabled" [(ngModel)]="scanSettings.symbologies['dotcode'].colorInvertedEnabled"
         item-right></ion-toggle>
     </ion-item>
+    <ion-item>
+      <ion-label>MicroQR</ion-label>
+      <ion-toggle [(ngModel)]="scanSettings.symbologies['microqr'].enabled" item-right></ion-toggle>
+    </ion-item>
   </ion-list>
 
   <ion-list *ngIf="scanSettings && scanSettings.symbologies && uiSettings">

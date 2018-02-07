@@ -36,7 +36,8 @@ Barcode.Symbology = {
 	FIVE_DIGIT_ADD_ON: "five-digit-add-on",
 	TWO_DIGIT_ADD_ON: "two-digit-add-on",
 	KIX: "kix",
-	RM4SCC: "rm4scc"
+	RM4SCC: "rm4scc",
+    MICRO_QR: "microqr"
 }
 
 module.exports = Barcode;

@@ -1506,7 +1506,7 @@ public class Scandit {
         public void setMissingCameraPermissionInfoText(String text);
 
         /**
-         * \brief Sets the color of the tracked barcodes to use for the specified state.
+         * Sets the color of the tracked barcodes to use for the specified state.
          *
          * @since 5.7
          *

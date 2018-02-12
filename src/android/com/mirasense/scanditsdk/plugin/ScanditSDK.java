@@ -177,7 +177,7 @@ public class ScanditSDK extends CordovaPlugin {
         if (data.length() > 2) {
             // We extract all options and add them to the intent extra bundle.
             try {
-                final JSONObject settings = data.getJSONObject(0);
+                final JSONObject settings = unifyRecognitionMode(data.getJSONObject(0));
                 final Bundle options = new Bundle();
                 setOptionsOnBundle(data.getJSONObject(1), options);
                 final Bundle overlayOptions = new Bundle();
@@ -218,7 +218,7 @@ public class ScanditSDK extends CordovaPlugin {
             return;
         }
         try {
-            final JSONObject settings = data.getJSONObject(0);
+            final JSONObject settings = unifyRecognitionMode(data.getJSONObject(0));
 
             mWorker.getHandler().post(new Runnable() {
                 @Override
@@ -241,6 +241,19 @@ public class ScanditSDK extends CordovaPlugin {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    
+    private JSONObject unifyRecognitionMode(JSONObject settings) throws JSONException {
+        if (settings.has("recognitionMode")) {
+            int mode = settings.optInt("recognitionMode", -1);
+            if (mode == 1) {
+                settings.put("recognitionMode", "text");
+            } else if (mode == 2) {
+                settings.put("recognitionMode", "code");
+            }
+        }
+        
+        return settings;
     }
 
     private void updateOverlay(final JSONArray data) {

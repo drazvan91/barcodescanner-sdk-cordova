@@ -245,7 +245,11 @@ public class Scandit {
              */
             AZTEC,
             /**
-             * \brief DotCode 2D barcode symbology.
+             * @brief MicroQR 2D barcode symbology.
+             */
+            MICRO_QR,
+            /**
+             * @brief DotCode 2D barcode symbology.
              */
             DOTCODE,
             /**

@@ -35,7 +35,11 @@ static NSMutableDictionary *SBSJSObjectsFromCode(SBSCode *code) {
                                  [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
     [dict setObject:@(code.compositeFlag) forKey:@"compositeFlag"];
     if ([code isRecognized]) {
-        [dict setObject:code.data forKey:@"data"];
+        if (code.data == nil) {
+            [dict setObject:@"" forKey:@"data"];
+        } else {
+            [dict setObject:code.data forKey:@"data"];
+        }
         // convert raw data to array of integers
         NSData *rawData = code.rawData;
         NSMutableArray *rawDataAsIntArray = [NSMutableArray arrayWithCapacity:rawData.length];

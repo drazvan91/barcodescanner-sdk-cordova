@@ -331,10 +331,14 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 
 - (SBSScanSettings *)updateScanSettings:(SBSScanSettings *)scanSettings withSettings:(NSDictionary *)settings {
     if ([scanSettings respondsToSelector:@selector(setRecognitionMode:)]) {
-        NSString *recognitionMode = settings[@"recognitionMode"];
+        id recognitionMode = settings[@"recognitionMode"];
         if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSString class]] && [recognitionMode isEqualToString:@"text"]) {
             scanSettings.recognitionMode = SBSRecognitionModeText;
-        } else {
+        } else if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSString class]]) {
+            scanSettings.recognitionMode = SBSRecognitionModeCode;
+        } else if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSNumber class]] && [recognitionMode isEqualToNumber:[NSNumber numberWithInt:1]]) {
+            scanSettings.recognitionMode = SBSRecognitionModeText;
+        } else if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSNumber class]]) {
             scanSettings.recognitionMode = SBSRecognitionModeCode;
         }
     }

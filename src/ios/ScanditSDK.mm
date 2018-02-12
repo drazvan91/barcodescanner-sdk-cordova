@@ -338,7 +338,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
             scanSettings.recognitionMode = SBSRecognitionModeCode;
         } else if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSNumber class]] && [recognitionMode isEqualToNumber:[NSNumber numberWithInt:1]]) {
             scanSettings.recognitionMode = SBSRecognitionModeText;
-        } else {
+        } else if (recognitionMode != nil && [recognitionMode isKindOfClass:[NSNumber class]]) {
             scanSettings.recognitionMode = SBSRecognitionModeCode;
         }
     }

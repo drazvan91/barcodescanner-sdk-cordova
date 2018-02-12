@@ -719,11 +719,11 @@ public class Scandit {
             /**
              * Text recognition
              */
-            1,
+            TEXT,
             /**
              * Barcode/2d code recognition
              */
-            2
+            CODE
         }
 
         /**

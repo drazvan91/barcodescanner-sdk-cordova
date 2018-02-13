@@ -62,6 +62,8 @@ public class SubViewPickerController extends PickerControllerBase implements
     private PickerStateMachine mPickerStateMachine = null;
 
     private SubViewPickerOrientationHandler mOrientationHandler = null;
+    private boolean mContinuousMode = false;
+    private boolean mIsDidScanDefined = false;
     private boolean mCloseWhenDidScanCallbackFinishes = false;
     private AtomicBoolean mPendingClose = new AtomicBoolean(false);
     // Can't use Size, because the class is not available in all the releases we support.
@@ -96,6 +98,7 @@ public class SubViewPickerController extends PickerControllerBase implements
                      boolean legacyMode) {
         mPendingClose.set(false);
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
+        mIsDidScanDefined = PhonegapParamParser.isDidScanDefined(options);
         mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin, null);
         mCloseWhenDidScanCallbackFinishes = false;
         mOrientationHandler.start(true);
@@ -362,8 +365,10 @@ public class SubViewPickerController extends PickerControllerBase implements
 
     @Override
     public void didScan(ScanSession session) {
-        // don't do anything if there is a pending close operation. otherwise we will deadlock
-        if (mPendingClose.get()) {
+        // don't do anything if:
+        // there is a pending close operation (otherwise we will deadlock)
+        // or the didScan callback is undefined
+        if (mPendingClose.get() || !mIsDidScanDefined) {
             return;
         }
         JSONArray eventArgs = Marshal.createEventArgs(ScanditSDK.DID_SCAN_EVENT,

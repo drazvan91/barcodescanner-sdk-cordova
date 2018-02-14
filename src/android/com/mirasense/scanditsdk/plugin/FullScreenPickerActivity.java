@@ -65,6 +65,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
 
     private PickerStateMachine mPickerStateMachine = null;
     private boolean mContinuousMode = false;
+    private boolean mIsDidScanDefined = false;
 
     private int mStateBeforeSuspend = PickerStateMachine.STOPPED;
     private List<Long> mRejectedCodeIds;
@@ -182,6 +183,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         PhonegapParamParser.updatePicker(picker, overlayOptions, this);
 
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
+        mIsDidScanDefined = PhonegapParamParser.isDidScanDefined(options);
 
         mStateBeforeSuspend = PhonegapParamParser.shouldStartInPausedState(options)
                 ? PickerStateMachine.PAUSED : PickerStateMachine.ACTIVE;
@@ -223,10 +225,13 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
 
     @Override
     public void didScan(ScanSession session) {
-        if (sPendingClose.get()) {
-            // return if there is a pending close. Otherwise we might deadlock
+        // don't do anything if:
+        // there is a pending close operation (otherwise we will deadlock)
+        // or the didScan callback is undefined
+        if (sPendingClose.get() || !mIsDidScanDefined) {
             return;
         }
+
         Bundle bundle = bundleForScanResult(session);
         if (!mContinuousMode) {
             mPickerStateMachine.switchToNextScanState(PickerStateMachine.PAUSED, session);

@@ -34,7 +34,6 @@ abstract class PickerControllerBase implements IPickerController {
     final CordovaPlugin mPlugin;
     final CallbackContext mCallbackContext;
 
-    boolean mContinuousMode = false;
     // Indicates whether a result callback (any of didScan, didRecognizeNewCodes, didRecognizeText)
     // is in process.
     private AtomicInteger mInFlightResultCallbackId = new AtomicInteger(0);

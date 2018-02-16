@@ -1,0 +1,9 @@
+{
+    "name": "SDK Cordova Android & iOS",
+    "owner": ["moritz@scandit.com"],
+    "distribution": "SOURCE",
+    "packages": [],
+    "ignored_packages": [],
+    "overrides": [],
+    "whitelist": []
+}

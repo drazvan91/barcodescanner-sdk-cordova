@@ -1495,10 +1495,10 @@ public class Scandit {
          *
          * \since 5.7
          *
-         * \param color The color to use for tracked barcodes in the specified state.
          * \param state The state that uses the specified color.
+         * \param color The color to use for tracked barcodes in the specified state.
          */
-        public void setMatrixScanHighlightingColor(String hexColor, String state);
+        public void setMatrixScanHighlightingColor(ScanOverlay.MatrixScanState state, String color);
         ///@}
     }
 

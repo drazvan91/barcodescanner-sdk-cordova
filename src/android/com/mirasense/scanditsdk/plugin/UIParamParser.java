@@ -231,8 +231,8 @@ public class UIParamParser {
             Bundle colors = bundle.getBundle(paramMatrixScanHighlightingColor);
             for (String key : colors.keySet()) {
                 try {
-                    int color = Integer.parseInt(colors.get(key), 16);
-                    picker.getOverlayView().setMatrixScanHighlightingColor(key, color);
+                    int color = Integer.parseInt(colors.getString(key), 16);
+                    picker.getOverlayView().setMatrixScanHighlightingColor(Integer.parseInt(key), color);
                 } catch (NumberFormatException e) {
                 }
             }

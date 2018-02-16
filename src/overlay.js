@@ -157,7 +157,7 @@ ScanOverlay.prototype.updateOverlayIfExists = function() {
     }
 }
 
-ScanOverlay.prototype.setMatrixScanHighlightingColor = function(hexCode, state) {
+ScanOverlay.prototype.setMatrixScanHighlightingColor = function(state, hexCode) {
     this.matrixScanHighlightingColors[state] = hexCode;
     this.updateOverlayIfExists();
 }

@@ -65,6 +65,8 @@ function ScanSettings() {
 
     this.symbologies[Barcode.Symbology.MAXICODE] = new SymbologySettings();
 
+    this.symbologies[Barcode.Symbology.MICRO_QR] = new SymbologySettings();
+
     this.symbologies[Barcode.Symbology.FIVE_DIGIT_ADD_ON] = new SymbologySettings();
 
     this.symbologies[Barcode.Symbology.TWO_DIGIT_ADD_ON] = new SymbologySettings();

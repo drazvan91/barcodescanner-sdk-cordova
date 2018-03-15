@@ -33,6 +33,37 @@ Use the cordova CLI to add the plugin to your already existing project.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+## _Add the type definitions (TypeScript only)_
+
+If you have a TypeScript project (e.g. Ionic, Angular, etc), you can import the type definition, just by making sure
+your TypeScript compiler knows about them. To make sure it does, you can either reference the type definition file at
+the beginning of the file you'll need them:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.javascript}
+/// <reference path="path-to-plugin/types/index.d.ts"/>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**or** by adding it to the included files in your `tsconfig.json` file (preferred way):
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.javascript}
+// tsconfig.json
+
+...
+"include": [
+    ... (your other included source files/folders)
+
+    "path-to-plugin/types/index.d.ts"
+],
+...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As soon as the type definitions for the plugin are included, type checking and compilation should work as you'd expect
+and you can import as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.javascript}
+import { Scandit } from "barcodescanner-sdk-cordova"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ## Instantiate and configure the barcode picker
 
 The scanning process is managed by the {@link Scandit.BarcodePicker BarcodePicker}. Before instantiating the picker, you will have to set your Scandit Barcode Scanner license key. The key is available from your Scandit Barcode Scanner SDK account at http://account.scandit.com in the License Keys section. The barcode scanning is configured through an instance of scan settings that you pass to the BarcodePicker constructor. 

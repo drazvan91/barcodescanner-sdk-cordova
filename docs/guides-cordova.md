@@ -29,6 +29,7 @@ How to setup the plugin on Telerik can be found in the \subpage cordova-telerik 
 * \subpage cordova-restrict-scanning-area
 * \subpage cordova-active-symbols-counts
 * \subpage cordova-scan-case
+* \subpage cordova-multiple-scanning
 
 ### Version/edition upgrades
 

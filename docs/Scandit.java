@@ -1883,7 +1883,7 @@ public class Scandit {
          *
          * \since 4.14.0
          */
-        public void acquire(ScanSettings settings, CaseCallbacks callbacks);
+        public static void acquire(ScanSettings settings, CaseCallbacks callbacks);
         
         /**
          * \brief Turn on/off scanning via the volume button
@@ -1936,6 +1936,6 @@ public class Scandit {
          *
          * \since 5.7.0
          */
-        public void setTimeout(boolean timeout, ScanCase.State fromState, ScanCase.State toState);
+        public void setTimeout(Number timeout, ScanCase.State fromState, ScanCase.State toState);
     }
 }

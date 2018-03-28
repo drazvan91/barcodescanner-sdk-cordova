@@ -12,13 +12,19 @@ Matrix Scan constantly tracks recognized barcodes' position. Thanks to this appr
 
 ### Enabling Matrix Scan
 
-To implement Matrix Scanning
+To implement Matrix Scanning:
 
 - Enable matrix scanning in the scan settings by setting {@link Scandit.ScanSettings.matrixScanEnabled} to `true`.
 
 - Set the maximum number of codes to be decoded every frame through {@link Scandit.ScanSettings.maxNumberOfCodesPerFrame} to something higher than 1, depending on the environment of the codes it is a good idea to set it higher than the number of codes that you actually want to scan.
 
 - Change the GUI style through {@link Scandit.ScanOverlay.setGuiStyle} to {@link  Scandit.ScanOverlay.GuiStyle Scandit.ScanOverlay.GuiStyle.MATRIXSCAN}.
+
+- For performance reasons it is important not to implement `didScan` callback while using MatrixScan in order to avoid unnecessary callback invocations. All the information about detected codes should be retrieved using `didRecognizeNewCodes` callback.
+
+- Pass a `didRecognizeNewCodes` callback as a {@link Scandit.BarcodePicker.show} function argument
+
+- In the `didRecognizeNewCodes` callback you can get currently tracked barcodes from the session through {@link Scandit.MatrixScanSession.newlyTrackedCodes}
 
 At this point you can start the barcode picker and any recognized barcodes of the enabled symbologies will be highlighted by a filled green rectangle. Barcodes that have been localized but not recognized will be highlighted by a green border.
 
@@ -58,10 +64,9 @@ function scan() {
     picker.getOverlayView().setBeepEnabled(false);
     picker.getOverlayView().setVibrateEnabled(false);
 
-    // In most cases you want to pass both didScan and didRecognizeNewCodes callbacks.
     // In the next paragraphs of this article you will find a few use cases with
-    // example implementation of these callbacks.
-    picker.show(didScan, null, null, null, didRecognizeNewCodes);
+    // example implementation of didRecognizeNewCodes callback.
+    picker.show(null, null, null, null, didRecognizeNewCodes);
     picker.startScanning();
 }
 ~~~~~~~~~~~~~~~~
@@ -70,27 +75,30 @@ function scan() {
 
 One of the use cases of Matrix Scan is to detect when the specified number of expected codes has been decoded by the scanner. To implement this scenario:
 
-- In the `didScan` callback, wait until the number of expected codes have been decoded, then store the codes and pause/stop the session. If you pause and plan to resume but want to start a new session, make sure that you clear the session first.
+- In the `didRecognizeNewCodes` callback, wait until the number of expected codes have been decoded, then store the codes and pause/stop the session. If you pause and plan to resume but want to start a new session, make sure that you clear the session first.
 
 ~~~~~~~~~~~~~~~~{.java}
-function didScan(scanSession) {
-    // Number of expected barcodes.
-    var numExpectedCodes = 3;
-    // Get all the scanned barcodes from the session.
-    var allCodes = scanSession.allRecognizedCodes;
-    // If the number of scanned codes is greater than or equal to the number of expected barcodes,
-    // pause the scanning and clear the session (to remove recognized barcodes).
-    if (allCodes.length >= numExpectedCodes) {
-    // Stop scanning or pause and clear the session.
-        scanSession.stopScanning();
-        // ...
-    }
+
+var detectedCodes = [];
+
+function didRecognizeNewCodes(matrixScanSession) {
+  // Number of expected barcodes.
+  var numExpectedCodes = 3;
+  // Get all the scanned barcodes from the session.
+  detectedCode.push(matrixScanSession.newlyTrackedCodes);
+  // If the number of scanned codes is greater than or equal to the number of expected barcodes,
+  // pause the scanning and clear the session (to remove recognized barcodes).
+  if (detectedCodes.length >= numExpectedCodes) {
+  // Stop scanning or pause and clear the session.
+      scanSession.stopScanning();
+      // ...
+  }
 }
 
 function scan() {
     //...
-    // After configuring your barcodePicker you can pass didScan callback as shown below:
-    picker.show(didScan, null, null, null, null);
+    // After configuring your barcodePicker you can pass didRecognizeNewCodes callback as shown below:
+    picker.show(null, null, null, null, didRecognizeNewCodes);
     picker.startScanning();
 }
 ~~~~~~~~~~~~~~~~
@@ -105,7 +113,7 @@ Like normal scanning Matrix Scanning provides you the option to reject codes. Ju
 
 - Once you've checked the tracked codes for their symbologies and/or data you can reject them through {@link Scandit.MatrixScanSession.rejectTrackedCode}.
 
-**Note:** Rejecting in the `didScan` callback is not allowed.
+**Note:** Rejecting in the `didScan` callback is not allowed when using Matrix Scan.
 
 ~~~~~~~~~~~~~~~~{.java}
 
@@ -121,7 +129,7 @@ function didRecognizeNewCodes(matrixScanSession) {
 function scan() {
     //...
     // After configuring your barcodePicker you can pass didRecognizeNewCodes callback as shown below:
-    picker.show(didScan, null, null, null, didRecognizeNewCodes);
+    picker.show(null, null, null, null, didRecognizeNewCodes);
     picker.startScanning();
 }
 

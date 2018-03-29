@@ -46,7 +46,7 @@ const static NSString *kSBSScanCaseDidScanEvent = @"didScan";
     self.callbackId = command.callbackId;
     NSDictionary *settingsDict = [command.arguments objectAtIndex:0];
     SBSScanCaseSettings *settings = [[SBSScanCaseSettings alloc] initWithDictionary:settingsDict];
-    [SBSScanCase acquireWithSettings:settings delegate:self];
+    self.scanCase = [SBSScanCase acquireWithSettings:settings delegate:self];
 }
 
 - (void)setState:(CDVInvokedUrlCommand *)command {

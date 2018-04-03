@@ -5,7 +5,7 @@ var Barcode = cordova.require("com.mirasense.scanditsdk.plugin.Barcode");
 
 function ScanCase(scanSettings, callbacks) {
     this.callbacks = callbacks;
-}
+};
 
 ScanCase.prototype = {
     _handleEvent: function (eventName, args) {
@@ -24,7 +24,7 @@ ScanCase.prototype = {
     setState: function (state) {
         cordova.exec(null, null, "SBSScanCasePlugin", "setState", [state]);
     }
-}
+};
 
 ScanCase.acquire = function (scanSettings, callbacks) {
     var sc = new ScanCase(scanSettings, callbacks);
@@ -40,19 +40,19 @@ ScanCase.acquire = function (scanSettings, callbacks) {
 
 ScanCase.prototype.volumeButtonToScanEnabled = function (enabled) {
     cordova.exec(null, null, "SBSScanCasePlugin", "volumeButtonToScanEnabled", [enabled]);
-}
+};
 
 ScanCase.prototype.scanBeepEnabled = function (enabled) {
     cordova.exec(null, null, "SBSScanCasePlugin", "scanBeepEnabled", [enabled]);
-}
+};
 
 ScanCase.prototype.errorSoundEnabled = function (enabled) {
     cordova.exec(null, null, "SBSScanCasePlugin", "errorSoundEnabled", [enabled]);
-}
+};
 
 ScanCase.prototype.setTimeout = function (timeout, fromState, toState) {
     cordova.exec(null, null, "SBSScanCasePlugin", "setTimeout", [timeout, fromState, toState]);
-}
+};
 
 ScanCase.State = {
     ACTIVE: 'active',
@@ -66,8 +66,4 @@ ScanCase.StateChangeReason = {
     VOLUME_BUTTON: 'volumeButton'
 };
 
-function CaseCallbacks() {
-}
-
-module.exports = ScanCase
-module.exports = CaseCallbacks
+module.exports = ScanCase;

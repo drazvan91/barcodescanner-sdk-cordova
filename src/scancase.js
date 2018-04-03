@@ -66,4 +66,4 @@ ScanCase.StateChangeReason = {
     VOLUME_BUTTON: 'volumeButton'
 };
 
-module.exports = ScanCase
+module.exports = ScanCase;

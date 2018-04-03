@@ -2,4 +2,4 @@
 function CaseCallbacks() {
 };
 
-module.exports = CaseCallbacks
+module.exports = CaseCallbacks;

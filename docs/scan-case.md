@@ -122,3 +122,21 @@ func scanCase(_ scanCase: SBSScanCase, didChange state: SBSScanCaseState, reason
     }
 }
 ~~~~~~~~~~~~~~~~ -->
+
+## Restricting scanning area
+
+It is possible to restrict the area in which the scanner will perform actual scanning. To do this you need to use the following settings while creating scan settings:
+- `scanningAreaHeight`: for 1D symbologies
+- `scanningAreaHeight2d`: for 2D symbologies
+
+Example configuration could look like this:
+
+~~~~~~~~~~~~~~~~{.java}
+Scandit.License.setAppKey("-- ENTER YOUR SCANDIT LICENSE KEY HERE --");
+var scanSettings = {
+    symbologies: [Scandit.Barcode.Symbology.EAN13],
+    scanningAreaHeight: 0.1,
+    scanningAreaHeight2d: 0.2
+};
+scanCase = Scandit.ScanCase.acquire(scanSettings, callbacks);
+~~~~~~~~~~~~~~~~

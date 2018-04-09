@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Scandit Ionic Sample
+    </ion-title>
+
+    <ion-buttons end>
+        <button ion-button icon-only (click)="toggleContinuousMode()">
+          <ion-icon name="infinite" [color]="continuousMode ? 'dark' : 'light'"></ion-icon>
+        </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding [ngStyle]="{ 'margin-top': scanner.contentHeight + 'px' }">
+  <p text-center *ngIf="!barcodes || barcodes.length < 1">
+    Scan a barcode!
+  </p>
+
+  <p text-center *ngFor="let barcode of barcodes">
+    {{barcode.symbology}}: {{barcode.data}}
+  </p>
+
+  <button full ion-button *ngIf="!continuousMode && barcodes && barcodes.length > 0" (click)="resumeScanning()">Continue Scanning</button>
+</ion-content>

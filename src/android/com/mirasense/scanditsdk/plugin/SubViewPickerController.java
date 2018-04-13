@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ProcessFrameListener;
+import com.scandit.barcodepicker.LicenseValidationListener;
 import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
@@ -55,7 +56,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SubViewPickerController extends PickerControllerBase implements
         BarcodePickerWithSearchBar.SearchBarListener, OnScanListener, ProcessFrameListener,
-        PickerStateMachine.Callback, TextRecognitionListener, PropertyChangeListener {
+        PickerStateMachine.Callback, TextRecognitionListener, PropertyChangeListener,
+        LicenseValidationListener {
 
     private RelativeLayout mLayout;
 
@@ -126,6 +128,7 @@ public class SubViewPickerController extends PickerControllerBase implements
                         new BarcodePickerWithSearchBar(pluginActivity, scanSettings);
                 picker.setOnScanListener(SubViewPickerController.this);
                 picker.setProcessFrameListener(SubViewPickerController.this);
+                picker.setLicenseValidationListener(SubViewPickerController.this);
                 picker.setTextRecognitionListener(SubViewPickerController.this);
                 picker.setPropertyChangeListener(SubViewPickerController.this);
                 mPickerStateMachine = new PickerStateMachine(
@@ -467,6 +470,14 @@ public class SubViewPickerController extends PickerControllerBase implements
     public void onPropertyChange(int name, int newState) {
         JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_PROPERTY,
                 ResultRelay.jsonForPropertyChange(name, newState));
+        PluginResult result = Marshal.createOkResult(args);
+        mCallbackContext.sendPluginResult(result);
+    }
+
+    @Override
+    public void failedToValidateLicense(String errorMessage) {
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_FAIL_TO_VALIDATE_LICENSE,
+                ResultRelay.jsonForLicenseValidationFail(errorMessage));
         PluginResult result = Marshal.createOkResult(args);
         mCallbackContext.sendPluginResult(result);
     }

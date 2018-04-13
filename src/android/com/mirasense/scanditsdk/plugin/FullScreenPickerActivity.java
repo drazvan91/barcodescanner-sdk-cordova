@@ -26,6 +26,7 @@ import android.view.WindowManager;
 
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ProcessFrameListener;
+import com.scandit.barcodepicker.LicenseValidationListener;
 import com.scandit.barcodepicker.PropertyChangeListener;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
@@ -52,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class FullScreenPickerActivity extends Activity implements OnScanListener,
         BarcodePickerWithSearchBar.SearchBarListener, ProcessFrameListener, TextRecognitionListener,
-        PickerStateMachine.Callback, PropertyChangeListener {
+        PickerStateMachine.Callback, PropertyChangeListener, LicenseValidationListener {
 
     public static final int CANCEL = 0;
     public static final int SCAN = 1;
@@ -165,6 +166,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         BarcodePickerWithSearchBar picker = new BarcodePickerWithSearchBar(this, scanSettings);
         picker.setOnScanListener(this);
         picker.setProcessFrameListener(this);
+        picker.setLicenseValidationListener(this);
         picker.setTextRecognitionListener(this);
         picker.setPropertyChangeListener(this);
 
@@ -398,6 +400,20 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         Bundle bundle = new Bundle();
         JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_CHANGE_PROPERTY,
                 ResultRelay.jsonForPropertyChange(name, newState));
+        bundle.putString("jsonString", args.toString());
+        bundle.putBoolean("waitForResult", false);
+        return bundle;
+    }
+
+    @Override
+    public void failedToValidateLicense(String errorMessage) {
+        ResultRelay.relayResult(bundleForLicenseValidationFail(errorMessage));
+    }
+
+    private Bundle bundleForLicenseValidationFail(String errorMessage) {
+        Bundle bundle = new Bundle();
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_FAIL_TO_VALIDATE_LICENSE,
+                ResultRelay.jsonForLicenseValidationFail(errorMessage));
         bundle.putString("jsonString", args.toString());
         bundle.putBoolean("waitForResult", false);
         return bundle;

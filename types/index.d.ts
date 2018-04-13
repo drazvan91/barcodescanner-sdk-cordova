@@ -108,7 +108,7 @@ declare module 'barcodescanner-sdk-cordova' {
             didRecognizeText?(recognizedText: RecognizedText);
             didRecognizeNewCodes?(matrixScanSession: MatrixScanSession);
             didChangeState?(newState: BarcodePicker.State);
-            didChangeProperty?(properyName: string, newValue: any);
+            didChangeProperty?(propertyName: string, newValue: any);
         }
     
         export class Constraints {

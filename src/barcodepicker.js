@@ -62,6 +62,7 @@ BarcodePicker.prototype.show = function () {
         callbacks.didRecognizeText = arguments.length > 3 && arguments[3] || null;
         callbacks.didRecognizeNewCodes = arguments.length > 4 && arguments[4] || null;
         callbacks.didChangeProperty = arguments.length > 5 && arguments[5] || null;
+        callbacks.didFailToValidateLicense = arguments.length > 6 && arguments[6] || null;
     } else {
         // new method signature: BarcodePicker.show({ didScan : function() });
         callbacks = arguments[0];
@@ -136,7 +137,7 @@ BarcodePicker.prototype.show = function () {
                 try {
                    desiredState = callbacks.didRecognizeText(recognizedText) || BarcodePicker.State.ACTIVE;
                 } catch(e) {
-                   console.log('event ' + eventName + ' failed:' + e);
+                   console.log('event ' + event + ' failed:' + e);
                 }
             }
 
@@ -186,9 +187,13 @@ BarcodePicker.prototype.show = function () {
                 throw exceptionRaisedDuringDidRecognizeNewCodes;
             }
             return;
-        } else if (event == 'didChangeProperty') {
+        } else if (event === 'didChangeProperty') {
             if (callbacks.didChangeProperty) {
                 callbacks.didChangeProperty(args[1].name, args[1].newState)
+            }
+        } else if (event === 'didFailToValidateLicense') {
+            if (callbacks.didFailToValidateLicense) {
+                callbacks.didFailToValidateLicense(args[1].errorMessage)
             }
         }
     }, callbacks.didCancel, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);

@@ -443,6 +443,13 @@ public class Scandit {
          * state of that property as its second argument.
          */
         public function didChangeProperty;
+
+        /**
+         * \brief Callback to be invoked whenever license validation process fails.
+         *
+         * The callback receives a string describing the error as its only argument.
+         */
+        public function didFailToValidateLicense;
     }
 
     /**

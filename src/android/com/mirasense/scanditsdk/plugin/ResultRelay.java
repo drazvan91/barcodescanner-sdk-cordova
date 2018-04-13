@@ -70,6 +70,16 @@ public class ResultRelay {
         return json;
     }
 
+    public static JSONObject jsonForLicenseValidationFail(String errorMessage) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("errorMessage", errorMessage);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     public static JSONObject jsonForSession(ScanSession session) {
         JSONObject json = new JSONObject();
         try {

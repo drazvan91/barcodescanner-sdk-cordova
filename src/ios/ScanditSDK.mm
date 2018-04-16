@@ -17,6 +17,7 @@
 #import "SBSPhonegapParamParser.h"
 #import "SBSTypeConversion.h"
 #import "SBSPickerStateMachine.h"
+#import "SBSSampleBufferConverter.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 #import <ScanditBarcodeScanner/SBSTextRecognition.h>
 
@@ -46,6 +47,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 
 @property (nonatomic, assign) BOOL matrixScanEnabled;
 @property (nonatomic, assign) BOOL isDidScanDefined;
+@property (nonatomic, assign) BOOL shouldPassBarcodeFrame;
 
 @property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
 
@@ -121,6 +123,12 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
         NSNumber *isDidScanDefined = [options objectForKey:[SBSPhonegapParamParser paramIsDidScanDefined]];
         if (isDidScanDefined && [isDidScanDefined isKindOfClass:[NSNumber class]]) {
             self.isDidScanDefined = [isDidScanDefined boolValue];
+        }
+
+        // check if didScan callback is defined
+        NSNumber *shouldPassBarcodeFrame = [options objectForKey:[SBSPhonegapParamParser paramIsShouldPassBarcodeFrame]];
+        if (shouldPassBarcodeFrame && [shouldPassBarcodeFrame isKindOfClass:[NSNumber class]]) {
+            self.shouldPassBarcodeFrame = [shouldPassBarcodeFrame boolValue];
         }
 
         dispatch_main_sync_safe(^{
@@ -359,11 +367,65 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     return scanSettings;
 }
 
+#pragma mark - SBSScanDelegate methods
+
+- (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
+    // Don't serialize the result if didScan is not defined.
+    if (!self.isDidScanDefined) { 
+        return; 
+    }
+    
+    CDVPluginResult *pluginResult = [self resultForSession:session];
+
+    int nextState = [self sendPluginResultBlocking:pluginResult];
+    if (!self.continuousMode) {
+        nextState = SBSPickerStateStopped;
+    }
+    [self switchToNextScanState:nextState withSession:session];
+    NSArray *newlyRecognized = session.newlyRecognizedCodes;
+    for (NSNumber *codeId in self.rejectedCodeIds) {
+        long value = [codeId longValue];
+        for (SBSCode *code in newlyRecognized) {
+            if (code.uniqueId == value) {
+                [session rejectCode:code];
+                break;
+            }
+        }
+    }
+}
+
 #pragma mark - SBSProcessFrameDelegate methods
 
 - (void)barcodePicker:(SBSBarcodePicker *)barcodePicker
       didProcessFrame:(CMSampleBufferRef)frame
               session:(SBSScanSession *)session {
+    // Call `didProcessFrame` only when new codes have been recognized and when didProcessFrame has been set.
+    if (self.shouldPassBarcodeFrame && session.newlyRecognizedCodes.count > 0) {
+        const auto base64frame = [SBSSampleBufferConverter base64StringFromFrame:frame];
+        const auto imageObject = @{@"base64FrameString": base64frame};
+        const auto pluginResult = [self createResultForEvent:@"didProcessFrame" value:imageObject];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    }
+
+    // If at least a code has been recognized and continuous mode is off, then we should dismiss/remove the picker
+    // and set hasPendingOperation = NO.
+    // This is done here and not in barcodePicker:didScan: because barcodePicker:didProcessFrame:session:
+    // is executed after barcodePicker:didScan: and we might need to send the `didProcessFrame` event.
+    if (session.newlyRecognizedCodes.count > 0 && !self.continuousMode) {
+        dispatch_main_sync_safe(^{
+            if (self.modallyPresented) {
+                [self.viewController dismissViewControllerAnimated:YES completion:nil];
+            } else {
+                [self.picker removeFromParentViewController];
+                [self.picker.view removeFromSuperview];
+                [self.picker didMoveToParentViewController:nil];
+            }
+            self.pickerStateMachine = nil;
+            self.hasPendingOperation = NO;
+        });
+    }
+
+    // Proceed only if matrix scan is enabled
     if (!self.matrixScanEnabled || session.trackedCodes == nil) {
         return;
     }
@@ -403,44 +465,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     }
 }
 
-#pragma mark - SBSScanDelegate methods
-
-- (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
-    if (!self.isDidScanDefined) { 
-        return; 
-    }
-    
-    CDVPluginResult *pluginResult = [self resultForSession:session];
-
-    int nextState = [self sendPluginResultBlocking:pluginResult];
-    if (!self.continuousMode) {
-        nextState = SBSPickerStateStopped;
-    }
-    [self switchToNextScanState:nextState withSession:session];
-    NSArray *newlyRecognized = session.newlyRecognizedCodes;
-    for (NSNumber *codeId in self.rejectedCodeIds) {
-        long value = [codeId longValue];
-        for (SBSCode *code in newlyRecognized) {
-            if (code.uniqueId == value) {
-                [session rejectCode:code];
-                break;
-            }
-        }
-    }
-    if (!self.continuousMode) {
-        dispatch_main_sync_safe(^{
-            if (self.modallyPresented) {
-                [self.viewController dismissViewControllerAnimated:YES completion:nil];
-            } else {
-                [self.picker removeFromParentViewController];
-                [self.picker.view removeFromSuperview];
-                [self.picker didMoveToParentViewController:nil];
-            }
-            self.pickerStateMachine = nil;
-            self.hasPendingOperation = NO;
-        });
-    }
-}
+#pragma mark - Create/send result
 
 - (CDVPluginResult *)createResultForEvent:(NSString *)name value:(NSObject *)value {
     NSArray *args = @[name, value];

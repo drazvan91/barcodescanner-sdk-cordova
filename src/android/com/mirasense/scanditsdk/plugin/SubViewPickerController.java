@@ -347,11 +347,14 @@ public class SubViewPickerController extends PickerControllerBase implements
                 java.lang.reflect.Method getViewMethod = webView.getClass().getMethod("getView");
                 Object viewObject = getViewMethod.invoke(webView);
                 if (viewObject instanceof View) {
-                    View view = (View) viewObject;
-                    ViewParent parentView = view.getParent();
-                    if (parentView instanceof ViewGroup) {
-                        return (ViewGroup) parentView;
+                    ViewParent parentView = ((View) viewObject).getParent();
+                    ViewGroup viewGroup = null;
+
+                    while (parentView != null && parentView instanceof ViewGroup) {
+                        viewGroup = (ViewGroup) parentView;
+                        parentView = viewGroup.getParent();
                     }
+                    return viewGroup;
                 }
             } catch (Exception e) {
                 String message = "Unable to fetch the ViewGroup through webView.getView().getParent()";

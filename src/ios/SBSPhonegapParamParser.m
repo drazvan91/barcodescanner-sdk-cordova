@@ -19,7 +19,7 @@
 
 + (NSString *)paramContinuousMode { return [@"continuousMode" lowercaseString]; }
 + (NSString *)paramIsDidScanDefined { return [@"isDidScanDefined" lowercaseString]; }
-+ (NSString *)paramIsShouldPassBarcodeFrame { return [@"shouldPassBarcodeFrame" lowercaseString]; }
++ (NSString *)paramShouldPassBarcodeFrame { return [@"shouldPassBarcodeFrame" lowercaseString]; }
 + (NSString *)paramPortraitMargins { return [@"portraitMargins" lowercaseString]; }
 + (NSString *)paramLandscapeMargins { return [@"landscapeMargins" lowercaseString]; }
 + (NSString *)paramPortraitConstraints { return [@"portraitConstraints" lowercaseString]; }

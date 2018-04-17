@@ -21,7 +21,7 @@
 
 + (NSString *)paramContinuousMode;
 + (NSString *)paramIsDidScanDefined;
-+ (NSString *)paramIsShouldPassBarcodeFrame;
++ (NSString *)paramShouldPassBarcodeFrame;
 + (NSString *)paramPortraitMargins;
 + (NSString *)paramLandscapeMargins;
 + (NSString *)paramPortraitConstraints;

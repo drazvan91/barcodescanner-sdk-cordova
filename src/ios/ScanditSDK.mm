@@ -126,7 +126,7 @@ SBSLicenseValidationDelegate>
         }
 
         // check if didScan callback is defined
-        NSNumber *shouldPassBarcodeFrame = [options objectForKey:[SBSPhonegapParamParser paramIsShouldPassBarcodeFrame]];
+        NSNumber *shouldPassBarcodeFrame = [options objectForKey:[SBSPhonegapParamParser paramShouldPassBarcodeFrame]];
         if (shouldPassBarcodeFrame && [shouldPassBarcodeFrame isKindOfClass:[NSNumber class]]) {
             self.shouldPassBarcodeFrame = [shouldPassBarcodeFrame boolValue];
         }

@@ -402,7 +402,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     // Call `didProcessFrame` only when new codes have been recognized and when didProcessFrame has been set.
     if (self.shouldPassBarcodeFrame && session.newlyRecognizedCodes.count > 0) {
         const auto base64frame = [SBSSampleBufferConverter base64StringFromFrame:frame];
-        const auto imageObject = @{@"base64FrameString": base64frame};
+        const auto imageObject = @{@"base64Data": base64frame};
         const auto pluginResult = [self createResultForEvent:@"didProcessFrame" value:imageObject];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     }

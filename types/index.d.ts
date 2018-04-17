@@ -113,7 +113,7 @@ declare module 'barcodescanner-sdk-cordova' {
         }
 
         export class Frame {
-            base64FrameString?: string;
+            base64Data: string;
         }
     
         export class Constraints {

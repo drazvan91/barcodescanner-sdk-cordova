@@ -110,6 +110,11 @@ declare module 'barcodescanner-sdk-cordova' {
             didChangeState?(newState: BarcodePicker.State);
             didChangeProperty?(propertyName: string, newValue: any);
             didFailToValidateLicense?(error: LicenseError);
+            didProcessFrame?(base64Frame: Frame);
+        }
+
+        export class Frame {
+            base64Data: string;
         }
 
         export class LicenseError {

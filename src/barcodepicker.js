@@ -63,6 +63,7 @@ BarcodePicker.prototype.show = function () {
         callbacks.didRecognizeNewCodes = arguments.length > 4 && arguments[4] || null;
         callbacks.didChangeProperty = arguments.length > 5 && arguments[5] || null;
         callbacks.didFailToValidateLicense = arguments.length > 6 && arguments[6] || null;
+        callbacks.didProcessFrame = arguments.length > 7 && arguments[7] || null;
     } else {
         // new method signature: BarcodePicker.show({ didScan : function() });
         callbacks = arguments[0];
@@ -82,6 +83,7 @@ BarcodePicker.prototype.show = function () {
     }
     
     options.isDidScanDefined = callbacks.didScan != null;
+    options.shouldPassBarcodeFrame = callbacks.didProcessFrame != null;
     
     var picker = this;
     cordova.exec(function (args) {
@@ -194,6 +196,10 @@ BarcodePicker.prototype.show = function () {
         } else if (event === 'didFailToValidateLicense') {
             if (callbacks.didFailToValidateLicense) {
                 callbacks.didFailToValidateLicense(args[1]);
+            }
+        } else if (event === 'didProcessFrame') {
+            if (callbacks.didProcessFrame) {
+                callbacks.didProcessFrame(args[1])
             }
         }
     }, callbacks.didCancel, "ScanditSDK", "show", [this.scanSettings, options, this.getOverlayView()]);

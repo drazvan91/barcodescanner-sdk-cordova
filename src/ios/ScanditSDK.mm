@@ -25,7 +25,8 @@
 @end
 
 @interface ScanditSDK () <SBSScanDelegate, SBSOverlayControllerDidCancelDelegate, ScanditSDKSearchBarDelegate,
-SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBSPropertyObserver>
+SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBSPropertyObserver,
+SBSLicenseValidationDelegate>
 
 @property (nonatomic, copy) NSString *callbackId;
 @property (readwrite, assign) BOOL hasPendingOperation;
@@ -47,10 +48,9 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
 @property (nonatomic, assign) BOOL matrixScanEnabled;
 @property (nonatomic, assign) BOOL isDidScanDefined;
 
-@property (nonatomic,strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
+@property (nonatomic, strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
 
 @end
-
 
 @implementation ScanditSDK
 
@@ -156,6 +156,7 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
             self.picker.scanDelegate = self;
             [self.picker addPropertyObserver:self];
             self.picker.processFrameDelegate = self;
+            self.picker.licenseValidationDelegate = self;
             if ([self.picker respondsToSelector:@selector(setTextRecognitionDelegate:)]) {
                 self.picker.textRecognitionDelegate = self;
             }
@@ -613,10 +614,17 @@ SBSPickerStateDelegate, SBSTextRecognitionDelegate, SBSProcessFrameDelegate, SBS
     if (![value isKindOfClass:[NSString class]] && ![value isKindOfClass:[NSNumber class]]) {
         return;
     }
-    auto dictionary = @{@"name": property, @"newState": value};
-    auto pluginResult = [self createResultForEvent:@"didChangeProperty" value:dictionary];
+    const auto dictionary = @{@"name": property, @"newState": value};
+    const auto pluginResult = [self createResultForEvent:@"didChangeProperty" value:dictionary];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+}
+
+#pragma mark - SBSLicenseValidationDelegate
+
+- (void)barcodePicker:(SBSBarcodePicker *)picker failedToValidateLicense:(NSString *)errorMessage {
+    const auto error = @{@"message": errorMessage};
+    const auto pluginResult = [self createResultForEvent:@"didFailToValidateLicense" value:error];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 }
 
 @end
-

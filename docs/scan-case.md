@@ -81,7 +81,7 @@ while releasing the button will change the state to STANDBY.
 To enable this feature, all you need to do is:
 
 ~~~~~~~~~~~~~~~~{.m}
-scanCase.setVolumeButtonToScanEnabled(true);
+scanCase.volumeButtonToScanEnabled(true);
 ~~~~~~~~~~~~~~~~
 
 You know when the state changes, because of the volume button, in the didChangeState callback, 

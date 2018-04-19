@@ -146,6 +146,7 @@
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/PickerControllerBase.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/PickerStateMachine.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/ResultRelay.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/SampleBufferConverter.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditSDK.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditWorker.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/SearchBar.java" target-dir="src/com/mirasense/scanditsdk/plugin" />

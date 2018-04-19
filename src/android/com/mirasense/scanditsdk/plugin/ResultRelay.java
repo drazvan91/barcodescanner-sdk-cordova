@@ -70,6 +70,16 @@ public class ResultRelay {
         return json;
     }
 
+    public static JSONObject jsonForDidProcessFrame(String base64Data) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("base64Data", base64Data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     public static JSONObject jsonForLicenseValidationFail(String errorMessage) {
         JSONObject json = new JSONObject();
         try {

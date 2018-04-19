@@ -66,6 +66,7 @@ public class SubViewPickerController extends PickerControllerBase implements
     private SubViewPickerOrientationHandler mOrientationHandler = null;
     private boolean mContinuousMode = false;
     private boolean mIsDidScanDefined = false;
+    private boolean mShouldPassBarcodeFrame = false;
     private boolean mCloseWhenDidScanCallbackFinishes = false;
     private AtomicBoolean mPendingClose = new AtomicBoolean(false);
     // Can't use Size, because the class is not available in all the releases we support.
@@ -101,6 +102,7 @@ public class SubViewPickerController extends PickerControllerBase implements
         mPendingClose.set(false);
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
         mIsDidScanDefined = PhonegapParamParser.isDidScanDefined(options);
+        mShouldPassBarcodeFrame = PhonegapParamParser.shouldPassBarcodeFrame(options);
         mOrientationHandler = new SubViewPickerOrientationHandler(Looper.getMainLooper(), mPlugin, null);
         mCloseWhenDidScanCallbackFinishes = false;
         mOrientationHandler.start(true);
@@ -398,6 +400,17 @@ public class SubViewPickerController extends PickerControllerBase implements
         if (mPendingClose.get()) {
             return;
         }
+
+        // call didProcessFrame only when new codes have been recognized and when didProcessFrame has been set.
+        if (mShouldPassBarcodeFrame && session.getNewlyRecognizedCodes().size() > 0) {
+            String base64Data = SampleBufferConverter.base64StringFromFrame(bytes, width, height);
+
+            JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_PROCESS_FRAME,
+                    ResultRelay.jsonForDidProcessFrame(base64Data));
+            PluginResult result = Marshal.createOkResult(args);
+            mCallbackContext.sendPluginResult(result);
+        }
+
         if ((mPickerStateMachine != null && !mPickerStateMachine.isMatrixScanEnabled()) || session.getTrackedCodes() == null) {
             return;
         }

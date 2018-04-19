@@ -41,6 +41,7 @@ public class ScanditSDK extends CordovaPlugin {
     public static final String DID_RECOGNIZE_NEW_CODES = "didRecognizeNewCodes";
     public static final String DID_CHANGE_PROPERTY = "didChangeProperty";
     public static final String DID_FAIL_TO_VALIDATE_LICENSE = "didFailToValidateLicense";
+    public static final String DID_PROCESS_FRAME = "didProcessFrame";
 
 
     private static final String INIT_LICENSE_COMMAND = "initLicense";

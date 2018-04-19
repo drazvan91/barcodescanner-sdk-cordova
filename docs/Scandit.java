@@ -450,6 +450,15 @@ public class Scandit {
          * The callback receives a string describing the error as its only argument.
          */
         public function didFailToValidateLicense;
+
+        /**
+         * \brief Callback to be invoked whenever a new camera frame has been processed and
+         * new codes have been recognized within that frame.
+         *
+         * The callback receives a base64 string encoding the processed frame. Frame is not rotated -
+         * it is in the exact same orientation as the original frame received from the device's camera.
+         */
+        public function didProcessFrame;
     }
 
     /**

@@ -45,6 +45,7 @@ public class PhonegapParamParser {
     public static final String paramContinuousMode = "continuousMode".toLowerCase();
     public static final String paramPaused = "paused".toLowerCase();
     public static final String paramIsDidScanDefined = "isDidScanDefined".toLowerCase();
+    public static final String paramShouldPassBarcodeFrame = "shouldPassBarcodeFrame".toLowerCase();
 
 
     public static void updatePicker(BarcodePickerWithSearchBar picker, Bundle bundle,
@@ -203,5 +204,11 @@ public class PhonegapParamParser {
         return options != null &&
                 options.containsKey(PhonegapParamParser.paramIsDidScanDefined) &&
                 options.getBoolean(PhonegapParamParser.paramIsDidScanDefined);
+    }
+
+    public static boolean shouldPassBarcodeFrame(Bundle options) {
+        return options != null &&
+                options.containsKey(PhonegapParamParser.paramShouldPassBarcodeFrame) &&
+                options.getBoolean(PhonegapParamParser.paramShouldPassBarcodeFrame);
     }
 }

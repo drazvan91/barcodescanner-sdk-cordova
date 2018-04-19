@@ -613,6 +613,16 @@ public class Scandit {
          */
         public void setConstraints(Constraints portraitConstraints, Constraints, landscapeConstraints, number animationDuration);
 
+
+        /**
+         * \brief Sets the orientations to which the barcode picker is allowed to rotate to.
+         *
+         * \param orientations An array of BarcodePicker.Orientation objects.
+         *
+         * \since 4.11.0
+         */
+        public void setOrientations(orientations: BarcodePicker.Orientation[]);
+
         /**
          * \deprecated Replaced by setConstraints(portraitConstraints, landscapeConstraints, animationDuration)
          * to allow more customization.

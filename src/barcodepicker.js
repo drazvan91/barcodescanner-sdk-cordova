@@ -84,7 +84,7 @@ BarcodePicker.prototype.show = function () {
     
     options.isDidScanDefined = callbacks.didScan != null;
     options.shouldPassBarcodeFrame = callbacks.didProcessFrame != null;
-    
+
     var picker = this;
     cordova.exec(function (args) {
         // all the events are serialized as an array, where the first argument is the event name

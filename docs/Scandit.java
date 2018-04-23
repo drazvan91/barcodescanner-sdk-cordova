@@ -450,6 +450,15 @@ public class Scandit {
          * The callback receives a string describing the error as its only argument.
          */
         public function didFailToValidateLicense;
+
+        /**
+         * \brief Callback to be invoked whenever a new camera frame has been processed and
+         * new codes have been recognized within that frame.
+         *
+         * The callback receives a base64 string encoding the processed frame. Frame is not rotated -
+         * it is in the exact same orientation as the original frame received from the device's camera.
+         */
+        public function didProcessFrame;
     }
 
     /**
@@ -603,6 +612,16 @@ public class Scandit {
          * \since 4.11.0
          */
         public void setConstraints(Constraints portraitConstraints, Constraints, landscapeConstraints, number animationDuration);
+
+
+        /**
+         * \brief Sets the orientations to which the barcode picker is allowed to rotate to.
+         *
+         * \param orientations An array of BarcodePicker.Orientation objects.
+         *
+         * \since 4.11.0
+         */
+        public void setOrientations(orientations: BarcodePicker.Orientation[]);
 
         /**
          * \deprecated Replaced by setConstraints(portraitConstraints, landscapeConstraints, animationDuration)

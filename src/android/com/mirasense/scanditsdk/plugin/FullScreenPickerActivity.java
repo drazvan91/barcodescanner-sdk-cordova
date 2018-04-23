@@ -67,6 +67,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
     private PickerStateMachine mPickerStateMachine = null;
     private boolean mContinuousMode = false;
     private boolean mIsDidScanDefined = false;
+    private boolean mShouldPassBarcodeFrame = false;
 
     private int mStateBeforeSuspend = PickerStateMachine.STOPPED;
     private List<Long> mRejectedCodeIds;
@@ -186,6 +187,7 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
 
         mContinuousMode = PhonegapParamParser.shouldRunInContinuousMode(options);
         mIsDidScanDefined = PhonegapParamParser.isDidScanDefined(options);
+        mShouldPassBarcodeFrame = PhonegapParamParser.shouldPassBarcodeFrame(options);
 
         mStateBeforeSuspend = PhonegapParamParser.shouldStartInPausedState(options)
                 ? PickerStateMachine.PAUSED : PickerStateMachine.ACTIVE;
@@ -268,6 +270,14 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
             // return if there is a pending close. Otherwise we might deadlock
             return;
         }
+
+        // call didProcessFrame only when new codes have been recognized and when didProcessFrame has been set.
+        if (mShouldPassBarcodeFrame && session.getNewlyRecognizedCodes().size() > 0) {
+            String base64Data = SampleBufferConverter.base64StringFromFrame(bytes, width, height);
+
+            ResultRelay.relayResult(bundleForDidProcessFrame(base64Data));
+        }
+
         if (!mPickerStateMachine.isMatrixScanEnabled() || session.getTrackedCodes() == null) {
             return;
         }
@@ -295,6 +305,15 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
             ResultRelay.relayResult(bundle);
             Marshal.rejectTrackedCodes(session, mRejectedTrackedCodeIds);
         }
+    }
+
+    private Bundle bundleForDidProcessFrame(String base64Data) {
+        Bundle bundle = new Bundle();
+        JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_PROCESS_FRAME,
+                ResultRelay.jsonForDidProcessFrame(base64Data));
+        bundle.putString("jsonString", args.toString());
+        bundle.putBoolean("waitForResult", false);
+        return bundle;
     }
 
     private Bundle bundleForProcessResult(List<TrackedBarcode> newylTrackedCodes) {

@@ -51,6 +51,7 @@ SBSLicenseValidationDelegate>
 @property (nonatomic, assign) BOOL shouldPassBarcodeFrame;
 
 @property (nonatomic, strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
+@property (nonatomic, strong) UINavigationController *pickerContainer;
 
 @end
 
@@ -188,8 +189,19 @@ SBSLicenseValidationDelegate>
             } else {
                 self.modallyPresented = YES;
 
-                // Present the barcode picker modally and start scanning.
-                [self.viewController presentViewController:self.picker animated:YES completion:nil];
+                // Present the barcode picker in a new window.
+                // We don't use presentViewController:animated:completion: because that would hang the webview
+                // if the cordova-plugin-wkwebview-engine plugin is used.
+                self.pickerContainer = [[UINavigationController alloc] initWithRootViewController:self.picker];
+                self.pickerContainer.navigationBarHidden = YES;
+                const auto frame = [[UIScreen mainScreen] bounds];
+                const auto scanditWindow = [[UIWindow alloc] initWithFrame:frame];
+                const auto scanditController = [[UIViewController alloc] init];
+                scanditController.view.backgroundColor = [UIColor clearColor];
+                [scanditWindow setRootViewController:scanditController];
+                [scanditWindow setWindowLevel:UIWindowLevelNormal];
+                [scanditWindow makeKeyAndVisible];
+                [scanditController presentViewController:self.pickerContainer animated:YES completion:nil];
             }
         });
     });
@@ -415,7 +427,8 @@ SBSLicenseValidationDelegate>
     if (session.newlyRecognizedCodes.count > 0 && !self.continuousMode) {
         dispatch_main_sync_safe(^{
             if (self.modallyPresented) {
-                [self.viewController dismissViewControllerAnimated:YES completion:nil];
+                [self.pickerContainer dismissViewControllerAnimated:YES completion:nil];
+                self.pickerContainer = nil;
             } else {
                 [self.picker removeFromParentViewController];
                 [self.picker.view removeFromSuperview];
@@ -558,7 +571,8 @@ SBSLicenseValidationDelegate>
     if (!self.continuousMode) {
         dispatch_main_sync_safe(^{
             if (self.modallyPresented) {
-                [self.viewController dismissViewControllerAnimated:YES completion:nil];
+                [self.pickerContainer dismissViewControllerAnimated:YES completion:nil];
+                self.pickerContainer = nil;
             } else {
                 [self.picker removeFromParentViewController];
                 [self.picker.view removeFromSuperview];
@@ -598,7 +612,8 @@ SBSLicenseValidationDelegate>
     [self.pickerStateMachine setDesiredState:SBSPickerStateStopped];
     dispatch_main_sync_safe(^{
         if (self.modallyPresented) {
-            [self.viewController dismissViewControllerAnimated:YES completion:nil];
+            [self.pickerContainer dismissViewControllerAnimated:YES completion:nil];
+            self.pickerContainer = nil;
         } else {
             [self.picker removeFromParentViewController];
             [self.picker.view removeFromSuperview];
@@ -610,7 +625,6 @@ SBSLicenseValidationDelegate>
     self.hasPendingOperation = NO;
 }
 
-
 #pragma mark - ScanditSDKSearchBarDelegate
 
 - (void)searchExecutedWithContent:(NSString *)content {
@@ -619,7 +633,8 @@ SBSLicenseValidationDelegate>
     if (!self.continuousMode) {
         [self.pickerStateMachine setDesiredState:SBSPickerStateStopped];
         if (self.modallyPresented) {
-            [self.viewController dismissViewControllerAnimated:YES completion:nil];
+            [self.pickerContainer dismissViewControllerAnimated:YES completion:nil];
+            self.pickerContainer = nil;
         } else {
             [self.picker removeFromParentViewController];
             [self.picker.view removeFromSuperview];

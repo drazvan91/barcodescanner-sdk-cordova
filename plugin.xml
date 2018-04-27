@@ -95,7 +95,7 @@
             <header-file src="src/ios/SBSPickerStateMachine.h"/>
             <source-file src="src/ios/SBSPickerStateMachine.m"/>
             <header-file src="src/ios/SBSSampleBufferConverter.h"/>
-            <source-file src="src/ios/SBSSampleBufferConverter.mm"/>
+            <source-file src="src/ios/SBSSampleBufferConverter.m"/>
 
             <!-- Frameworks needed by Scandit SDK for iOS -->
             <framework src="src/ios/scanditsdk-community-ios_4.0.0/ScanditBarcodeScanner.framework" custom="true"/>

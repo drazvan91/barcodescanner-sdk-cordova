@@ -2,6 +2,11 @@
     "name": "SDK Cordova Android & iOS",
     "owner": ["moritz@scandit.com"],
     "distribution": "SOURCE",
+    "packages": [
+        { "type": "npm", "path": "samples/extended/package.json", "distribution": "NONE" },
+        { "type": "npm", "path": "samples/ionic-sample/package.json", "distribution": "NONE" },
+        { "type": "npm", "path": "samples/ocr/package.json", "distribution": "NONE" }
+    ],
     "overrides": [
         { "package": { "name": "shelljs", "version": "0.2.6" }, "license": { "id": "BSD*" }, "reason": "https://github.com/shelljs/shelljs/blob/v0.2.6/LICENSE" },
         { "package": { "name": "properties-parser", "version": "0.2.3" }, "license": { "id": "MIT" }, "reason": "https://github.com/xavi-/node-properties-parser/commit/f160e88af8fce4006cde7a537186a4d3ccdccb38#diff-b9cfc7f2cdf78a7f4b91a753d10865a2" },

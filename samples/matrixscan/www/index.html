@@ -72,19 +72,11 @@
                 }
             }
 
-            function newTrackedCodes(matrixScanSession) {
-                // If you want to visualy reject a code you should use SBSScanSession's rejectTrackedCode.
-                // For example, the following commented code will reject all EAN8 codes.
-                matrixScanSession.newlyTrackedCodes.forEach(element => {
-                    if (element.symbology == Scandit.Barcode.Symbology.EAN8) {
-                        matrixScanSession.rejectTrackedCode(element)
-                    }
-                });
-            }
-
-            function didScan(scanSession) {
-                scanSession.newlyRecognizedCodes.forEach(barcode => {
-                    if (recognizedCodes.indexOf(barcode.data) < 0) {
+            function didRecognizeNewCodes(matrixScanSession) {
+                matrixScanSession.newlyTrackedCodes.forEach(barcode => {
+                    if (barcode.symbology == Scandit.Barcode.Symbology.EAN8) {
+                        matrixScanSession.rejectTrackedCode(barcode)
+                    } else if (recognizedCodes.indexOf(barcode.data) < 0) {
                         recognizedCodes.push(barcode.data)
                     }
                 });
@@ -133,7 +125,9 @@
                 constraints.bottomMargin = '30%';
                 picker.setConstraints(constraints, constraints)
 
-                picker.show(didScan, null, null, null, newTrackedCodes);
+                picker.show({
+                    didRecognizeNewCodes: didRecognizeNewCodes,
+                });
                 picker.startScanning();
             }
 

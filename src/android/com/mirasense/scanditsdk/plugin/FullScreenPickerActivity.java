@@ -35,6 +35,7 @@ import com.scandit.barcodepicker.ocr.TextRecognitionListener;
 import com.scandit.base.util.JSONParseException;
 import com.scandit.recognition.TrackedBarcode;
 
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -271,14 +272,16 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
             return;
         }
 
-        // call didProcessFrame only when new codes have been recognized and when didProcessFrame has been set.
-        if (mShouldPassBarcodeFrame && session.getNewlyRecognizedCodes().size() > 0) {
-            String base64Data = SampleBufferConverter.base64StringFromFrame(bytes, width, height);
-
-            ResultRelay.relayResult(bundleForDidProcessFrame(base64Data));
+        if ((mPickerStateMachine != null && !mPickerStateMachine.isMatrixScanEnabled())) {
+            // Call didProcessFrame only when new codes have been recognized.
+            if (session.getNewlyRecognizedCodes().size() > 0) {
+                returnFrameBufferIfWanted(bytes, width, height);
+            }
+            return;
         }
 
-        if (!mPickerStateMachine.isMatrixScanEnabled() || session.getTrackedCodes() == null) {
+        // If tracked codes are null for whatever reason, there is nothing more to do.
+        if (session.getTrackedCodes() == null) {
             return;
         }
 
@@ -304,6 +307,16 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
             Bundle bundle = bundleForProcessResult(newlyTrackedCodes);
             ResultRelay.relayResult(bundle);
             Marshal.rejectTrackedCodes(session, mRejectedTrackedCodeIds);
+
+            // Call didProcessFrame only when new codes have started to be tracked.
+            returnFrameBufferIfWanted(bytes, width, height);
+        }
+    }
+
+    private void returnFrameBufferIfWanted(byte[] bytes, int width, int height) {
+        if (mShouldPassBarcodeFrame) {
+            String base64Data = SampleBufferConverter.base64StringFromFrame(bytes, width, height);
+            ResultRelay.relayResult(bundleForDidProcessFrame(base64Data));
         }
     }
 

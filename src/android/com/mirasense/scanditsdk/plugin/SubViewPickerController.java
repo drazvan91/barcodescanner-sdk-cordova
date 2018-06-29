@@ -401,17 +401,16 @@ public class SubViewPickerController extends PickerControllerBase implements
             return;
         }
 
-        // call didProcessFrame only when new codes have been recognized and when didProcessFrame has been set.
-        if (mShouldPassBarcodeFrame && session.getNewlyRecognizedCodes().size() > 0) {
-            String base64Data = SampleBufferConverter.base64StringFromFrame(bytes, width, height);
-
-            JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_PROCESS_FRAME,
-                    ResultRelay.jsonForDidProcessFrame(base64Data));
-            PluginResult result = Marshal.createOkResult(args);
-            mCallbackContext.sendPluginResult(result);
+        if ((mPickerStateMachine != null && !mPickerStateMachine.isMatrixScanEnabled())) {
+            // Call didProcessFrame only when new codes have been recognized.
+            if (session.getNewlyRecognizedCodes().size() > 0) {
+                returnFrameBufferIfWanted(bytes, width, height);
+            }
+            return;
         }
 
-        if ((mPickerStateMachine != null && !mPickerStateMachine.isMatrixScanEnabled()) || session.getTrackedCodes() == null) {
+        // If tracked codes are null for whatever reason, there is nothing more to do.
+        if (session.getTrackedCodes() == null) {
             return;
         }
 
@@ -439,6 +438,20 @@ public class SubViewPickerController extends PickerControllerBase implements
             PluginResult result = Marshal.createOkResult(eventArgs);
             sendPluginResultBlocking(result);
             Marshal.rejectTrackedCodes(session, mRejectedTrackedCodeIds);
+
+            // Call didProcessFrame only when new codes have started to be tracked.
+            returnFrameBufferIfWanted(bytes, width, height);
+        }
+    }
+
+    private void returnFrameBufferIfWanted(byte[] bytes, int width, int height) {
+        if (mShouldPassBarcodeFrame) {
+            String base64Data = SampleBufferConverter.base64StringFromFrame(bytes, width, height);
+
+            JSONArray args = Marshal.createEventArgs(ScanditSDK.DID_PROCESS_FRAME,
+                    ResultRelay.jsonForDidProcessFrame(base64Data));
+            PluginResult result = Marshal.createOkResult(args);
+            mCallbackContext.sendPluginResult(result);
         }
     }
 

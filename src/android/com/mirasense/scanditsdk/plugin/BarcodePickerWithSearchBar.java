@@ -142,7 +142,9 @@ public class BarcodePickerWithSearchBar extends BarcodePicker {
     }
 
     protected void setSearchBarPlaceholderText(String text) {
-        mSearchBar.setHint(text);
+        if (mSearchBar != null) {
+            mSearchBar.setHint(text);
+        }
     }
 
     private void onSearchClicked() {

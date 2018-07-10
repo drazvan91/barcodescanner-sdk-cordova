@@ -199,7 +199,7 @@
 #pragma mark - Search Bar
 
 - (void)showSearchBar:(BOOL)show {
-    dispatch_async(dispatch_get_main_queue(), (^{
+    void (^block)() = ^void() {
         if (!show && self.manualSearchBar) {
             [self.manualSearchBar removeFromSuperview];
             self.manualSearchBar = nil;
@@ -217,7 +217,12 @@
             [self.overlayController setTorchButtonLeftMargin:15 topMargin:15 + 44 width:40 height:40];
             [self.overlayController setCameraSwitchButtonRightMargin:15 topMargin:15 + 44 width:40 height:40];
         }
-    }));
+    };
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
 }
 
 - (void)createManualSearchBar {

@@ -413,11 +413,9 @@ SBSLicenseValidationDelegate>
       didProcessFrame:(CMSampleBufferRef)frame
               session:(SBSScanSession *)session {
     // Call `didProcessFrame` only when new codes have been recognized and when didProcessFrame has been set.
-    if (self.shouldPassBarcodeFrame && session.newlyRecognizedCodes.count > 0) {
-        const auto base64frame = [SBSSampleBufferConverter base64StringFromFrame:frame];
-        const auto imageObject = @{@"base64Data": base64frame};
-        const auto pluginResult = [self createResultForEvent:@"didProcessFrame" value:imageObject];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    // If MatrixScan is enabled we will send the frame later.
+    if (!self.matrixScanEnabled && session.newlyRecognizedCodes.count > 0) {
+        [self sendFrameIfNeeded:frame];
     }
 
     // If at least a code has been recognized and continuous mode is off, then we should dismiss/remove the picker
@@ -443,6 +441,7 @@ SBSLicenseValidationDelegate>
     if (!self.matrixScanEnabled || session.trackedCodes == nil) {
         return;
     }
+
     NSDictionary<NSNumber *, SBSTrackedCode *> *trackedCodes = session.trackedCodes;
     NSSet<NSNumber *> *trackedCodeIdentifiers = [NSSet setWithArray:[trackedCodes allKeys]];
     NSMutableArray<SBSTrackedCode *> *newlyTrackedCodes = [[NSMutableArray alloc] init];
@@ -461,9 +460,8 @@ SBSLicenseValidationDelegate>
 
     // We want to block the thread and wait for the JS callback only if at least one new code was found.
     if (atLeastOneNewCode) {
+        // Call JS callback to send the tracked codes (blocking the thread).
         CDVPluginResult *pluginResult = [self trackingResultWithTrackedCodes:newlyTrackedCodes];
-
-        // Call JS callback blocking the thread
         [self sendNewlyTrackedCodesBlocking:pluginResult];
 
         // Visually reject codes
@@ -476,6 +474,9 @@ SBSLicenseValidationDelegate>
                 }
             }
         }
+
+        // Send the frame
+        [self sendFrameIfNeeded:frame];
     }
 }
 
@@ -551,6 +552,15 @@ SBSLicenseValidationDelegate>
     NSString *command = @"cordova.callbacks['%@'].success(%@);";
     NSString *commandSubst = [NSString stringWithFormat:command, self.callbackId, result.argumentsAsJSON];
     [self.commandDelegate evalJs:commandSubst scheduledOnRunLoop:NO];
+}
+
+- (void)sendFrameIfNeeded:(CMSampleBufferRef)sampleBuffer {
+    if (self.shouldPassBarcodeFrame) {
+        const auto base64frame = [SBSSampleBufferConverter base64StringFromFrame:sampleBuffer];
+        const auto imageObject = @{@"base64Data": base64frame};
+        const auto pluginResult = [self createResultForEvent:@"didProcessFrame" value:imageObject];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    }
 }
 
 #pragma mark - SBSTextRecognitionDelegate

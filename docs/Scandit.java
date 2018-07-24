@@ -225,7 +225,7 @@ public class Scandit {
              */
             PDF417,
             /**
-             * \brief PDF417 barcode symbology.
+             * \brief Micro PDF417 barcode symbology.
              */
             MICRO_PDF417,
             /**
@@ -253,7 +253,7 @@ public class Scandit {
              */
             AZTEC,
             /**
-             * @brief DotCode 2D barcode symbology.
+             * \brief DotCode 2D barcode symbology.
              */
             DOTCODE,
             /**
@@ -277,11 +277,11 @@ public class Scandit {
              */
             TWO_DIGIT_ADD_ON,
             /**
-             * \brief Royal Dutch TPG Post KIX
+             * \brief Royal Dutch TPG Post KIX.
              */
             KIX,
             /**
-             * \brief Royal Mail 4 State Customer Code (RM4SCC)
+             * \brief Royal Mail 4 State Customer Code (RM4SCC).
              */
             RM4SCC
         }

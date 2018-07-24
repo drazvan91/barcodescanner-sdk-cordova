@@ -213,6 +213,10 @@ public class Scandit {
              */
             QR,
             /**
+             * \brief MicroQR Code 2D barcode symbology.
+             */
+            MICRO_QR,
+            /**
              * \brief Datamatrix 2D barcode symbology.
              */
             DATA_MATRIX,
@@ -220,6 +224,10 @@ public class Scandit {
              * \brief PDF417 barcode symbology.
              */
             PDF417,
+            /**
+             * \brief Micro PDF417 barcode symbology.
+             */
+            MICRO_PDF417,
             /**
              * \brief MSI Plessey 1D barcode symbology.
              */
@@ -245,11 +253,7 @@ public class Scandit {
              */
             AZTEC,
             /**
-             * @brief MicroQR 2D barcode symbology.
-             */
-            MICRO_QR,
-            /**
-             * @brief DotCode 2D barcode symbology.
+             * \brief DotCode 2D barcode symbology.
              */
             DOTCODE,
             /**
@@ -271,7 +275,15 @@ public class Scandit {
              * as well: \ref SYMBOLOGY_EAN13, \ref SYMBOLOGY_UPCA, \ref SYMBOLOGY_UPCE, or
              * \ref SYMBOLOGY_EAN8 and the maximum number of codes per frame has to be set to at least 2.
              */
-            TWO_DIGIT_ADD_ON
+            TWO_DIGIT_ADD_ON,
+            /**
+             * \brief Royal Dutch TPG Post KIX.
+             */
+            KIX,
+            /**
+             * \brief Royal Mail 4 State Customer Code (RM4SCC).
+             */
+            RM4SCC
         }
 
         /**

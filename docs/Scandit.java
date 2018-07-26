@@ -193,6 +193,10 @@ public class Scandit {
              */
             CODE25,
             /**
+             * \brief Code 32 barcode symbology.
+             */
+            CODE32,
+            /**
              * \brief Code39 barcode symbology.
              */
             CODE39,

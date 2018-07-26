@@ -17,6 +17,7 @@ Barcode.Symbology = {
     UPCE: "upce",
     CODE11: "code11",
     CODE128: "code128",
+    CODE32: "code32",
     CODE39: "code39",
     CODE93: "code93",
     CODE25: "code25",

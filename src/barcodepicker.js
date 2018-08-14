@@ -224,8 +224,11 @@ BarcodePicker.codeArrayFromGenericArray = function(genericArray) {
 }
 
 BarcodePicker.prototype.applyScanSettings = function(settings) {
-    if (this.isShown && settings instanceof ScanSettings) {
-        cordova.exec(null, null, "ScanditSDK", "applySettings", [settings]);
+    if (settings instanceof ScanSettings) {
+        this.scanSettings = settings;
+        if (this.isShown) {
+            cordova.exec(null, null, "ScanditSDK", "applySettings", [settings]);
+        }
     }
 }
 

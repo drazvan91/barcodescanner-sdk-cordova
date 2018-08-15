@@ -263,6 +263,19 @@
     }
 }
 
+- (void)setSearchBarKeyboardType:(UIKeyboardType)keyboardType {
+    void (^block)() = ^void() {
+        if (self.manualSearchBar) {
+            [self.manualSearchBar setKeyboardType:keyboardType];
+        }
+    };
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+
 - (CGFloat)navigationBarOffset {
     if ((self.navigationController && !self.navigationController.navigationBar.hidden)
         && NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1

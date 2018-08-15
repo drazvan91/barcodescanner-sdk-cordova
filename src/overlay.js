@@ -105,6 +105,11 @@ ScanOverlay.prototype.showSearchBar = function(show) {
     this.searchBar = show;
     this.updateOverlayIfExists();
 }
+               
+ScanOverlay.prototype.setSearchBarKeyboardType = function(keyboard) {
+    this.searchBarKeyboardType = keyboard;
+    this.updateOverlayIfExists();
+}
 
 ScanOverlay.prototype.setSearchBarActionButtonCaption = function(caption) {
     this.searchBarActionButtonCaption = caption;

@@ -14,6 +14,7 @@ package com.mirasense.scanditsdk.plugin;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.text.InputType;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,6 +139,12 @@ public class BarcodePickerWithSearchBar extends BarcodePicker {
             removeView(mSearchBar);
             mSearchBar = null;
             invalidate();
+        }
+    }
+
+    public void setSearchBarInputType(int inputType) {
+        if (mSearchBar != null) {
+            mSearchBar.setInputType(inputType);
         }
     }
 

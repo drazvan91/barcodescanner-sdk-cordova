@@ -1455,6 +1455,15 @@ public class Scandit {
         public void showSearchBar(boolean show);
 
         /**
+         * Sets the type of keyboard that is for entering data into the search bar.
+         *
+         * \since 5.9.0
+         *
+         * \param keyboardType The type of keyboard, "text" or "number".
+         */
+        public void setSearchBarKeyboardType(string keyboardType);
+
+        /**
          * \brief Sets the caption of the search button at the top of the numerical keyboard.
          *
          * By default this is: "Go"

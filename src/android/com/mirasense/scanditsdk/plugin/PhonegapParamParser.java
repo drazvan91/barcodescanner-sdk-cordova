@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 public class PhonegapParamParser {
 
     public static final String paramSearchBar = "searchBar".toLowerCase();
+    public static final String paramSearchBarKeyboardType = "searchBarKeyboardType".toLowerCase();
     public static final String paramSearchBarPlaceholderText = "searchBarPlaceholderText".toLowerCase();
     public static final String paramMinSearchBarBarcodeLength = "minSearchBarBarcodeLength".toLowerCase();
     public static final String paramMaxSearchBarBarcodeLength = "maxSearchBarBarcodeLength".toLowerCase();
@@ -58,6 +60,17 @@ public class PhonegapParamParser {
         if (bundle.containsKey(paramSearchBar)) {
             picker.showSearchBar(bundle.getBoolean(paramSearchBar));
             picker.setOnSearchBarListener(listener);
+
+            if (bundle.containsKey(paramSearchBarKeyboardType)) {
+                String keyboard = bundle.getString(paramSearchBarKeyboardType);
+                if (keyboard != null) {
+                    if (keyboard.equals("text")) {
+                        picker.setSearchBarInputType(InputType.TYPE_CLASS_TEXT);
+                    } else {
+                        picker.setSearchBarInputType(InputType.TYPE_CLASS_NUMBER);
+                    }
+                }
+            }
         }
 
         if (bundle.containsKey(paramSearchBarPlaceholderText)) {

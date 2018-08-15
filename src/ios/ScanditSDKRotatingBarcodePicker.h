@@ -35,4 +35,6 @@
 
 - (void)showSearchBar:(BOOL)show;
 
+- (void)setSearchBarKeyboardType:(UIKeyboardType)keyboardType;
+
 @end

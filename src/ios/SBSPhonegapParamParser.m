@@ -42,6 +42,7 @@
 + (NSString *)paramOrientationsLandscapeRight { return [@"landscapeRight" lowercaseString]; }
 
 + (NSString *)paramSearchBar { return [@"searchBar" lowercaseString]; }
++ (NSString *)paramSearchBarKeyboardType { return [@"searchBarKeyboardType" lowercaseString]; }
 + (NSString *)paramSearchBarActionButtonCaption { return [@"searchBarActionButtonCaption" lowercaseString]; }
 + (NSString *)paramSearchBarCancelButtonCaption { return [@"searchBarCancelButtonCaption" lowercaseString]; }
 + (NSString *)paramSearchBarPlaceholderText { return [@"searchBarPlaceholderText" lowercaseString]; }
@@ -100,6 +101,19 @@
             picker.searchDelegate = searchDelegate;
         } else {
             NSLog(@"SBS Plugin: failed to parse search bar - wrong type");
+        }
+    }
+    
+    NSObject *searchBarKeyboardType = [options objectForKey:[self paramSearchBarKeyboardType]];
+    if (searchBarKeyboardType) {
+        if ([searchBarKeyboardType isKindOfClass:[NSString class]]) {
+            if ([(NSString *)searchBarKeyboardType isEqualToString:@"text"]) {
+                [picker setSearchBarKeyboardType:UIKeyboardTypeAlphabet];
+            } else {
+                [picker setSearchBarKeyboardType:UIKeyboardTypeNumberPad];
+            }
+        } else {
+            NSLog(@"SBS Plugin: failed to parse search bar keyboard type - wrong type");
         }
     }
     

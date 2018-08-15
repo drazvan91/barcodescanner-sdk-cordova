@@ -36,25 +36,27 @@
 
 @implementation ScanditSDKRotatingBarcodePicker
 
-- (instancetype)initWithSettings:(SBSScanSettings *)settings{
-    if (self = [super initWithSettings:settings]) {
-        self.portraitConstraints = [[SBSConstraints alloc] init];
-        self.landscapeConstraints = [[SBSConstraints alloc] init];
+- (instancetype)initWithSettings:(SBSScanSettings *)settings {
+    self = [super initWithSettings:settings];
+    if (self) {
+        _portraitConstraints = [[SBSConstraints alloc] init];
+        _landscapeConstraints = [[SBSConstraints alloc] init];
     }
-    
     return self;
 }
 
-
 #pragma mark - Orientation Changes & Margin Adjustment
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                duration:(NSTimeInterval)duration {
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    
-    [self adjustSize:0 newOrientation:toInterfaceOrientation];
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    UIInterfaceOrientation orientation;
+    if (size.width > size.height) {
+        orientation = UIInterfaceOrientationLandscapeLeft;
+    } else {
+        orientation = UIInterfaceOrientationPortrait;
+    }
+    [self adjustSize:0 newOrientation:orientation];
 }
-
 
 - (void)adjustSize:(CGFloat)animationDuration {
     [self adjustSize:animationDuration newOrientation:UIInterfaceOrientationUnknown];

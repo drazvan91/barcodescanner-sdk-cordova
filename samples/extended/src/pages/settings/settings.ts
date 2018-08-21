@@ -14,6 +14,7 @@ export class SettingsPage {
   public uiSettings: UiSettings;
 
   public scanningArea;
+  public dpmModeEnabled = false;
 
   public viewfinderStyle: string;
   public cameraSwitchVisibility: string;
@@ -54,6 +55,7 @@ export class SettingsPage {
   public normalizeSettings(): void {
     this.normalizeSymbologies();
     this.updateScanningArea();
+    this.setupDPMMode();
   }
 
   private updateSettings(): void {
@@ -128,5 +130,20 @@ export class SettingsPage {
       this.scanSettings.activeScanningAreaLandscape = newArea;
       this.settingsProvider.clampActiveScanningArea(this.scannerProvider.portraitConstraints, this.scannerProvider.landscapeConstraints);
     }
+  }
+
+  private setupDPMMode(): void {
+    // Enabling the direct_part_marking_mode extension comes at the cost of increased frame processing times.
+    // It is recommended to restrict the scanning area to a smaller part of the image for best performance.
+    if (this.dpmModeEnabled) {
+      const dpmScanArea = new Scandit.Rect(0.33, 0.33, 0.33, 0.33);
+      this.scanSettings.activeScanningAreaPortrait = dpmScanArea;
+      this.scanSettings.activeScanningAreaLandscape = dpmScanArea;
+      this.scanSettings.symbologies['data-matrix'].extensions = ["direct_part_marking_mode"]
+    } else {
+      this.updateScanningArea();
+      this.scanSettings.symbologies['data-matrix'].extensions = []
+    }
+    console.log(this.scanSettings);
   }
 }

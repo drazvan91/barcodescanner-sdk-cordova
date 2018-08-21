@@ -20,9 +20,13 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -89,8 +93,28 @@ abstract class PickerControllerBase implements IPickerController {
     @Override
     public void finishDidRecognizeNewCodesCallback(JSONArray data) {
         setRejectedTrackedCodeIds(determineRejectedCodes(data, 0));
+        setTrackedCodeStates(determineStateObjects(data, 1));
         clearInFlightResultCallbackAndNotify();
     }
+
+    public static Map<Long, JSONObject> determineStateObjects(JSONArray data, int dataIndex) {
+        Map<Long, JSONObject> stateObjects = new HashMap<>();
+        if (data != null && data.length() > dataIndex) {
+            try {
+                JSONObject jsonObject = data.getJSONObject(dataIndex);
+                Iterator<String> iterator = jsonObject.keys();
+                while (iterator.hasNext()) {
+                    String id = iterator.next();
+                    stateObjects.put(Long.parseLong(id), jsonObject.getJSONObject(id));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return stateObjects;
+    }
+
+    protected abstract void setTrackedCodeStates(Map<Long, JSONObject> trackedCodeStates);
 
     /**
      * Reads the rejected code ids out of the specified position in the json array. Handles arrays

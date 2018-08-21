@@ -137,6 +137,7 @@
             <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
         <resource-file src="src/android/scanditsdk-community-android_4.0.0/ScanditBarcodeScanner.aar" target="libs/ScanditBarcodeScanner.aar" />
         <!-- These source files contain the Android-specific implementation of the Cordova/Phonegap plugin -->
+        <source-file src="src/android/com/mirasense/scanditsdk/plugin/BaseBarcodePicker.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/BarcodePickerWithSearchBar.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullScreenPickerActivity.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/FullscreenPickerController.java" target-dir="src/com/mirasense/scanditsdk/plugin" />

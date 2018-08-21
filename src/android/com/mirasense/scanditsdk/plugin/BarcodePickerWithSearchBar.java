@@ -30,7 +30,7 @@ import com.scandit.base.system.SbSystemUtils;
  * A small wrapper around the barcode picker to add support for a search bar into which barcode
  * data can be entered manually.
  */
-public class BarcodePickerWithSearchBar extends BarcodePicker {
+public class BarcodePickerWithSearchBar extends BaseBarcodePicker {
 
     private SearchBar mSearchBar;
     private SearchBarListener mListener;

@@ -102,6 +102,11 @@ public class FullScreenPickerActivity extends Activity implements OnScanListener
         sActiveActivity.mRejectedTrackedCodeIds = rejectedCodeIds;
     }
 
+    public static void setTrackedCodeStates(Map<Long, JSONObject> trackedCodeStates) {
+        if (sActiveActivity == null) return;
+        sActiveActivity.mPickerStateMachine.setTrackedCodeStates(trackedCodeStates);
+    }
+
     public static void updateUI(Bundle overlayOptions) {
         if (sActiveActivity == null || sActiveActivity.mPickerStateMachine == null) return;
         UIParamParser.updatePickerUI(sActiveActivity.mPickerStateMachine.getPicker(), overlayOptions);

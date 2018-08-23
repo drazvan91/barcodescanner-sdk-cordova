@@ -181,6 +181,14 @@ public class SubViewPickerController extends PickerControllerBase implements
     }
 
     @Override
+    protected void setTrackedCodeStates(Map<Long, JSONObject> trackedCodeStates) {
+        PickerStateMachine stateMachine = mPickerStateMachine;
+        if (stateMachine != null) {
+            stateMachine.setTrackedCodeStates(trackedCodeStates);
+        }
+    }
+
+    @Override
     public void startScanning() {
         this.runOnUiThread(new Runnable() {
             @Override

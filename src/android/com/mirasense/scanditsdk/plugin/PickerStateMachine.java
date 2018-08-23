@@ -15,7 +15,10 @@ package com.mirasense.scanditsdk.plugin;
 import com.scandit.barcodepicker.ScanSession;
 import com.scandit.barcodepicker.ScanSettings;
 
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
+import java.util.Map;
 
 /**
  * @brief Simple state machine for managing the different states of the barcode picker
@@ -93,6 +96,10 @@ class PickerStateMachine {
 
     public boolean isMatrixScanEnabled() {
         return mMatrixScanEnabled;
+    }
+
+    protected void setTrackedCodeStates(Map<Long, JSONObject> trackedCodeStates) {
+        mPicker.setTrackedCodeStates(trackedCodeStates);
     }
 
     public void startScanning() {

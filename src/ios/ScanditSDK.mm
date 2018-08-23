@@ -119,7 +119,7 @@ SBSLicenseValidationDelegate>
         if (continuousMode && [continuousMode isKindOfClass:[NSNumber class]]) {
             self.continuousMode = [continuousMode boolValue];
         }
-        
+
         // check if didScan callback is defined
         NSNumber *isDidScanDefined = [options objectForKey:[SBSPhonegapParamParser paramIsDidScanDefined]];
         if (isDidScanDefined && [isDidScanDefined isKindOfClass:[NSNumber class]]) {
@@ -329,8 +329,11 @@ SBSLicenseValidationDelegate>
 
 - (void)finishDidRecognizeNewCodesCallback:(CDVInvokedUrlCommand *)command {
     NSArray *args = command.arguments;
-    if ([args count] == 1 && [args[0] isKindOfClass:[NSArray class]]) {
+    if ([args count] >= 1 && [args[0] isKindOfClass:[NSArray class]]) {
         self.visuallyRejectedCodeIds = args[0];
+    }
+    if ([args count] >= 2 && [args[1] isKindOfClass:[NSDictionary class]]) {
+        [self.picker setTrackedCodeStates:args[1]];
     }
     self.didRecognizeNewCodesCallbackFinish = YES;
     [self.didRecognizeNewCodesCondition signal];
@@ -384,10 +387,10 @@ SBSLicenseValidationDelegate>
 
 - (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
     // Don't serialize the result if didScan is not defined.
-    if (!self.isDidScanDefined) { 
-        return; 
+    if (!self.isDidScanDefined) {
+        return;
     }
-    
+
     CDVPluginResult *pluginResult = [self resultForSession:session];
 
     int nextState = [self sendPluginResultBlocking:pluginResult];

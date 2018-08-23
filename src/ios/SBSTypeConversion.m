@@ -19,6 +19,12 @@
 
 @end
 
+@interface SBSTrackedCode (Identifier)
+
+@property (nonatomic, readonly) NSNumber *identifier;
+
+@end
+
 @implementation SBSCode (UniqueId)
 
 - (long)uniqueId {
@@ -28,9 +34,13 @@
 @end
 
 static NSMutableDictionary *SBSJSObjectsFromCode(SBSCode *code) {
+    NSInteger identifier = code.uniqueId;
+    if ([code isKindOfClass:[SBSTrackedCode class]]) {
+        identifier = ((SBSTrackedCode *)code).identifier.integerValue;
+    }
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                  [code symbologyName], @"symbology",
-                                 [NSNumber numberWithLong:code.uniqueId], @"uniqueId",
+                                 [NSNumber numberWithLong:identifier], @"uniqueId",
                                  [NSNumber numberWithBool:[code isGs1DataCarrier]], @"gs1DataCarrier",
                                  [NSNumber numberWithBool:[code isRecognized]], @"recognized", nil];
     [dict setObject:@(code.compositeFlag) forKey:@"compositeFlag"];

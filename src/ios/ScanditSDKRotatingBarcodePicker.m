@@ -197,6 +197,9 @@
     }
 }
 
+- (void)setTrackedCodeStates:(NSDictionary *)trackedCodeStates {
+    // Extend to draw custom views.
+}
 
 #pragma mark - Search Bar
 

@@ -37,4 +37,6 @@
 
 - (void)setSearchBarKeyboardType:(UIKeyboardType)keyboardType;
 
+- (void)setTrackedCodeStates:(NSDictionary *)trackedCodeStates;
+
 @end

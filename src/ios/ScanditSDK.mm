@@ -18,6 +18,7 @@
 #import "SBSTypeConversion.h"
 #import "SBSPickerStateMachine.h"
 #import "SBSSampleBufferConverter.h"
+#import "SBSResizeScannerProtocol.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 #import <ScanditBarcodeScanner/SBSTextRecognition.h>
 
@@ -52,6 +53,8 @@ SBSLicenseValidationDelegate>
 
 @property (nonatomic, strong, readonly) ScanditSDKRotatingBarcodePicker *picker;
 @property (nonatomic, strong) UINavigationController *pickerContainer;
+
+@property (nonatomic, weak) id<SBSResizeScannerProtocol> delegate;
 
 @end
 
@@ -101,7 +104,26 @@ SBSLicenseValidationDelegate>
     NSDictionary *settings = [command.arguments objectAtIndex:0];
     NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];
     NSDictionary *overlayOptions = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:2]];
+    [self checkConstraints:options];
     [self showPickerWithSettings:settings options:options overlayOptions:overlayOptions];
+}
+
+- (void)checkConstraints:(NSDictionary *) options {
+    NSDictionary *portraitConstraintsDict = [options objectForKey:[SBSPhonegapParamParser paramPortraitConstraints]];
+    NSDictionary *landscapeConstraintsDict = [options objectForKey:[SBSPhonegapParamParser paramLandscapeConstraints]];
+    if (self.delegate != nil && portraitConstraintsDict != nil && landscapeConstraintsDict != nil) {
+        SBSConstraints *portraitConstraints = [[SBSConstraints alloc] init];
+        portraitConstraints.topMargin = portraitConstraintsDict[@"topmargin"];
+        portraitConstraints.rightMargin = portraitConstraintsDict[@"rightmargin"];
+        portraitConstraints.bottomMargin = portraitConstraintsDict[@"bottommargin"];
+        portraitConstraints.leftMargin = portraitConstraintsDict[@"leftmargin"];
+        SBSConstraints *landscapeConstraints = [[SBSConstraints alloc] init];
+        landscapeConstraints.topMargin = landscapeConstraintsDict[@"topmargin"];
+        landscapeConstraints.rightMargin = landscapeConstraintsDict[@"rightmargin"];
+        landscapeConstraints.bottomMargin = landscapeConstraintsDict[@"bottommargin"];
+        landscapeConstraints.leftMargin = landscapeConstraintsDict[@"leftmargin"];
+        [self.delegate scannerResized:portraitConstraints landscapeConstraints:landscapeConstraints with:0];
+    }
 }
 
 - (void)picker:(ScanditSDKRotatingBarcodePicker *)picker didChangeState:(SBSPickerState)newState {
@@ -183,8 +205,15 @@ SBSLicenseValidationDelegate>
                 [self.viewController.view addSubview:self.picker.view];
                 [picker didMoveToParentViewController:self.viewController];
 
-                [SBSPhonegapParamParser updateLayoutOfPicker:self.picker
-                                                 withOptions:options];
+                NSDictionary *constraints = [SBSPhonegapParamParser updateLayoutOfPicker:self.picker withOptions:options];
+                if (self.delegate != nil && constraints != nil) {
+                    SBSConstraints *portraitMargins = [constraints objectForKey:@"portraitConstraints"];
+                    SBSConstraints *landscapeMargins = [constraints objectForKey:@"landscapeConstraints"];
+                    NSNumber *animationDuration = [constraints objectForKey:@"animationDuration"];
+                    CGFloat duration = [animationDuration doubleValue];
+                    [self.delegate scannerResized:portraitMargins landscapeConstraints:landscapeMargins with:duration];
+                }
+
 
             } else {
                 self.modallyPresented = YES;
@@ -292,7 +321,15 @@ SBSLicenseValidationDelegate>
         dispatch_async(self.queue, ^{
             dispatch_main_sync_safe(^{
                 NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:0]];
-                [SBSPhonegapParamParser updateLayoutOfPicker:self.picker withOptions:options];
+                NSDictionary *constraints = [SBSPhonegapParamParser updateLayoutOfPicker:self.picker withOptions:options];
+                if (self.delegate != nil && constraints != nil) {
+                    SBSConstraints *portraitMargins = [constraints objectForKey:@"portraitConstraints"];
+                    SBSConstraints *landscapeMargins = [constraints objectForKey:@"landscapeConstraints"];
+                    NSNumber *animationDuration = [constraints objectForKey:@"animationDuration"];
+                    CGFloat duration = [animationDuration doubleValue];
+                    [self.delegate scannerResized:portraitMargins landscapeConstraints:landscapeMargins with:duration];
+                }
+
             });
         });
     }
@@ -383,6 +420,14 @@ SBSLicenseValidationDelegate>
     return scanSettings;
 }
 
+- (void)add:(id <SBSResizeScannerProtocol>)listener {
+    self.delegate = listener;
+}
+
++ (void)add:(id <SBSResizeScannerProtocol>)listener to:(ScanditSDK *)scanditSdk {
+    [scanditSdk add:listener];
+}
+
 #pragma mark - SBSScanDelegate methods
 
 - (void)barcodePicker:(SBSBarcodePicker *)picker didScan:(SBSScanSession *)session {
@@ -434,6 +479,9 @@ SBSLicenseValidationDelegate>
                 [self.picker removeFromParentViewController];
                 [self.picker.view removeFromSuperview];
                 [self.picker didMoveToParentViewController:nil];
+            }
+            if (self.delegate != nil) {
+                [self.delegate scannerDismissed];
             }
             self.pickerStateMachine = nil;
             self.hasPendingOperation = NO;
@@ -591,6 +639,9 @@ SBSLicenseValidationDelegate>
                 [self.picker.view removeFromSuperview];
                 [self.picker didMoveToParentViewController:nil];
             }
+            if (self.delegate != nil) {
+                [self.delegate scannerDismissed];
+            }
             self.pickerStateMachine = nil;
             self.hasPendingOperation = NO;
         });
@@ -632,6 +683,9 @@ SBSLicenseValidationDelegate>
             [self.picker.view removeFromSuperview];
             [self.picker didMoveToParentViewController:nil];
         }
+        if (self.delegate != nil) {
+            [self.delegate scannerDismissed];
+        }
     });
     self.pickerStateMachine = nil;
     [self sendCancelEvent];
@@ -652,6 +706,9 @@ SBSLicenseValidationDelegate>
             [self.picker removeFromParentViewController];
             [self.picker.view removeFromSuperview];
             [self.picker didMoveToParentViewController:nil];
+        }
+        if (self.delegate != nil) {
+            [self.delegate scannerDismissed];
         }
         self.pickerStateMachine = nil;
         self.hasPendingOperation = NO;

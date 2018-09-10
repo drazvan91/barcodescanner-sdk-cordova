@@ -117,11 +117,15 @@ SBSLicenseValidationDelegate>
         portraitConstraints.rightMargin = portraitConstraintsDict[@"rightmargin"];
         portraitConstraints.bottomMargin = portraitConstraintsDict[@"bottommargin"];
         portraitConstraints.leftMargin = portraitConstraintsDict[@"leftmargin"];
+        portraitConstraints.width = portraitConstraintsDict[@"width"];
+        portraitConstraints.height = portraitConstraintsDict[@"height"];
         SBSConstraints *landscapeConstraints = [[SBSConstraints alloc] init];
         landscapeConstraints.topMargin = landscapeConstraintsDict[@"topmargin"];
         landscapeConstraints.rightMargin = landscapeConstraintsDict[@"rightmargin"];
         landscapeConstraints.bottomMargin = landscapeConstraintsDict[@"bottommargin"];
         landscapeConstraints.leftMargin = landscapeConstraintsDict[@"leftmargin"];
+        landscapeConstraints.width = landscapeConstraintsDict[@"width"];
+        landscapeConstraints.height = landscapeConstraintsDict[@"height"];
         [self.delegate scannerResized:portraitConstraints landscapeConstraints:landscapeConstraints with:0];
     }
 }
@@ -426,6 +430,14 @@ SBSLicenseValidationDelegate>
 
 + (void)add:(id <SBSResizeScannerProtocol>)listener to:(ScanditSDK *)scanditSdk {
     [scanditSdk add:listener];
+}
+
+- (void)removeListener {
+    self.delegate = nil;
+}
+
++ (void)removeListener:(ScanditSDK *)scanditSdk {
+    [scanditSdk removeListener];
 }
 
 #pragma mark - SBSScanDelegate methods

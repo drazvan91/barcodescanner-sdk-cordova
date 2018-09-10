@@ -47,4 +47,6 @@ dispatch_sync(dispatch_get_main_queue(), block);\
 
 + (void)add:(id <SBSResizeScannerProtocol>)listener to:(ScanditSDK *)scanditSdk;
 
++ (void)removeListener:(ScanditSDK *)scanditSdk;
+
 @end

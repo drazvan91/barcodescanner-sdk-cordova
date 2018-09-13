@@ -89,6 +89,8 @@ SBSLicenseValidationDelegate>
 }
 
 - (void)show:(CDVInvokedUrlCommand *)command {
+    self.callbackId = command.callbackId;
+
     if (self.hasPendingOperation) {
         return;
     }
@@ -99,7 +101,6 @@ SBSLicenseValidationDelegate>
         NSLog(@"The show call received too few arguments and has to return without starting.");
         return;
     }
-    self.callbackId = command.callbackId;
 
     NSDictionary *settings = [command.arguments objectAtIndex:0];
     NSDictionary *options = [self lowerCaseOptionsFromOptions:[command.arguments objectAtIndex:1]];

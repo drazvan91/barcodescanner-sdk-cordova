@@ -108,7 +108,7 @@
     if (searchBarKeyboardType) {
         if ([searchBarKeyboardType isKindOfClass:[NSString class]]) {
             if ([(NSString *)searchBarKeyboardType isEqualToString:@"text"]) {
-                [picker setSearchBarKeyboardType:UIKeyboardTypeAlphabet];
+                [picker setSearchBarKeyboardType:UIKeyboardTypeNumbersAndPunctuation];
             } else {
                 [picker setSearchBarKeyboardType:UIKeyboardTypeNumberPad];
             }

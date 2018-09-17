@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
 
-import { ScannerSettings } from './scanner-settings';
-
 import { Enums } from './enums';
+import { ScannerSettings } from './scanner-settings';
 
 @Injectable()
 export class Scanner {
@@ -17,6 +16,7 @@ export class Scanner {
 
   public portraitConstraints: Constraints;
   public landscapeConstraints: Constraints;
+  public didScan: (session) => void;
 
   private ScannerState;
 
@@ -175,7 +175,9 @@ export class Scanner {
   }
 
   private onScan(session): void {
-    this.events.publish(this.event.scan, session);
+    if (this.didScan) {
+      this.didScan(session);
+    }
   }
 
   private onManualInput(content): void {

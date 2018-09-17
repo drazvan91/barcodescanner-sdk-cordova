@@ -1,9 +1,7 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { Events, Content, NavController, NavParams } from 'ionic-angular';
+import { Content } from 'ionic-angular';
 
 import { Scanner } from '../../providers/scanner';
-
-import { Enums } from '../../providers/enums';
 
 @Component({
   selector: 'page-pickers',
@@ -16,28 +14,19 @@ export class PickersPage {
 
   constructor(
     private zone: NgZone,
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private events: Events,
     private scanner: Scanner,
-    private enums: Enums,
   ) {
-    this.onScanHandler = (session) => {
-      this.handleScan(session);
-    }
   }
 
   public ionViewWillEnter(): void {
-    this.subscribe();
+    this.scanner.didScan = (session) => {
+      this.handleScan(session);
+    }
   }
 
   public ionViewDidEnter(): void {
     this.stopScanning();
     this.setScannedCodes(undefined);
-  }
-
-  public ionViewWillLeave(): void {
-    this.unsubscribe();
   }
 
   public startFullscreenScanner($event: MouseEvent): void {
@@ -77,14 +66,6 @@ export class PickersPage {
 
   public stopScanning(): void {
     this.scanner.stop();
-  }
-
-  private subscribe(): void {
-    this.events.subscribe(this.scanner.event.scan, this.onScanHandler);
-  }
-
-  private unsubscribe(): void {
-    this.events.unsubscribe(this.scanner.event.scan, this.onScanHandler);
   }
 
   private startScanner(top: Margin, right: Margin, bottom: Margin, left: Margin): void {

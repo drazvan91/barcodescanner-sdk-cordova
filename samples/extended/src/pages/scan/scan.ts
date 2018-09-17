@@ -1,9 +1,8 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { Content, Events, NavController, Platform, ViewController } from 'ionic-angular';
-
-import { Scanner } from '../../providers/scanner';
+import { Content, Events } from 'ionic-angular';
 
 import { Enums } from '../../providers/enums';
+import { Scanner } from '../../providers/scanner';
 
 @Component({
   selector: 'page-scan',
@@ -25,17 +24,11 @@ export class ScanPage {
 
   constructor(
     private zone: NgZone,
-    private platform: Platform,
     private events: Events,
-    private nav: NavController,
-    private view: ViewController,
     private scanner: Scanner,
     private enums: Enums,
   ) {
     this.ScannerState = this.enums.ScannerState;
-    this.onScanHandler = (session) => {
-      this.handleScan(session);
-    }
 
     this.onStateChangeHandler = (state) => {
       this.handleStateChange(state);
@@ -46,6 +39,9 @@ export class ScanPage {
 
   public ionViewWillEnter(): void {
     this.subscribe();
+    this.scanner.didScan = (session) => {
+      this.handleScan(session);
+    }
   }
   
   public onPause(): void {
@@ -71,14 +67,12 @@ export class ScanPage {
   }
 
   private subscribe(): void {
-    this.events.subscribe(this.scanner.event.scan, this.onScanHandler);
     this.events.subscribe(this.scanner.event.stateChange, this.onStateChangeHandler);
     document.addEventListener('pause', this.onPause, false);
     document.addEventListener('resume', this.onResume, false);
   }
 
   private unsubscribe(): void {
-    this.events.unsubscribe(this.scanner.event.scan, this.onScanHandler);
     this.events.unsubscribe(this.scanner.event.stateChange, this.onStateChangeHandler);
   }
 

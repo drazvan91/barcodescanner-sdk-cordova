@@ -30,9 +30,6 @@ export class ScanPage {
     private enums: Enums,
   ) {
     this.ScannerState = this.enums.ScannerState;
-    this.scanner.didScan = (session) => {
-      this.handleScan(session);
-    }
 
     this.onStateChangeHandler = (state) => {
       this.handleStateChange(state);
@@ -43,6 +40,9 @@ export class ScanPage {
 
   public ionViewWillEnter(): void {
     this.subscribe();
+    this.scanner.didScan = (session) => {
+      this.handleScan(session);
+    }
   }
   
   public onPause(): void {

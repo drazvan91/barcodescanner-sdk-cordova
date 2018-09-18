@@ -17,7 +17,6 @@ export class ScanPage {
 
   public scannerPlaceholderHeight = '200px';
 
-  private onScanHandler: Function;
   private onStateChangeHandler: Function;
 
   private shouldBeScanning: boolean;

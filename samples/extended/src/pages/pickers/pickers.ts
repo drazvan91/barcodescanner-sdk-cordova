@@ -12,8 +12,6 @@ export class PickersPage {
 
   public scannedCodes;
 
-  private onScanHandler: Function;
-
   constructor(
     private zone: NgZone,
     private scanner: Scanner,

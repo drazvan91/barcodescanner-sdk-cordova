@@ -84,7 +84,7 @@ public class Marshal {
         }
         for (Long id : rejectedCodeIds) {
             for (TrackedBarcode code : session.getTrackedCodes().values()) {
-                if (code.getHandle() == id) {
+                if (code instanceof TrackedBarcode && ((TrackedBarcode) code).getId() == id) {
                     session.rejectTrackedCode(code);
                 }
             }

@@ -73,6 +73,8 @@
             }
 
             function didRecognizeNewCodes(matrixScanSession) {
+                // If you want to visually reject a code you should use MatrixScanSession's rejectTrackedCode() method.
+                // For example, the following code will reject all EAN8 codes.
                 matrixScanSession.newlyTrackedCodes.forEach(barcode => {
                     if (barcode.symbology == Scandit.Barcode.Symbology.EAN8) {
                         matrixScanSession.rejectTrackedCode(barcode)

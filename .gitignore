@@ -3,3 +3,5 @@ src/windows
 .DS_Store
 src/.DS_Store
 .idea/
+.sourcemaps
+/samples/ocr/www

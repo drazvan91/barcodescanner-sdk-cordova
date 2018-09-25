@@ -18,6 +18,7 @@
 #import "SBSTypeConversion.h"
 #import "SBSPickerStateMachine.h"
 #import "SBSSampleBufferConverter.h"
+#import "SBSTrackedCode+Private.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 #import <ScanditBarcodeScanner/SBSTextRecognition.h>
 
@@ -471,7 +472,7 @@ SBSLicenseValidationDelegate>
         for (NSNumber *codeId in self.visuallyRejectedCodeIds) {
             long value = [codeId longValue];
             for (SBSTrackedCode *code in [trackedCodes allValues]) {
-                if (code.uniqueId == value) {
+                if ([code isKindOfClass:[SBSTrackedCode class]] && code.identifier.longValue == value) {
                     [session rejectTrackedCode:code];
                     break;
                 }

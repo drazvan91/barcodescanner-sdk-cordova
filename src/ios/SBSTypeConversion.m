@@ -10,18 +10,13 @@
 //  express or implied. See the License for the specific language governing permissions and
 //  limitations under the License.
 #import "SBSTypeConversion.h"
+#import "SBSTrackedCode+Private.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
 @interface SBSCode (Handle)
 
 // private property to get the underlying data handle. Used for generating unique Ids.
 @property (readonly, nonatomic) void *handle;
-
-@end
-
-@interface SBSTrackedCode (Identifier)
-
-@property (nonatomic, readonly) NSNumber *identifier;
 
 @end
 

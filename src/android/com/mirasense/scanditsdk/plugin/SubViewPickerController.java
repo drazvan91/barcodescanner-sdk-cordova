@@ -25,6 +25,8 @@ import android.view.ViewParent;
 import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
+import com.mirasense.scanditsdk.plugin.BarcodePickerWithSearchBar.Constraints;
+
 import com.scandit.barcodepicker.OnScanListener;
 import com.scandit.barcodepicker.ProcessFrameListener;
 import com.scandit.barcodepicker.LicenseValidationListener;
@@ -43,6 +45,7 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -76,7 +79,7 @@ public class SubViewPickerController extends PickerControllerBase implements
 
     private Set<Long> mLastFrameTrackedCodeIds = new HashSet<Long>();
     private List<Long> mRejectedTrackedCodeIds;
-
+    private WeakReference<ResizeScannerInterface> resizeListener = new WeakReference<>(null);
 
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
@@ -151,6 +154,7 @@ public class SubViewPickerController extends PickerControllerBase implements
                 mLayout.addView(mPickerStateMachine.getPicker(), rLayoutParams);
                 PhonegapParamParser.updateLayout(pluginActivity, mPickerStateMachine.getPicker(),
                         options, mScreenDimensions);
+                callPickerShownListener(options);
 
                 if (mPendingClose.compareAndSet(true, false)) {
                     // picker was closed(canceled) in the meantime. close it now.
@@ -235,6 +239,7 @@ public class SubViewPickerController extends PickerControllerBase implements
             public void run() {
                 PhonegapParamParser.updateLayout(pluginActivity, mPickerStateMachine.getPicker(),
                         layoutOptions, mScreenDimensions);
+                callPickerResizedListener(layoutOptions);
             }
         });
     }
@@ -247,6 +252,28 @@ public class SubViewPickerController extends PickerControllerBase implements
         BarcodePickerWithSearchBar picker = mPickerStateMachine.getPicker();
         UIParamParser.updatePickerUI(picker, overlayOptions);
         PhonegapParamParser.updatePicker(picker, overlayOptions, this);
+    }
+    
+    private void callPickerResizedListener(Bundle bundle) {
+        ResizeScannerInterface listener = resizeListener.get();
+        if (listener != null) {
+            Constraints portrait = PhonegapParamParser.extractConstraints(bundle,
+                    PhonegapParamParser.paramPortraitConstraints, mScreenDimensions.x, mScreenDimensions.y);
+            Constraints landscape = PhonegapParamParser.extractConstraints(bundle,
+                    PhonegapParamParser.paramLandscapeConstraints, mScreenDimensions.y, mScreenDimensions.x);
+            listener.scannerResized(portrait, landscape, bundle.getInt(PhonegapParamParser.paramAnimationDuration));
+        }
+    }
+
+    private void callPickerShownListener(Bundle bundle) {
+        ResizeScannerInterface listener = resizeListener.get();
+        if (listener != null) {
+            Constraints portrait = PhonegapParamParser.extractConstraints(bundle,
+                    PhonegapParamParser.paramPortraitConstraints, mScreenDimensions.x, mScreenDimensions.y);
+            Constraints landscape = PhonegapParamParser.extractConstraints(bundle,
+                    PhonegapParamParser.paramLandscapeConstraints, mScreenDimensions.y, mScreenDimensions.x);
+            listener.scannerShown(portrait, landscape);
+        }
     }
 
     @Override
@@ -343,6 +370,10 @@ public class SubViewPickerController extends PickerControllerBase implements
         }
         mLayout = null;
         mPickerStateMachine = null;
+        ResizeScannerInterface listener = resizeListener.get();
+        if (listener != null) {
+            listener.scannerDismissed();
+        }
     }
 
     private void removeSubviewPicker() {
@@ -523,5 +554,9 @@ public class SubViewPickerController extends PickerControllerBase implements
                 ResultRelay.jsonForLicenseValidationFail(errorMessage));
         PluginResult result = Marshal.createOkResult(args);
         mCallbackContext.sendPluginResult(result);
+    }
+    
+    public void setResizeListener(ResizeScannerInterface listener) {
+        resizeListener = new WeakReference<>(listener);
     }
 }

@@ -185,7 +185,7 @@ public class PhonegapParamParser {
         return result;
     }
 
-    private static BarcodePickerWithSearchBar.Constraints extractConstraints(Bundle bundle, String key,
+    public static BarcodePickerWithSearchBar.Constraints extractConstraints(Bundle bundle, String key,
                                                                          int width, int height) {
         BarcodePickerWithSearchBar.Constraints result = new BarcodePickerWithSearchBar.Constraints();
         Bundle constraintsBundle = bundle.getBundle(key);

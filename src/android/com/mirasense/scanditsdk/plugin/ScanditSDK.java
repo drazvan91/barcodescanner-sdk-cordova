@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -77,7 +78,7 @@ public class ScanditSDK extends CordovaPlugin {
     }
 
     private ArrayList<Command> mQueuedCommands = new ArrayList<Command>();
-
+    private WeakReference<ResizeScannerInterface> resizeListener = new WeakReference<>(null);
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -206,6 +207,7 @@ public class ScanditSDK extends CordovaPlugin {
                 if (showPickerAsSubView) {
                     if (mPickerController == null || !(mPickerController instanceof SubViewPickerController)) {
                         mPickerController = new SubViewPickerController(ScanditSDK.this, mCallbackContext);
+                        ((SubViewPickerController)mPickerController).setResizeListener(resizeListener.get());
                     }
                 } else {
                     mPickerController = new FullscreenPickerController(ScanditSDK.this, mCallbackContext);
@@ -420,5 +422,12 @@ public class ScanditSDK extends CordovaPlugin {
         super.onResume(multitasking);
         if (mPickerController == null) return;
         mPickerController.onActivityResume();
+    }
+
+    public void setResizeListener(ResizeScannerInterface listener) {
+        resizeListener = new WeakReference<>(listener);
+        if (mPickerController instanceof SubViewPickerController) {
+            ((SubViewPickerController)mPickerController).setResizeListener(listener);
+        }
     }
 }

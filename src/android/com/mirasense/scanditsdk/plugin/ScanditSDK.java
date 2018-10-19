@@ -78,7 +78,7 @@ public class ScanditSDK extends CordovaPlugin {
     }
 
     private ArrayList<Command> mQueuedCommands = new ArrayList<Command>();
-    private WeakReference<ResizeScannerInterface> resizeListener = new WeakReference<>(null);
+    private WeakReference<ResizeScannerInterface> resizeListener = new WeakReference<ResizeScannerInterface>(null);
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -425,7 +425,7 @@ public class ScanditSDK extends CordovaPlugin {
     }
 
     public void setResizeListener(ResizeScannerInterface listener) {
-        resizeListener = new WeakReference<>(listener);
+        resizeListener = new WeakReference<ResizeScannerInterface>(listener);
         if (mPickerController instanceof SubViewPickerController) {
             ((SubViewPickerController) mPickerController).setResizeListener(listener);
         }

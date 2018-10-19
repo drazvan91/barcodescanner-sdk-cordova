@@ -79,7 +79,7 @@ public class SubViewPickerController extends PickerControllerBase implements
 
     private Set<Long> mLastFrameTrackedCodeIds = new HashSet<Long>();
     private List<Long> mRejectedTrackedCodeIds;
-    private WeakReference<ResizeScannerInterface> resizeListener = new WeakReference<>(null);
+    private WeakReference<ResizeScannerInterface> resizeListener = new WeakReference<ResizeScannerInterface>(null);
 
     SubViewPickerController(CordovaPlugin plugin, CallbackContext callbacks) {
         super(plugin, callbacks);
@@ -557,6 +557,6 @@ public class SubViewPickerController extends PickerControllerBase implements
     }
     
     public void setResizeListener(ResizeScannerInterface listener) {
-        resizeListener = new WeakReference<>(listener);
+        resizeListener = new WeakReference<ResizeScannerInterface>(listener);
     }
 }

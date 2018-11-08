@@ -35,34 +35,17 @@ Use the cordova CLI to add the plugin to your already existing project.
 
 ## _Add the type definitions (TypeScript only)_
 
-If you have a TypeScript project (e.g. Ionic, Angular, etc), you can import the type definition, just by making sure
-your TypeScript compiler knows about them. To make sure it does, you can either reference the type definition file at
-the beginning of the file you'll need them:
+If you have a TypeScript project (e.g. Ionic, Angular, etc), you can declare `Scandit` the following way, so TypeScript knows that `Scandit` exists in the global scope:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.javascript}
-/// <reference path="path-to-plugin/types/index.d.ts"/>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```typescript
+declare let Scandit: any;
+```
 
-**or** by adding it to the included files in your `tsconfig.json` file (preferred way):
+We suggest inserting this type declaration at the top of the file where you'll use `Scandit`.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.javascript}
-// tsconfig.json
+The `Scandit` namespace is going to be added to the `window` object, so there's no need to import any module, the only requirement for TypeScript projects is just to let the compiler know that `Scandit` exists in the global scope, so your project can compile properly.
 
-...
-"include": [
-    ... (your other included source files/folders)
-
-    "path-to-plugin/types/index.d.ts"
-],
-...
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-As soon as the type definitions for the plugin are included, type checking and compilation should work as you'd expect
-and you can import as follows:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.javascript}
-import { Scandit } from "barcodescanner-sdk-cordova"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+_As a more complex solution, you can also drop a type definition file (from `types/index.d.ts`) into your project. Depending on your TypeScript configuration, you might need to specify additional configuration options to make sure the TypeScript compiler is aware of the type definition file._
 
 ## Instantiate and configure the barcode picker
 

@@ -22,7 +22,7 @@ The following sets the portrait's scanning area to 90% of the camera preview wid
 ~~~~~~~~~~~~~~~~{.java}
 
 var settings = Scandit.ScanSettings();
-settings.activeScanningAreaPortrait = new Scandit.Rect(0.05, 0.45, 0.9, 0.1);
+settings.activeScanningAreaPortrait = new Scandit.Rect(0.05, 0.45, 0.95, 0.1);
 
 ~~~~~~~~~~~~~~~~
 

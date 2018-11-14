@@ -100,9 +100,7 @@ function ScanSettings() {
     this.relativeZoom = 0.0;
 
     this.maxNumberOfCodesPerFrame = 1;
-    this.properties = {
-        enable_camera2_api : 0
-    }
+    this.properties = {}
 
     this.recognitionMode = ScanSettings.RecognitionMode.CODE;
 
@@ -111,7 +109,8 @@ function ScanSettings() {
 
 ScanSettings.RecognitionMode = {
 	TEXT: 1,
-	CODE: 2
+    CODE: 2,
+    CODE_AND_TEXT: 3
 }
 
 ScanSettings.CameraFacing = {

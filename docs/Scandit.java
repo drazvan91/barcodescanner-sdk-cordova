@@ -862,7 +862,7 @@ public class Scandit {
         /**
          * A dictionary containing hidden properties.
          * <p>
-         * This function is for internal use only and any functionality that can be
+         * This dictionary is for internal use only and any functionality that can be
          * accessed through it can and will vanish without public notice from one
          * version to the next. Do not call this function unless you specifically
          * have to.

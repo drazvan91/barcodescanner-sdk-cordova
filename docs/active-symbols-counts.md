@@ -15,7 +15,7 @@ The active symbol count setting is ignored for fixed-size barcodes (EAN and UPC 
 ## Change the barcode length
 
 To know the symbol count of a barcode, you can either:
-* scan it with the "Any Code" mode of the Scandit demo app, available on the Apple and Google Play Store.
+* scan it with the "Any Code" mode of the Scandit demo app, available on the <a href="https://itunes.apple.com/app/id453880584">App Store</a> and <a href="https://play.google.com/store/apps/details?id=com.scandit.demoapp">Google Play Store</a>.
 * have a look at <a href="../c_api/symbologies.html">Calculating symbol counts for variable-length symbologies</a>.
 
 Changing the length of the barcodes is done through {@link Scandit.SymbologySettings.activeSymbolCounts activeSymbolCounts} on the symbology settings object.

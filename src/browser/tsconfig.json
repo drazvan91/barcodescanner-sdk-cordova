@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outFile": "./ScanditSdkProxy.js",
+    "sourceMap": true,
+    "module": "amd"
+  },
+  "include": ["src/*.ts"]
+}

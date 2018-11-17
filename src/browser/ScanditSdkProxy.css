@@ -1,0 +1,9 @@
+.scandit-mocked-scanner {
+    position: fixed;
+    background-color: red;
+}
+
+.scandit-mocked-scanner.NeverShown-state,
+.scandit-mocked-scanner.Hidden-state {
+    display: none;
+}  

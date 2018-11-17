@@ -159,4 +159,9 @@
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/ResizeScannerInterface.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
         <source-file src="src/android/com/mirasense/scanditsdk/plugin/ScanditCordovaTopView.java" target-dir="src/com/mirasense/scanditsdk/plugin" />
     </platform>
+    <platform name="browser">
+      <js-module src="src/browser/ScanditSdkProxy.js" name="ScanditSdkProxy">
+        <runs/>
+      </js-module>
+    </platform>
 </plugin>
